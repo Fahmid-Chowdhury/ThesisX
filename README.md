@@ -58,22 +58,30 @@ Thesis X is a collaborative platform designed for university students and facult
 - Supervisors can review, suggest changes, and approve/reject proposals.
 - Collaborative commenting feature for supervisors to provide feedback.
 
-### 9. Document Management and Storage
+### 9. AI-Powered Thesis Assistant
+- Summary Generation: Allows students to upload thesis drafts or research papers and receive concise summaries.
+- Detailed Insights: Students can interact with the AI to explore specific sections or concepts in their paper, e.g., "Explain the methodology section in detail."
+- Interactive Q&A: Students can ask the AI questions about their thesis topic or receive suggestions for improvement.
+- Feedback Support: AI provides feedback on grammar, structure, and academic tone.
+- Integration with Document Manager: Enables seamless access and interaction with uploaded documents.
+
+
+### 10. Document Management and Storage
 - Upload and manage thesis drafts, research papers, and related files.
 - Automatically extract metadata (e.g., paper title, authors) from uploaded documents.
 
-### 10. Communication Tools
+### 11. Communication Tools
 - Messaging system for students and faculty to communicate directly.
 - Share meeting links through Zoom, Google Meet, or Teams.
 - File sharing via the messaging system (may have limitations).
 
-### 11. Thesis Progress Tracker
+### 12. Thesis Progress Tracker
 - Milestone tracker to mark key stages (proposal, literature review, data collection, etc.).
 - Option to set deadlines and reminders for students and supervisors.
 - Students can update milestone statuses.
 - Supervisors can review progress and provide feedback.
 
-### 12. Admin Dashboard
+### 13. Admin Dashboard
 - Admins can view and manage all faculty and student accounts.
 - Ability to monitor the number of students assigned to each faculty member.
 - Oversee thesis submission timelines and approval processes.
