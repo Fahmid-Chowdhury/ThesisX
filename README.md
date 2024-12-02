@@ -4,15 +4,12 @@
 Thesis X is a collaborative platform designed for university students and faculty to streamline the process of selecting thesis supervisors and co-supervisors. It addresses common challenges in the thesis topic selection phase, helping students connect with faculty members more efficiently. Key features include allowing faculty to register with their research interests, previous works, and availability, while students can browse and select supervisors and co-supervisors based on their preferences. This platform aims to enhance communication and facilitate appointments between students and faculty during the thesis supervision process.
 
 ## Tech Stack
-- **Stack**
   - React.js
   - Express.js
   - Node.js
   - PostgreSQL
   - Prisma (ORM)
   - Socket.io
-
----
 
 ## Features
 
