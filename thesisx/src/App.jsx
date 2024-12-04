@@ -1,43 +1,26 @@
 // ===========================
 import { useContext } from 'react'
+import BarLoader from "react-spinners/BarLoader";
 // ===========================
 import { AuthContext } from './Contexts/Authentication/AuthContext'
-
+import Signin from './authenticaiton/signin/Signin';
 function App() {
     
     const {token, user, loading, signIn, signOut } = useContext(AuthContext);
 
     if (loading) {
         return (
-            <div>
-                Loading...
+            <div className='h-screen w-screen bg-[hsl(0,0%,95%)] dark:bg-[hsl(0,0%,5%)] flex flex-col items-center justify-center'>
+                <BarLoader 
+                    color={'hsl(220 60% 60%)'}
+                    height={'6px'}
+                    width={'150px'}
+                />
             </div>
     )}
     return (
         <>
-            {
-                user ? (
-                    <div>
-                        {user.name}
-                        {user.email}
-                    </div>
-                ) : (
-                    <div>
-                        User is not defined
-                    </div>
-                )
-            }
-            {
-                token ? (
-                    <div>
-                        token is defined
-                    </div>
-                ) : (
-                    <div>
-                        token is not defined
-                    </div>
-                )
-            }
+            <Signin />
         </>
     )
 }

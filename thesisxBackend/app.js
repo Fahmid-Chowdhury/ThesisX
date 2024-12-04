@@ -2,7 +2,7 @@ const express = require('express');
 
 const app = express();
 
-const LoginSignupRoutes = require('./routes/LoginSignup');
+const LoginSignupRoutes = require('./routes/AuthRoutes');
 
 app.use('/user', LoginSignupRoutes);
 

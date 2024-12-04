@@ -8,9 +8,8 @@ const AuthProvider = ({ children }) => {
     
     useEffect(() => {
         const storedToken = localStorage.getItem('authToken');
-        console.log(import.meta.env.VITE_API_DOMAIN)
 
-        if (true) {
+        if (storedToken) {
             setToken(storedToken);
             fetchUserData(storedToken);
         } else {
@@ -21,9 +20,8 @@ const AuthProvider = ({ children }) => {
     const fetchUserData = async (authToken) => {
         try {
             // get user info
-            console.log("fetching user information")
-            // const apiDomain = process.env.REACT_APP_API_DOMAIN;
-            const response = await fetch(`${"http://localhost:8080"}/api/user`, {
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+            const response = await fetch(`${apiDomain}/api/user`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,

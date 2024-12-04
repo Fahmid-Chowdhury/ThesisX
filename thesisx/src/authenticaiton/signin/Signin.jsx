@@ -32,7 +32,7 @@ const Signin = () => {
     })
 
     return (
-        <div className="h-screen bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] flex items-center justify-center">
+        <div className="h-screen w-screen bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] flex items-center justify-center">
             <div className="bg-[hsl(0,0,100%)] dark:bg-[hsl(0,0,0)] p-[50px] shadow-md dark:shadow-[hsl(0,0,70%] rounded-xl max-w-[900px] m-5 text-black dark:text-white">
                 <div className="lg:grid lg:grid-cols-2 gap-10 ">
                     <LeftBanner />
