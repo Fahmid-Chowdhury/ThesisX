@@ -30,7 +30,6 @@ const AuthProvider = ({ children }) => {
 
             if (response.ok) {
                 const userData = await response.json();
-                console.log('response success')
                 setUser(userData);
             } else {
                 setUser(null);

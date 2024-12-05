@@ -3,7 +3,8 @@ import { useContext } from 'react'
 import BarLoader from "react-spinners/BarLoader";
 // ===========================
 import { AuthContext } from './Contexts/Authentication/AuthContext'
-import Signin from './authenticaiton/signin/Signin';
+import AppRouter from './Routes/routes';
+
 function App() {
     
     const {token, user, loading, signIn, signOut } = useContext(AuthContext);
@@ -20,7 +21,7 @@ function App() {
     )}
     return (
         <>
-            <Signin />
+            <AppRouter />
         </>
     )
 }

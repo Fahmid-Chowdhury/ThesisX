@@ -1,5 +1,7 @@
-import {useState, useEffect} from 'react';
-
+import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+// ================================
+import { AuthContext } from '../../Contexts/Authentication/AuthContext';
 function LeftBanner() {
     return (
         <div className='mb-4 lg:mb-0'>
@@ -26,10 +28,19 @@ function LeftBanner() {
 
 
 const Signin = () => {
+    const {signIn} = useContext( AuthContext );
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({
         email:'',
         password:''
     })
+
+    const handleSubmit = async(e) => {
+        e.preventDefault()
+        signIn("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MzMzMDA5MDEsImV4cCI6MTc2NDgzNjkwMSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjoiTWFuYWdlciJ9.ab1K3oAoMmv4Jj-ua58mW90uNWpS1RWK5XGvpvukUbE")
+
+        navigate("/home")
+    }
 
     return (
         <div className="h-screen w-screen bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] flex items-center justify-center">
@@ -37,7 +48,7 @@ const Signin = () => {
                 <div className="lg:grid lg:grid-cols-2 gap-10 ">
                     <LeftBanner />
                     <div>
-                        <form action="">
+                        <form onSubmit={handleSubmit}>
                             <div className='flex flex-col justify-center gap-2'>
                                 <label htmlFor="email">Email</label>
                                 <input type="email" className='border outline-1 border-[hsl(0,0,30%)] dark:border-[hsl(0,0,70%)] rounded-lg py-2 px-4 bg-transparent' placeholder='Email' required />
