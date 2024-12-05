@@ -1,172 +1,168 @@
-const prisma = require('../prismaClient.js');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const sendOTP = require('../utils/nodemailer.js');
+//============= imports =================
+import DB from "../DB/db.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { sendEmail } from "../utils/nodemailer.js";
+//=======================================
 
+async function generateAndSendOTP(email) {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();  // Generate a 6-digit OTP
+    const expireAt = new Date(Date.now() + 10 * 60 * 1000); // Set OTP expiry time (10 minutes)
 
-async function generateAndSendOTP(userId, email) {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiration = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    try {
+        // Check if an OTP already exists for the given email
+        const existingOtp = await DB.Otp.findUnique({
+            where: { email },
+        });
 
-    // Save OTP in the `otps` table
-    await prisma.otps.create({
-        data: {
-            user_id: userId,
-            otp,
-            expiration
+        let status;
+
+        if (existingOtp) {
+            // Update OTP if it exists
+            status = await DB.Otp.update({
+                where: { email },
+                data: {
+                    otp,
+                    expireAt,
+                },
+            });
+        } else {
+            // Create new OTP if it doesn't exist
+            status = await DB.Otp.create({
+                data: {
+                    email,
+                    otp,
+                    expireAt,
+                },
+            });
         }
-    });
 
-    // Send OTP via email
-    const sendOTPEmail = await sendOTP(email, 'Verify your email', `Your OTP is ${otp}`);
+        if (status) {
+            await sendEmail(email, 'Verify your email', `Your OTP is: ${otp}. It will expire in 10 minutes.`);
+            return {
+                success: true,
+                message: "OTP sent successfully",
+            };
+        } else {
+            return {
+                success: false,
+                message: "Internal server error",
+            };
+        }
+    } catch (err) {
+        console.error("Error in generating OTP:", err);
+        return {
+            success: false,
+            message: "Failed to process OTP request",
+        };
+    }
 }
 
-
 async function signup(req, res) {
-    const { name, email, password, role, department } = req.body;
+    
+    try {
+        const { otp, name, email, password, role, department } = req.body;
 
-    bcrypt.genSalt(10, function(err, salt) {
-        if (err) {
-            return res.status(500).json({ message: 'Internal server error' });
+        // Verify the OTP
+        const otpRecord = await DB.Otp.findUnique({
+            where: { email },
+        });
+
+        // Check if OTP exists and is not expired
+        if (!otpRecord) {
+            return res.status(400).json({ success: false, message: 'OTP not found for this email' });
         }
 
-        try {
-            bcrypt.hash(password, salt, async function(err, hash) {
-                if (err) {
-                    return res.status(500).json({ message: 'Internal server error' });
-                }
-
-                try {
-                    const user = await prisma.user.create({
-                        data: {
-                            name,
-                            email,
-                            password: hash,
-                            role,
-                            department
-                        }
-                    });
-
-                    await generateAndSendOTP(user.id, email);
-
-                    res.status(201).json({ message: 'User created successfully' });
-                } catch (err) {
-                    res.status(400).json({ message: 'Username already taken' });
-                }
-            });
-        } catch (err) {
-            res.status(500).json({ message: 'Internal server error' });
+        if (otpRecord.otp !== otp) {
+            return res.status(400).json({ success: false, message: 'Invalid OTP' });
         }
-    })
+
+        if (new Date() > otpRecord.expireAt) {
+            return res.status(400).json({ success: false, message: 'OTP has expired' });
+        }
+
+        
+        // Hash the password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create the user
+        const user = await DB.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+                role,
+                department,
+            },
+        });
+
+        await DB.Otp.delete({
+            where: { email },
+        });
+
+        res.status(201).json({ success: true, message: 'User created successfully' });
+    } catch (err) {
+        console.error('Error during signup:', err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 }
 
 async function login(req, res) {
-    const { email, password } = req.body;
-
     try {
-        const user = await prisma.user.findUnique({
+        const { email, password } = req.body;
+        const user = await DB.user.findUnique({
             where: {
                 email
             }
         });
 
-        if (user === null) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        if (user.isVerified === false) {
-            return res.status(401).json({ message: 'User is not active' });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
         }
 
         bcrypt.compare(password, user.password, function(err, result) {
             if (err) {
-                return res.status(500).json({ message: 'Internal server error' });
+                return res.status(500).json({ success: false, message: 'Internal server error' });
             }
 
             if (result) {
                 const token = jwt.sign({ 
                     email: user.email, 
                     role: user.role, 
-                    dept: user.department, 
-                    isActive: user.isActive 
+                    dept: user.department,  
                 }, process.env.JWT_KEY);
-                return res.status(200).json({ message: 'Login successful', token });
+                return res.status(200).json({ success: true, message: 'Login successful', token });
             } else {
-                return res.status(401).json({ message: 'Invalid credentials' });
+                return res.status(401).json({ success: false, message: 'Invalid credentials' });
             }
         });
     } catch (err) {
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
 
-async function verifyOTP(req, res) {
-    const { email, otp } = req.body;
-
+async function verifyEmail(req, res) {
+    
     try {
-        const user = await prisma.user.findUnique({
+        const { email } = req.body;
+        if (!email){
+            res.status(400).json({ success: false, message: "Empty field"})
+        }
+
+        const user = await DB.User.findUnique({
             where: { email }
         });
-
-        if (user === null) {
-            return res.status(404).json({ message: 'User not found' });
+        if (user) {
+            return res.status(409).json({ success: false, message: 'Email already registered' });
         }
+        const result = await generateAndSendOTP(email);
 
-        const otpRecord = await prisma.otp.findFirst({
-            where: {
-                userId: user.id,
-                otp,
-                isVerified: false
-            }
-        });
-
-        if (otpRecord === null) {
-            return res.status(400).json({ message: 'Invalid OTP' });
+        if (result.success){
+            res.status(200).json({ success: true, message: result.message });
+        } else {
+            res.status(500).json({ success: false, message: result.message });
         }
-
-        if (new Date() > otpRecord.expiration) {
-            return res.status(400).json({ message: 'OTP expired. Please request a new one.' });
-        }
-
-        // Mark OTP as verified
-        await prisma.otp.delete({
-            where: { id: otpRecord.id }
-        });
-
-        // Update user as verified
-        await prisma.user.update({
-            where: { id: user.id },
-            data: { isVerified: true }
-        });
-
-        res.status(200).json({ message: 'Email verified successfully' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-}
-
-async function resendOTP(req, res) {
-    const { email } = req.body;
-
-    try {
-        const user = await prisma.user.findUnique({
-            where: { email }
-        });
-
-        if (user === null) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        // Delete old OTPs for the user
-        await prisma.otp.deleteMany({
-            where: { userId: user.id }
-        });
-
-        // Generate and send a new OTP
-        await generateAndSendOTP(user.id, email);
-
-        res.status(200).json({ message: 'New OTP sent to your email' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Internal server error' });
@@ -174,10 +170,8 @@ async function resendOTP(req, res) {
 }
 
 
-
-module.exports = {
-    signup,
-    login,
-    verifyOTP,
-    resendOTP
+export { 
+    signup, 
+    login, 
+    verifyEmail, 
 };

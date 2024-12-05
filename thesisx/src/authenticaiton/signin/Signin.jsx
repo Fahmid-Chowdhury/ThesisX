@@ -37,8 +37,7 @@ const Signin = () => {
 
     const handleSubmit = async(e) => {
         e.preventDefault()
-        signIn("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MzMzMDA5MDEsImV4cCI6MTc2NDgzNjkwMSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjoiTWFuYWdlciJ9.ab1K3oAoMmv4Jj-ua58mW90uNWpS1RWK5XGvpvukUbE")
-
+        signIn("")
         navigate("/home")
     }
 

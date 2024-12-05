@@ -1,25 +1,26 @@
 {
-  "name": "thesisxbackend",
-  "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "@prisma/client": "^6.0.1",
-    "axios": "^1.7.8",
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.3",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.1",
-    "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^6.9.16",
-    "nodemon": "^3.1.7"
-  },
-  "devDependencies": {
-    "prisma": "^6.0.1"
-  }
+    "name": "thesisxbackend",
+    "version": "1.0.0",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "@prisma/client": "^6.0.1",
+        "axios": "^1.7.8",
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.20.3",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.1",
+        "jsonwebtoken": "^9.0.2",
+        "nodemailer": "^6.9.16",
+        "nodemon": "^3.1.7"
+    },
+    "devDependencies": {
+        "prisma": "^6.0.1"
+    }
 }
