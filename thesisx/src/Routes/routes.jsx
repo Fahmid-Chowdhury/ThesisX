@@ -6,7 +6,7 @@ import Signin from "../authenticaiton/signin/Signin";
 // ===============================
 
 const ProtectedRoute = ({ element }) => {
-    const { token } = useContext(AuthContext);
+    const token = localStorage.getItem("authToken");
 
     if (!token) {
         return <Navigate to="/signin" />;
@@ -16,7 +16,7 @@ const ProtectedRoute = ({ element }) => {
 };
 
 const Home = () => {
-    return(
+    return (
         <>
             home
         </>
@@ -25,15 +25,12 @@ const Home = () => {
 
 const AppRouter = () => {
     return (
-      <Router>
         <Routes>
-          <Route path="/signin" element={<Signin />} />
-          <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
-          {/* Add other routes here */}
-          <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
+            <Route path="/" element={<Navigate to="/home" />} />
         </Routes>
-      </Router>
     );
-  };
-  
-  export default AppRouter;
+};
+
+export default AppRouter;

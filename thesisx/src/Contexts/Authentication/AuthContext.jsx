@@ -2,7 +2,6 @@ import { createContext, useState, useEffect } from 'react';
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(null);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true); // To show a loading state while fetching user data
     
@@ -10,7 +9,6 @@ const AuthProvider = ({ children }) => {
         const storedToken = localStorage.getItem('authToken');
 
         if (storedToken) {
-            setToken(storedToken);
             fetchUserData(storedToken);
         } else {
             setLoading(false); // If no token, stop loading and proceed
@@ -21,7 +19,7 @@ const AuthProvider = ({ children }) => {
         try {
             // get user info
             const apiDomain = import.meta.env.VITE_API_DOMAIN;
-            const response = await fetch(`${apiDomain}/api/user`, {
+            const response = await fetch(`${apiDomain}/api/user/getuser`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
@@ -29,8 +27,8 @@ const AuthProvider = ({ children }) => {
             });
 
             if (response.ok) {
-                const userData = await response.json();
-                setUser(userData);
+                const res = await response.json();
+                setUser(res.data);
             } else {
                 setUser(null);
                 localStorage.removeItem('authToken'); // If fetching user fails, remove token
@@ -44,20 +42,9 @@ const AuthProvider = ({ children }) => {
         }
     };
 
-    const signIn = (authToken) => {
-        localStorage.setItem('authToken', authToken);
-        setToken(authToken);
-        fetchUserData(authToken);
-    };
-
-    const signOut = () => {
-        localStorage.removeItem('authToken');
-        setToken(null);
-        setUser(null);
-    };
 
     return (
-        <AuthContext.Provider value={{ token, user, loading, signIn, signOut }}>
+        <AuthContext.Provider value={{ user, loading, fetchUserData }}>
             {children}
         </AuthContext.Provider>
     );

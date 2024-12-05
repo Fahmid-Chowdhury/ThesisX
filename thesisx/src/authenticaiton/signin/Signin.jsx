@@ -28,17 +28,53 @@ function LeftBanner() {
 
 
 const Signin = () => {
-    const {signIn} = useContext( AuthContext );
+    const { fetchUserData } = useContext(AuthContext);
     const navigate = useNavigate()
+    const [loading, setLoading] = useState(false); // To manage loading state
+    const [error, setError] = useState(null)
     const [formData, setFormData] = useState({
-        email:'',
-        password:''
+        email: '',
+        password: ''
     })
 
-    const handleSubmit = async(e) => {
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        signIn("")
-        navigate("/home")
+        setLoading(true);
+        setError(null);
+
+        try {
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+            const response = await fetch(`${apiDomain}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+            console.log(data)
+            if (!response.ok) {
+                throw new Error(data.message || 'Sign-in failed');
+            }
+            localStorage.setItem("authToken", data.token)
+            fetchUserData(data.token);
+            navigate('/') 
+
+        } catch (err) {
+            setError(err.message || 'Something went wrong');
+        } finally {
+            setLoading(false);
+        }
+
     }
 
     return (
@@ -50,11 +86,11 @@ const Signin = () => {
                         <form onSubmit={handleSubmit}>
                             <div className='flex flex-col justify-center gap-2'>
                                 <label htmlFor="email">Email</label>
-                                <input type="email" className='border outline-1 border-[hsl(0,0,30%)] dark:border-[hsl(0,0,70%)] rounded-lg py-2 px-4 bg-transparent' placeholder='Email' required />
+                                <input type="email" name='email' className='border outline-1 border-[hsl(0,0,30%)] dark:border-[hsl(0,0,70%)] rounded-lg py-2 px-4 bg-transparent' placeholder='Email' value={formData.email} onChange={handleChange} required />
                             </div>
                             <div className='flex flex-col justify-center gap-2 mt-3'>
                                 <label htmlFor="text">Password</label>
-                                <input type="password" className='border outline-1 border-[hsl(0,0,30%)] dark:border-[hsl(0,0,70%)] rounded-lg py-2 px-4 bg-transparent' placeholder='password' required />
+                                <input type="password" name='password' className='border outline-1 border-[hsl(0,0,30%)] dark:border-[hsl(0,0,70%)] rounded-lg py-2 px-4 bg-transparent' placeholder='password' value={formData.password} onChange={handleChange} required />
                             </div>
 
                             <div className='mt-4 flex flex-col'>

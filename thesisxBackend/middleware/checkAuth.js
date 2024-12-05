@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
 const checkAuth = (req, res, next) => {
     try {
@@ -12,6 +12,8 @@ const checkAuth = (req, res, next) => {
             error
         });
     }
-};
+}
 
-export { checkAuth };
+module.exports = {
+    checkAuth
+};
