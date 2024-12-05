@@ -78,3 +78,35 @@
 }
 ```
 ---
+## User Routes
+
+| Method  | Endpoint                                         | Description                      |
+|-------- |--------------------------------------------------|----------------------------------|
+| GET     | [/api/user/getuser](#get-apiusergetuser)         | Get user information             |
+
+### GET /api/user/getuser
+---
+**Description**: Get user information from token
+
+### Expected Output:
+```bash
+{
+    success: true,
+    data: {
+        id: 1,
+        email: "example@gmail.com",
+        name: "example name",
+        department: "CS",
+        role: "STUDENT",
+        bio: null,
+        verified: false,
+        createdAt: "2024-12-05T06:56:46.865Z",
+        updatedAt: "2024-12-05T06:56:46.865Z"
+    }
+}
+```
+---
+
+
+
+
