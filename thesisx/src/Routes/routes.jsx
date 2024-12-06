@@ -1,8 +1,12 @@
-import { useContext } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { AuthContext } from '../Contexts/Authentication/AuthContext';
+import { Route, Routes, Navigate, useLocation, Outlet } from 'react-router-dom';
 // ===============================
 import Signin from "../authenticaiton/signin/Signin";
+import Navbar from '../Components/Navbar/Navbar';
+import Home from '../Pages/Home/Home';
+import Thesis from '../Pages/Thesis/Thesis';
+import Supervisors from '../Pages/Supervisors/Supervisors';
+import Appointments from '../Pages/Appointments/Appointments';
+import Notifications from '../Pages/Notifications/Notifications';
 // ===============================
 
 const ProtectedRoute = ({ element }) => {
@@ -15,20 +19,32 @@ const ProtectedRoute = ({ element }) => {
     return element;
 };
 
-const Home = () => {
+const Layout = () => {
+    const location = useLocation();
+    const noNavRoutes = ["/signin", "/register"]; // Routes without TopNav
+    const shouldShowNav = !noNavRoutes.includes(location.pathname);
+
     return (
         <>
-            home
+            {shouldShowNav && <Navbar />}
+            <Outlet /> 
         </>
-    )
-}
+    );
+};
 
 const AppRouter = () => {
     return (
         <Routes>
             <Route path="/signin" element={<Signin />} />
-            <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
-            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/register" element={<div>Register Page</div>} />
+
+            <Route element={<Layout />}>
+                <Route path="/" element={<ProtectedRoute element={<Home />} />} />
+                <Route path="/thesis" element={<ProtectedRoute element={<Thesis />} />} />
+                <Route path="/supervisors" element={<ProtectedRoute element={<Supervisors />} />} />
+                <Route path="/appointments" element={<ProtectedRoute element={<Appointments />} />} />
+                <Route path="/notifications" element={<ProtectedRoute element={<Notifications />} />} />
+            </Route>
         </Routes>
     );
 };
