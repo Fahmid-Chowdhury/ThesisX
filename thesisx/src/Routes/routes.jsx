@@ -1,6 +1,7 @@
 import { Route, Routes, Navigate, useLocation, Outlet } from 'react-router-dom';
 // ===============================
 import Signin from "../authenticaiton/signin/Signin";
+import Signup from "../authenticaiton/signup/Signup";
 import Navbar from '../Components/Navbar/Navbar';
 import Home from '../Pages/Home/Home';
 import Thesis from '../Pages/Thesis/Thesis';
@@ -21,7 +22,7 @@ const ProtectedRoute = ({ element }) => {
 
 const Layout = () => {
     const location = useLocation();
-    const noNavRoutes = ["/signin", "/register"]; // Routes without TopNav
+    const noNavRoutes = ["/signin", "/signup"]; // Routes without TopNav
     const shouldShowNav = !noNavRoutes.includes(location.pathname);
 
     return (
@@ -36,7 +37,7 @@ const AppRouter = () => {
     return (
         <Routes>
             <Route path="/signin" element={<Signin />} />
-            <Route path="/register" element={<div>Register Page</div>} />
+            <Route path="/signup" element={<Signup />} />
 
             <Route element={<Layout />}>
                 <Route path="/" element={<ProtectedRoute element={<Home />} />} />

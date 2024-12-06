@@ -98,17 +98,19 @@ const Signin = () => {
                                     Sign In
                                 </button>
                             </div>
-                            <div className='flex justify-center items-center gap-1 mt-3'>
-                                <div className='h-[1px] w-full bg-[hsl(0,0,30%)] dark:bg-[hsl(0,0,70%)]'></div>
-                                <p className="text-nowrap text-[hsl(0,0,30%)] dark:text-[hsl(0,0,70%)]">Don't have an account?</p>
-                                <div className='h-[1px] w-full bg-[hsl(0,0,30%)] dark:bg-[hsl(0,0,70%)]'></div>
-                            </div>
-                            <div className='mt-4 flex flex-col'>
-                                <button className='px-6 py-2 bg-blue-600 text-white rounded-lg'>
-                                    Register
-                                </button>
-                            </div>
                         </form>
+                        <div className='flex justify-center items-center gap-1 mt-3'>
+                            <div className='h-[1px] w-full bg-[hsl(0,0,30%)] dark:bg-[hsl(0,0,70%)]'></div>
+                            <p className="text-nowrap text-[hsl(0,0,30%)] dark:text-[hsl(0,0,70%)]">Don't have an account?</p>
+                            <div className='h-[1px] w-full bg-[hsl(0,0,30%)] dark:bg-[hsl(0,0,70%)]'></div>
+                        </div>
+                        <div className='mt-4 flex flex-col'>
+                            <button className='px-6 py-2 bg-blue-600 text-white rounded-lg' onClick={() => {
+                                navigate('/signup')
+                            }}>
+                                Signup
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
