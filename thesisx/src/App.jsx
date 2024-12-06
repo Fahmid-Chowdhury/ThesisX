@@ -4,6 +4,8 @@ import BarLoader from "react-spinners/BarLoader";
 // ===========================
 import { AuthContext } from './Contexts/Authentication/AuthContext'
 import AppRouter from './Routes/routes';
+// ===========================
+
 
 function App() {
     

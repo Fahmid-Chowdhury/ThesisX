@@ -8,3 +8,75 @@
     box-sizing: border-box;
     font-family: "Outfit", sans-serif;
 }
+
+@keyframes slideFromLeft {
+    0% {
+      transform: scale(0%);
+      opacity: 0;
+      /* Start off-screen to the left */
+    }
+    100% {
+      transform: scale(100%);
+      opacity: 1; /* End at the normal position */
+    }
+}
+
+.animate-into-view-10 {
+    animation: slideFromLeft 1s ease-in forwards; /* 1s duration, ease-out timing function */
+}
+.animate-into-view-1 {
+    animation: slideFromLeft 0.1s ease-in forwards; /* 1s duration, ease-out timing function */
+}
+.animate-into-view-2 {
+    animation: slideFromLeft 0.2s ease-in forwards; /* 1s duration, ease-out timing function */
+}
+
+/* General Scrollbar Style */
+::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+    height: 12px; /* Height of the scrollbar (for horizontal scrollbars) */
+}
+
+/* Scrollbar Track */
+::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Background of the scrollbar track */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1); /* Optional inner shadow */
+}
+
+/* Scrollbar Thumb */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #ff6b6b, #f06595); /* Gradient color for the thumb */
+    border-radius: 10px; /* Rounded corners */
+    border: 2px solid #f0f0f0; /* Matches the track background for a "floating" effect */
+}
+
+/* Scrollbar Thumb (on hover) */
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #f06595, #d6336c); /* Darker gradient on hover */
+}
+
+/* Scrollbar Corner (for resizable elements) */
+::-webkit-scrollbar-corner {
+    background: #f0f0f0;
+}
+
+/* Dark Mode (optional) */
+@media (prefers-color-scheme: dark) {
+    ::-webkit-scrollbar-track {
+        background: #1e1e2f;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(45deg, #ff8787, #e64980);
+        border: 2px solid #1e1e2f;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(45deg, #e64980, #c2255c);
+    }
+
+    ::-webkit-scrollbar-corner {
+        background: #1e1e2f;
+    }
+}
