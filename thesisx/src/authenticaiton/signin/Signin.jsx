@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 // ================================
 import { AuthContext } from '../../Contexts/Authentication/AuthContext';
 import { DangerAlert } from '../../Components/Alert/Alert';
+import LoaderSVG from '../../assets/LoaderSVG';
 function LeftBanner() {
     return (
         <div className='mb-4 lg:mb-0'>
@@ -83,7 +84,17 @@ const Signin = () => {
             <div className="sm:bg-[hsl(0,0,100%)] bg-[hsl(0,0,95%)] sm:dark:bg-[hsl(0,0,10%)] dark:bg-[hsl(0,0,5%)] lg:p-[50px] md:p-[42px] sm:p-[36px] p-[20px] sm:shadow-md rounded-xl max-w-[900px] m-5 text-black dark:text-white">
                 <div className="lg:grid lg:grid-cols-2 gap-10 ">
                     <LeftBanner />
-                    <div>
+                    <div className='h-full flex flex-col relative'>
+                        {
+                            loading &&
+                            <div className="absolute z-10 w-full h-full scale-110 backdrop-blur-sm flex flex-col items-center justify-center">
+                                <LoaderSVG 
+                                    color={"hsl(18,73%,48%)"}
+                                    size={40}
+                                />
+                                <p>Loading...</p>
+                            </div>
+                        }
                         <div className='hidden lg:block'>
                             <h1 className='font-bold text-[36px]'>
                                 Sign In

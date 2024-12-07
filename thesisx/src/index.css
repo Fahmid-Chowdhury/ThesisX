@@ -80,3 +80,14 @@
         background: #1e1e2f;
     }
 }
+
+.dropdown-menu {
+    transform: translateY(-10px); /* Start slightly above */
+    opacity: 0; /* Start invisible */
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out; /* Smooth animation */
+}
+  
+.dropdown-menu.show {
+    transform: translateY(0); /* Move into position */
+    opacity: 1; /* Fade in */
+  }

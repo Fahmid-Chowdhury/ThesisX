@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { BellIcon, UserCircleIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { BellIcon, UserCircleIcon, Bars3Icon, XMarkIcon, UserIcon, Cog6ToothIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import Dropdown, { DropdownItem } from "../Dropdown/Dropdown";
 
 
 const Navbar = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-
+    const navigate = useNavigate()
+    const SignOut = () =>{
+        localStorage.removeItem("authToken");
+        navigate("/signin")
+    }
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
     };
@@ -55,12 +59,27 @@ const Navbar = () => {
                         >
                             <BellIcon className="w-6 h-6" />
                         </button>
-                        <button
-                            className="text-[hsl(220, 15%, 40%)] hover:text-[hsl(220, 50%, 40%)] transition duration-300"
-                            aria-label="Profile"
-                        >
-                            <UserCircleIcon className="w-6 h-6" />
-                        </button>
+                        <Dropdown trigger={
+                            <button
+                                className="text-[hsl(220, 15%, 40%)] hover:text-[hsl(220, 50%, 40%)] transition duration-300"
+                                aria-label="Profile"
+                            >
+                                <UserCircleIcon className="w-6 h-6" />
+                            </button>
+                        }>
+                            <DropdownItem>
+                                <UserIcon className="w-4 h-4"/>
+                                <Link to={"/profile"}>My Profile</Link>
+                            </DropdownItem>
+                            <DropdownItem>
+                                <Cog6ToothIcon className="w-4 h-4"/>
+                                <Link to={"/accountmanagement"}>Account Management</Link>
+                            </DropdownItem>
+                            <DropdownItem onPress = {SignOut}>
+                                <ArrowRightStartOnRectangleIcon className="w-4 h-4"/>
+                                <p>Sign Out</p>
+                            </DropdownItem>
+                        </Dropdown>
                     </div>
 
                     {/* Hamburger Menu (Visible on small screens) */}
