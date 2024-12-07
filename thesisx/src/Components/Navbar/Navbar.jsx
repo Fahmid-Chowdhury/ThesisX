@@ -16,21 +16,21 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="bg-[hsl(220, 15%, 96%)] shadow-md relative">
+        <nav className="bg-[hsl(220,15%,95%)] dark:bg-[hsl(0,0%,10%)] shadow-md relative">
             <div className="mx-auto px-4 sm:px-6 lg:px-8 z-0">
                 <div className="flex justify-between items-center h-16">
                     {/* Left: Logo */}
                     <div className="flex items-center">
                         <NavLink
                             to="/"
-                            className="text-[hsl(220, 15%, 20%)] text-xl font-bold"
+                            className="text-xl font-bold"
                         >
                             thesis X
                         </NavLink>
                     </div>
 
                     {/* Center: Navigation Links (Hidden on small screens) */}
-                    <div className="hidden md:flex items-center">
+                    <div className="hidden md:flex items-center text-[hsl(0,0,10%)] dark:text-[hsl(0,0,90%)]">
                         {[
                             { to: "/", label: "Home" },
                             { to: "/thesis", label: "Thesis" },
@@ -41,8 +41,8 @@ const Navbar = () => {
                                 key={to}
                                 to={to}
                                 className={({ isActive }) =>
-                                    `text-[hsl(220, 15%, 40%)] px-4 py-[6px] rounded-full hover:text-[hsl(220,50%,30%)] transition duration-300 ${
-                                        isActive ? " text-[hsl(220,50%,30%)] bg-[hsl(220,10%,95%)]" : ""
+                                    ` px-4 py-[6px] rounded-full hover:text-[hsl(18,73%,30%)] dark:hover:text-[hsl(18,73%,70%)] transition duration-300 ${
+                                        isActive ? " text-[hsl(18,73%,30%)] dark:text-[hsl(18,73%,70%)] bg-[hsl(220,15%,85%)] dark:bg-[hsl(220,15%,15%)]" : ""
                                     }`
                                 }
                             >

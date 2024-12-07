@@ -21,7 +21,7 @@ const Dropdown = ({ children, trigger }) => {
 
 export function DropdownItem ({ children, onPress }) {
     return(
-        <li className='flex gap-3 items-center px-4 py-2 cursor-pointer'
+        <li className='flex gap-3 items-center px-4 py-2 cursor-pointer hover:bg-slate-400'
             onClick={onPress}
         >
             {children}

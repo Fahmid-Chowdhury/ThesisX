@@ -26,9 +26,15 @@ const Layout = () => {
     const shouldShowNav = !noNavRoutes.includes(location.pathname);
 
     return (
-        <>
-            {shouldShowNav && <Navbar />}
-            <Outlet /> 
+        <>  
+            <div className='h-screen w-screen bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] flex flex-col text-[hsl(0,0,10%)] dark:text-[hsl(0,0,90%)]'>
+                <div>
+                    {shouldShowNav && <Navbar />}
+                </div>
+                <div className='h-100 overflow-auto '>
+                    <Outlet /> 
+                </div>
+            </div>
         </>
     );
 };
