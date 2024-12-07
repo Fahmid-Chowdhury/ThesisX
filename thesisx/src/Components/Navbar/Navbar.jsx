@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { BellIcon, UserCircleIcon, Bars3Icon, XMarkIcon, UserIcon, Cog6ToothIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import { BellIcon, UserCircleIcon, Bars3Icon, XMarkIcon, UserIcon, Cog6ToothIcon, ArrowRightStartOnRectangleIcon, SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import Dropdown, { DropdownItem } from "../Dropdown/Dropdown";
 
 
 const Navbar = () => {
+    const [isDarkMode, setIsDarkMode] = useState(true)
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate()
     const SignOut = () =>{
@@ -13,6 +14,40 @@ const Navbar = () => {
     }
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
+    };
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        // Set initial state based on system preference
+        const handleSystemThemeChange = () => {
+            const isSystemDark = mediaQuery.matches;
+            setIsDarkMode(isSystemDark);
+
+            // Sync class with the system theme
+            const root = document.documentElement.classList;
+            if (isSystemDark) {
+                root.add('dark');
+            } else {
+                root.remove('dark');
+            }
+        };
+
+        handleSystemThemeChange(); // Set on component mount
+        mediaQuery.addEventListener('change', handleSystemThemeChange); // Listen for system theme changes
+
+        return () => {
+            mediaQuery.removeEventListener('change', handleSystemThemeChange);
+        };
+    }, []);
+
+    const toggleDarkMode = () => {
+        const root = document.documentElement.classList;
+        if (isDarkMode) {
+            root.remove('dark');
+        } else {
+            root.add('dark');
+        }
+        setIsDarkMode(!isDarkMode);
     };
 
     return (
@@ -52,16 +87,23 @@ const Navbar = () => {
                     </div>
 
                     {/* Right: Notification & Profile Icons */}
-                    <div className="hidden md:flex items-center space-x-6">
+                    <div className="flex items-center space-x-6">
                         <button
-                            className="text-[hsl(220, 15%, 40%)] hover:text-[hsl(220, 50%, 40%)] transition duration-300"
+                            onClick={toggleDarkMode}
+                            className="text-[hsl(0,0,30%)] hover:text-[hsl(18,73%,30%)] dark:text-[hsl(0,0,70%)] dark:hover:text-[hsl(18,73%,70%)] transition duration-300"
+                            aria-label="Toggle Dark Mode"
+                        >
+                            {isDarkMode ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
+                        </button>
+                        <button
+                            className="text-[hsl(0,0,40%)] hover:text-[hsl(18,73%,40%)] dark:text-[hsl(0,0,70%)] dark:hover:text-[hsl(18,73%,70%)] transition duration-300"
                             aria-label="Notifications"
                         >
                             <BellIcon className="w-6 h-6" />
                         </button>
                         <Dropdown trigger={
                             <button
-                                className="text-[hsl(220, 15%, 40%)] hover:text-[hsl(220, 50%, 40%)] transition duration-300"
+                                className="text-[hsl(0,0,40%)] hover:text-[hsl(18,73%,40%)] dark:text-[hsl(0,0,70%)] dark:hover:text-[hsl(18,73%,70%)] transition duration-300"
                                 aria-label="Profile"
                             >
                                 <UserCircleIcon className="w-6 h-6" />
@@ -69,35 +111,35 @@ const Navbar = () => {
                         }>
                             <DropdownItem>
                                 <UserIcon className="w-4 h-4"/>
-                                <Link to={"/profile"}>My Profile</Link>
+                                <Link to={"/profile"} className="w-full">My Profile</Link>
                             </DropdownItem>
                             <DropdownItem>
                                 <Cog6ToothIcon className="w-4 h-4"/>
-                                <Link to={"/accountmanagement"}>Account Management</Link>
+                                <Link to={"/accountmanagement"} className="w-full">Account Management</Link>
                             </DropdownItem>
                             <DropdownItem onPress = {SignOut}>
                                 <ArrowRightStartOnRectangleIcon className="w-4 h-4"/>
                                 <p>Sign Out</p>
                             </DropdownItem>
                         </Dropdown>
-                    </div>
-
-                    {/* Hamburger Menu (Visible on small screens) */}
-                    <div className="md:hidden">
+                        
                         <button
                             onClick={toggleSidebar}
-                            className="text-[hsl(220, 15%, 40%)] hover:text-[hsl(220, 50%, 40%)] transition duration-300"
+                            className="text-[hsl(220, 15%, 40%)] hover:text-[hsl(220, 50%, 40%)] transition duration-300 md:hidden"
                             aria-label="Menu"
                         >
                             {sidebarOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
                         </button>
+                        
                     </div>
+
+                    {/* Hamburger Menu (Visible on small screens) */}
                 </div>
             </div>
 
             {/* Sidebar (Responsive) */}
             <div
-                className={`fixed top-0 right-0 h-full w-64 bg-[hsl(220,10%,95%)] z-50 shadow-lg transform ${
+                className={`fixed top-0 right-0 h-full w-64 bg-[hsl(220,15%,95%)] dark:bg-[hsl(0,0,10%)] z-50  shadow-lg transform ${
                     sidebarOpen ? "translate-x-0" : "translate-x-full"
                 } transition-transform duration-300 md:hidden`}
             >
@@ -108,7 +150,7 @@ const Navbar = () => {
                     >
                         <XMarkIcon className="w-6 h-6" />
                     </button>
-                    <div className="flex flex-col space-y-4 mt-6 px-6">
+                    <div className="flex flex-col space-y-4 mt-6 px-6 h-full">
                         {[
                             { to: "/", label: "Home" },
                             { to: "/thesis", label: "Thesis" },
@@ -120,7 +162,7 @@ const Navbar = () => {
                                 to={to}
                                 className={({ isActive }) =>
                                     `text-[hsl(220, 15%, 40%)] hover:text-[hsl(220, 50%, 40%)] transition duration-300 ${
-                                        isActive ? "font-bold text-[hsl(220, 50%, 40%)]" : ""
+                                        isActive ? "font-bold text-[hsl(18,73%,30%)] dark:text-[hsl(18,73%,70%)]" : ""
                                     }`
                                 }
                                 onClick={toggleSidebar} // Close sidebar on link click

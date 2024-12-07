@@ -7,7 +7,7 @@ const AuthProvider = ({ children }) => {
     
     useEffect(() => {
         const storedToken = localStorage.getItem('authToken');
-
+        
         if (storedToken) {
             fetchUserData(storedToken);
         } else {

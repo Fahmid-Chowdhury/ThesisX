@@ -1,4 +1,5 @@
 import { Route, Routes, Navigate, useLocation, Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 // ===============================
 import Signin from "../authenticaiton/signin/Signin";
 import Signup from "../authenticaiton/signup/Signup";
@@ -27,7 +28,7 @@ const Layout = () => {
 
     return (
         <>  
-            <div className='h-screen w-screen bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] flex flex-col text-[hsl(0,0,10%)] dark:text-[hsl(0,0,90%)]'>
+            <div className='transition-colors h-screen w-screen bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] flex flex-col text-[hsl(0,0,10%)] dark:text-[hsl(0,0,90%)]'>
                 <div>
                     {shouldShowNav && <Navbar />}
                 </div>
@@ -40,6 +41,34 @@ const Layout = () => {
 };
 
 const AppRouter = () => {
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        setIsDarkMode(mediaQuery.matches); // Set initial mode based on system
+
+        const handleChange = (event) => {
+            setIsDarkMode(event.matches);
+        };
+
+        mediaQuery.addEventListener('change', handleChange);
+
+        return () => {
+            mediaQuery.removeEventListener('change', handleChange);
+        };
+    }, []);
+
+    // Apply dark or light mode to document root
+    useEffect(() => {
+        const root = document.documentElement;
+        if (isDarkMode) {
+            root.classList.add('dark');
+            root.classList.remove('light');
+        } else {
+            root.classList.add('light');
+            root.classList.remove('dark');
+        }
+    }, [isDarkMode]);
     return (
         <Routes>
             <Route path="/signin" element={<Signin />} />
