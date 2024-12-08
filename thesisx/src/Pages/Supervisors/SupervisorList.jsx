@@ -77,7 +77,7 @@ const SupervisorCard = ({ supervisor }) => {
                                 Dept: {supervisor.department}
                             </p>
                         </div>
-                        <p className="text-sm text-white w-fit ">
+                        <p className="text-sm text-black dark:text-white w-fit ">
                         
                         {supervisor.availability > 0
                             ? `${supervisor.availability} slots open`
