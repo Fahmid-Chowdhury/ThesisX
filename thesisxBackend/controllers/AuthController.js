@@ -2,7 +2,7 @@
 import DB from "../DB/db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { sendEmail } from "../utils/nodemailer.js";
+import { sendEmail } from "../middleware/nodemailer.js";
 //=======================================
 
 async function generateAndSendOTP(email) {
