@@ -11,8 +11,8 @@ export default {
         current: 'currentColor',
         "white": 'hsl(0,0,90%)',
         "black": 'hsl(0,0,10%)',
-        "themeColDark":"hsl(227,60%,45%)",
-        "themeColLight":"hsl(227,60%,55%)"
+        "themeColDark":"hsl(210,80%,45%)",
+        "themeColLight":"hsl(210,80%,55%)"
     },
     extend: {},
   },

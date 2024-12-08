@@ -10,7 +10,7 @@ const Dropdown = ({ children, trigger }) => {
             <div className='flex items-center justify-center'>{trigger}</div>
             
             <div className={show ? "visible":"invisible"}>
-                <ul className={`dropdown-menu min-w-max absolute right-0 mt-3 bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] divide-y divide-[hsl(0,0,90%)] dark:divide-[hsl(0,0,10%)] border border-[hsl(0,0,90%)] dark:border-[hsl(0,0,10%)] rounded-lg shadow overflow-hidden ${show? "show":""}`}>
+                <ul className={`dropdown-menu z-50 min-w-max absolute right-0 mt-3 bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] divide-y divide-[hsl(0,0,90%)] dark:divide-[hsl(0,0,10%)] border border-[hsl(0,0,90%)] dark:border-[hsl(0,0,10%)] rounded-lg shadow overflow-hidden ${show? "show":""}`}>
                     {children}
                 </ul>
             </div>

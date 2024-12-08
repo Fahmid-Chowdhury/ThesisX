@@ -51,7 +51,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="bg-[hsl(220,15%,95%)] dark:bg-[hsl(0,0%,10%)] shadow-md relative">
+        <nav className="bg-[hsl(220,15%,95%)] dark:bg-[hsl(0,0%,10%)] border-b border-[hsl(0,0,85%)] dark:border-[hsl(0,0,15%)] relative">
             <div className="mx-auto px-4 sm:px-6 lg:px-8 z-0">
                 <div className="flex justify-between items-center h-16">
                     {/* Left: Logo */}

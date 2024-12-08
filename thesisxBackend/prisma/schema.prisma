@@ -28,9 +28,48 @@ model User{
     role        Role
     department  String?
     bio         String?
+    image       String?
     verified    Boolean    @default(false)
     createdAt   DateTime   @default(now())
     updatedAt   DateTime   @updatedAt
 
+    faculty     Faculty?
+    student     Student?
     @@map("user") // Explicitly set the table name as "user"
+}
+
+model Faculty {
+  id                Int           @id @default(autoincrement())
+  userId            Int           @unique
+  department        String
+  researchInterests String[]
+  availability      Json?
+  publications      Publication[]
+  user              User          @relation(fields: [userId], references: [id])
+
+  @@map("faculty")
+}
+
+model Student {
+  id                Int          @id @default(autoincrement())
+  userId            Int          @unique
+  department        String
+  researchInterests String[]
+  user              User         @relation(fields: [userId], references: [id])
+
+  @@map("student")
+}
+
+model Publication {
+  id              Int      @id @default(autoincrement())
+  title           String
+  abstract        String?
+  authors         String[]
+  publicationDate DateTime
+  url             String?
+  facultyId       Int
+  createdAt       DateTime @default(now())
+  faculty         Faculty  @relation(fields: [facultyId], references: [id])
+
+  @@map("publication")
 }

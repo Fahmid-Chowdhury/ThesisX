@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-
+import { useState } from 'react';
+import UserClickOutside from '../../hooks/UseClickOutside';
 const CustomSelect = ({ value, options, onChange }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const dropRef = UserClickOutside(()=>setIsOpen(false))
 
     const selectedOption = options.find(option => option.value === value);
     const selectedLabel = selectedOption ? selectedOption.label : '';
@@ -12,7 +13,7 @@ const CustomSelect = ({ value, options, onChange }) => {
     };
 
     return (
-        <div className="relative">
+        <div className="relative" ref={dropRef}>
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
@@ -20,7 +21,7 @@ const CustomSelect = ({ value, options, onChange }) => {
             >
                 <span>{selectedLabel || 'Select an option'}</span>
                 <svg
-                    className={`w-4 h-4 transform ${isOpen ? 'rotate-180' : 'rotate-0'} transition-transform`}
+                    className={`w-6 h-6 transform ${isOpen ? 'rotate-180' : 'rotate-0'} transition-transform`}
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
@@ -35,14 +36,15 @@ const CustomSelect = ({ value, options, onChange }) => {
             </button>
             {isOpen && (
                 <ul
-                    className="absolute w-full animate-into-view-1 mt-1 bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] border border-[hsl(0,0,30%)] dark:border-[hsl(0,0,70%)] rounded-lg shadow-md z-10 overflow-hidden"
+                    className="absolute w-full animate-into-view-1 mt-1 bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] border border-[hsl(0,0,30%)] dark:border-[hsl(0,0,70%)] rounded-lg shadow-md z-10 overflow-visible"
                     role="listbox"
+                    
                 >
                     {options.map((option) => (
                         <li
                             key={option.value}
                             onClick={() => handleOptionClick(option.value)}
-                            className="cursor-pointer px-4 py-2 text-sm text-black dark:text-white hover:bg-gray-200 dark:hover:bg-[hsl(0,0,15%)]"
+                            className="cursor-pointer px-4 py-2 text-sm text-black dark:text-white hover:bg-[hsl(0,0,85%)] dark:hover:bg-[hsl(0,0,15%)]"
                             role="option"
                         >
                             {option.label}
