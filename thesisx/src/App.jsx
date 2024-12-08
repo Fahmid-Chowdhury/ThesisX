@@ -15,7 +15,7 @@ function App() {
         return (
             <div className='h-screen w-screen bg-[hsl(0,0%,95%)] dark:bg-[hsl(0,0%,5%)] flex flex-col items-center justify-center'>
                 <BarLoader 
-                    color={'hsl(220 60% 60%)'}
+                    color={'hsl(18 73% 60%)'}
                     height={'6px'}
                     width={'150px'}
                 />

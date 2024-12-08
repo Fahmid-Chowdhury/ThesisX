@@ -76,8 +76,8 @@ const Navbar = () => {
                                 key={to}
                                 to={to}
                                 className={({ isActive }) =>
-                                    ` px-4 py-[6px] rounded-full hover:text-[hsl(18,73%,30%)] dark:hover:text-[hsl(18,73%,70%)] transition duration-300 ${
-                                        isActive ? " text-[hsl(18,73%,30%)] dark:text-[hsl(18,73%,70%)] bg-[hsl(220,15%,85%)] dark:bg-[hsl(220,15%,15%)]" : ""
+                                    ` px-4 py-[6px] rounded-full hover:text-themeColDark dark:hover:text-themeColLight transition duration-300 ${
+                                        isActive ? " text-themeColDark dark:text-themeColLight bg-[hsl(220,15%,85%)] dark:bg-[hsl(220,15%,15%)]" : ""
                                     }`
                                 }
                             >
@@ -90,20 +90,20 @@ const Navbar = () => {
                     <div className="flex items-center space-x-6">
                         <button
                             onClick={toggleDarkMode}
-                            className="text-[hsl(0,0,30%)] hover:text-[hsl(18,73%,30%)] dark:text-[hsl(0,0,70%)] dark:hover:text-[hsl(18,73%,70%)] transition duration-300"
+                            className="text-[hsl(0,0,30%)] hover:text-themeColDark dark:text-[hsl(0,0,70%)] dark:hover:text-themeColLight transition duration-300"
                             aria-label="Toggle Dark Mode"
                         >
                             {isDarkMode ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
                         </button>
                         <button
-                            className="text-[hsl(0,0,40%)] hover:text-[hsl(18,73%,40%)] dark:text-[hsl(0,0,70%)] dark:hover:text-[hsl(18,73%,70%)] transition duration-300"
+                            className="text-[hsl(0,0,30%)] hover:text-themeColDark dark:text-[hsl(0,0,70%)] dark:hover:text-themeColLight transition duration-300"
                             aria-label="Notifications"
                         >
                             <BellIcon className="w-6 h-6" />
                         </button>
                         <Dropdown trigger={
                             <button
-                                className="text-[hsl(0,0,40%)] hover:text-[hsl(18,73%,40%)] dark:text-[hsl(0,0,70%)] dark:hover:text-[hsl(18,73%,70%)] transition duration-300"
+                                className="text-[hsl(0,0,30%)] hover:text-themeColDark dark:text-[hsl(0,0,70%)] dark:hover:text-themeColLight transition duration-300"
                                 aria-label="Profile"
                             >
                                 <UserCircleIcon className="w-6 h-6" />
@@ -162,7 +162,7 @@ const Navbar = () => {
                                 to={to}
                                 className={({ isActive }) =>
                                     `text-[hsl(220, 15%, 40%)] hover:text-[hsl(220, 50%, 40%)] transition duration-300 ${
-                                        isActive ? "font-bold text-[hsl(18,73%,30%)] dark:text-[hsl(18,73%,70%)]" : ""
+                                        isActive ? "font-bold text-themeColDark dark:text-themeColLight" : ""
                                     }`
                                 }
                                 onClick={toggleSidebar} // Close sidebar on link click

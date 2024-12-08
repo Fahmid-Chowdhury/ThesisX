@@ -1,14 +1,16 @@
 import { Route, Routes, Navigate, useLocation, Outlet } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 // ===============================
-import Signin from "../authenticaiton/signin/Signin";
-import Signup from "../authenticaiton/signup/Signup";
+import Signin from "../Authentication/Signin/Signin";
+import Signup from "../Authentication/Signup/Signup";
 import Navbar from '../Components/Navbar/Navbar';
 import Home from '../Pages/Home/Home';
 import Thesis from '../Pages/Thesis/Thesis';
 import Supervisors from '../Pages/Supervisors/Supervisors';
 import Appointments from '../Pages/Appointments/Appointments';
 import Notifications from '../Pages/Notifications/Notifications';
+import Profile from '../Pages/Profile/Profile';
+import AccountManagement from '../Pages/AccountManagement/AccountManagement';
 // ===============================
 
 const ProtectedRoute = ({ element }) => {
@@ -28,11 +30,11 @@ const Layout = () => {
 
     return (
         <>  
-            <div className='transition-colors h-screen w-screen bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] flex flex-col text-[hsl(0,0,10%)] dark:text-[hsl(0,0,90%)]'>
+            <div className='transition-colors h-screen w-screen bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] flex flex-col text-black dark:text-white'>
                 <div>
                     {shouldShowNav && <Navbar />}
                 </div>
-                <div className='h-100 overflow-auto '>
+                <div className='h-full overflow-auto '>
                     <Outlet /> 
                 </div>
             </div>
@@ -80,6 +82,8 @@ const AppRouter = () => {
                 <Route path="/supervisors" element={<ProtectedRoute element={<Supervisors />} />} />
                 <Route path="/appointments" element={<ProtectedRoute element={<Appointments />} />} />
                 <Route path="/notifications" element={<ProtectedRoute element={<Notifications />} />} />
+                <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+                <Route path="/accountmanagement" element={<ProtectedRoute element={<AccountManagement />} />} />
             </Route>
         </Routes>
     );
