@@ -53,8 +53,7 @@ model Student {
   id                Int          @id @default(autoincrement())
   userId            Int          @unique
   researchInterests String[]
-//   past contributions
-//   skills 
+  contributions     Contribution[]
   user              User         @relation(fields: [userId], references: [id])
 
   @@map("student")
@@ -72,4 +71,17 @@ model Publication {
   faculty         Faculty  @relation(fields: [facultyId], references: [id])
 
   @@map("publication")
+}
+
+model Contribution {
+    id              Int      @id @default(autoincrement())
+    title           String
+    abstract        String?
+    authors         String[]
+    publicationDate DateTime
+    url             String?
+    studentId       Int
+    createdAt       DateTime @default(now())
+    student         Student  @relation(fields: [studentId], references: [id])
+
 }

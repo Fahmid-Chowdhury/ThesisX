@@ -45,7 +45,7 @@ async function getUser(req, res) {
 
 async function getProfile(req, res) {
     try {
-        const email = req.userData.email;
+        const email = req.userData?.email;
 
         if (!email) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -54,46 +54,71 @@ async function getProfile(req, res) {
         const user = await DB.User.findUnique({
             where: { email },
             select: {
-                // Explicitly include all fields except password
                 id: true,
                 name: true,
                 email: true,
                 role: true,
+                department: true,
                 bio: true,
                 verified: true,
                 createdAt: true,
                 updatedAt: true,
                 image: true,
-                faculty: true, // Include all fields from the faculty model
-                student: true  // Include all fields from the student model
-            }
+                faculty: {
+                    select: {
+                        researchInterests: true,
+                        availability: true,
+                        publications: {
+                            select: {
+                                id: true,
+                                title: true,
+                                authors: true,
+                                url: true,
+                                publicationDate: true,
+                            },
+                        },
+                    },
+                },
+                student: {
+                    select: {
+                        researchInterests: true,
+                        contributions: {
+                            select: {
+                                id: true,
+                                title: true,
+                                authors: true,
+                                url: true,
+                                publicationDate: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
-        
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        let profile = { ...user };
-        if (user.role === 'FACULTY') {
-            profile.facultyDetails = user.faculty;
-        } else if (user.role === 'STUDENT') {
-            profile.studentDetails = user.student;
-        }
+        let profile = {
+            ...user,
+            facultyDetails: user.role === 'FACULTY' ? user.faculty : undefined,
+            studentDetails: user.role === 'STUDENT' ? user.student : undefined,
+        };
 
-        // Remove faculty and student raw data if role does not match
         delete profile.faculty;
         delete profile.student;
 
         return res.status(200).json({
             success: true,
-            data: profile
+            data: profile,
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error in getProfile:', error);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
 
 const uploadUserImage = async (req, res) => {
     const { userId } = req.params;
