@@ -121,21 +121,21 @@ async function getProfile(req, res) {
 
 
 const uploadUserImage = async (req, res) => {
-    const { userId } = req.params;
-    const imagePath = req.file?.path;
-
-    if (!imagePath) {
-        return res.status(400).json({ success: false, message: "Image file is required" });
-    }
-
     try {
-        // Extract the relative path of the uploaded image
+        const email = req.userData?.email;
+        const imagePath = req.file?.path;
+
+        if (!imagePath) {
+            return res.status(400).json({ success: false, message: "Image file is required" });
+        }
+
         const absolutePath = req.file.path; // Absolute path from multer
-        const relativePath = path.relative(path.resolve("."), absolutePath); // Convert to relative path
+        
+        const relativePath = path.relative(path.resolve("./public/images"), absolutePath); // Convert to relative path
 
         // Update the user's image path in the database
         await DB.user.update({
-            where: { id: parseInt(userId) },
+            where: { email },
             data: { image: relativePath },
         });
 

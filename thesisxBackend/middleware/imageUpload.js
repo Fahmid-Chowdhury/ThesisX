@@ -1,8 +1,7 @@
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
-
-// Resolve the current directory (in case of ES module usage)
+import { v4 as uuidv4 } from "uuid";  
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -12,11 +11,12 @@ const uploadDirectory = path.resolve(__dirname, "../public/images");
 // Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, uploadDirectory); // Save in the "documents" directory
+        cb(null, uploadDirectory); // Save in the "images" directory
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
+        // Generate a unique filename using UUID
+        const uniqueFilename = uuidv4() + path.extname(file.originalname);
+        cb(null, uniqueFilename); // Use UUID as the filename
     },
 });
 
@@ -34,7 +34,4 @@ const imageUpload = multer({
     fileFilter 
 });
 
-
-export { 
-    imageUpload,
-};
+export { imageUpload };
