@@ -52,54 +52,32 @@ async function getProfile(req, res) {
         }
 
         const user = await DB.User.findUnique({
-            where: {
-                email: email
-            },
+            where: { email },
             select: {
+                // Explicitly include all fields except password
                 id: true,
-                email: true,
                 name: true,
-                department: true,
+                email: true,
                 role: true,
                 bio: true,
                 verified: true,
                 createdAt: true,
                 updatedAt: true,
-                faculty: {
-                    select: {
-                        department: true,
-                        researchInterests: true,
-                        availability: true,
-                        publications: {
-                            select: {
-                                id: true,
-                                title: true,
-                                abstract: true,
-                                authors: true,
-                                publicationDate: true,
-                                url: true,
-                                createdAt: true
-                            }
-                        }
-                    }
-                },
-                student: {
-                    select: {
-                        department: true,
-                        researchInterests: true
-                    }
-                }
+                image: true,
+                faculty: true, // Include all fields from the faculty model
+                student: true  // Include all fields from the student model
             }
         });
+        
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
         let profile = { ...user };
-        if (user.role === 'FACULTY' && user.faculty) {
+        if (user.role === 'FACULTY') {
             profile.facultyDetails = user.faculty;
-        } else if (user.role === 'STUDENT' && user.student) {
+        } else if (user.role === 'STUDENT') {
             profile.studentDetails = user.student;
         }
 
@@ -147,58 +125,10 @@ const uploadUserImage = async (req, res) => {
     }
 };
 
-const getUserImage = async (req, res) => {
-    const { userId } = req.params;
-    const { width, height, quality, format } = req.query;
-    const convertToWebp = format === "true";
-    try {
-        // Fetch the user's image path from the database
-        const user = await DB.user.findUnique({
-            where: { id: parseInt(userId) },
-        });
 
-        if (!user || !user.image || !fs.existsSync(user.image)) {
-            return res.status(404).json({ success: false, message: "Image not found" });
-        }
-
-        // Resolve the absolute path of the image
-        const relativeImagePath = user.image; // Relative path from the database
-        const absoluteImagePath = path.resolve(relativeImagePath); // Convert to absolute path
-
-         // Check if the file exists
-         if (!fs.existsSync(absoluteImagePath)) {
-            return res.status(404).json({ success: false, message: "Image file not found" });
-        }
-
-        // Set default values for resizing
-        const resizeWidth = width ? parseInt(width) : 300; // Default width
-        const resizeHeight = height ? parseInt(height) : 300; // Default height
-        const resizeQuality = quality ? parseInt(quality) : 80; // Default quality
-
-        // Process the image with Sharp
-        let imageProcessor = sharp(absoluteImagePath)
-            .resize(resizeWidth, resizeHeight, { fit: "cover" });
-
-        if (convertToWebp) {
-            imageProcessor = imageProcessor.webp({ quality: resizeQuality });
-        } else {
-            imageProcessor = imageProcessor.jpeg({ quality: resizeQuality });
-        }
-
-        const outputBuffer = await imageProcessor.toBuffer();
-        
-        // Return the processed image
-        res.set("Content-Type", "image/jpeg");
-        res.send(outputBuffer);
-    } catch (error) {
-        console.error("Error retrieving user image:", error);
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-};
 
 export { 
     getUser, 
     getProfile,
     uploadUserImage,
-    getUserImage
 };

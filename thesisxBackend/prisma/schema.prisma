@@ -41,7 +41,6 @@ model User{
 model Faculty {
   id                Int           @id @default(autoincrement())
   userId            Int           @unique
-  department        String
   researchInterests String[]
   availability      Json?
   publications      Publication[]
@@ -53,8 +52,9 @@ model Faculty {
 model Student {
   id                Int          @id @default(autoincrement())
   userId            Int          @unique
-  department        String
   researchInterests String[]
+//   past contributions
+//   skills 
   user              User         @relation(fields: [userId], references: [id])
 
   @@map("student")

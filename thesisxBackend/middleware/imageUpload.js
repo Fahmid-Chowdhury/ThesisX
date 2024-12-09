@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Directory to save uploaded files
-const uploadDirectory = path.resolve(__dirname, "../documents/images");
+const uploadDirectory = path.resolve(__dirname, "../public/images");
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
