@@ -83,6 +83,7 @@
 | Method  | Endpoint                                         | Description                      |
 |-------- |--------------------------------------------------|----------------------------------|
 | GET     | [/api/user/getuser](#get-apiusergetuser)         | Get user information             |
+| GET     | [/api/user/getprofile](#get-apiusergetprofile)   | Get user profile            |
 
 ### GET /api/user/getuser
 ---
@@ -102,6 +103,66 @@
         verified: false,
         createdAt: "2024-12-05T06:56:46.865Z",
         updatedAt: "2024-12-05T06:56:46.865Z"
+    }
+}
+```
+---
+### GET /api/user/getprofile
+---
+**Description**: Get user information from token and fetch profile 
+
+### Expected Output:
+```bash
+// for faculties
+{
+    success: true,
+    data: {
+        id: 1,
+        email: "faculty@example.com",
+        name: "Dr. Smith",
+        department: "Computer Science",
+        role: "FACULTY",
+        bio: "Researcher in AI and ML",
+        verified: true,
+        createdAt: "2024-01-01T00:00:00.000Z",
+        updatedAt: "2024-12-01T00:00:00.000Z",
+        image:null,
+        facultyDetails: {
+            department: "Computer Science",
+            researchInterests: ["AI", "ML"],
+            availability: null,
+            publications: [
+                {
+                    id: 1,
+                    title: "Advances in AI",
+                    abstract: "Study on AI advancements.",
+                    authors: ["Dr. Smith", "Dr. Doe"],
+                    publicationDate: "2024-06-01T00:00:00.000Z",
+                    url: "https://example.com/publication",
+                    createdAt: "2024-05-01T00:00:00.000Z"
+                }
+            ]
+        }
+    }
+}
+
+// for students
+{
+    success: true,
+    data: {
+        id: 1,
+        email: "faculty@example.com",
+        name: "Dr. Smith",
+        department: "Computer Science",
+        role: "FACULTY",
+        bio: "Researcher in AI and ML",
+        verified: true,
+        image:null,
+        createdAt: "2024-01-01T00:00:00.000Z",
+        updatedAt: "2024-12-01T00:00:00.000Z",
+        facultyDetails: {
+            "researchInterests": ["AI", "Blockchain"]
+        }
     }
 }
 ```

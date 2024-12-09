@@ -149,8 +149,8 @@ const uploadUserImage = async (req, res) => {
 
 const getUserImage = async (req, res) => {
     const { userId } = req.params;
-    const { width, height, quality } = req.query;
-
+    const { width, height, quality, format } = req.query;
+    const convertToWebp = format === "true";
     try {
         // Fetch the user's image path from the database
         const user = await DB.user.findUnique({
@@ -176,11 +176,17 @@ const getUserImage = async (req, res) => {
         const resizeQuality = quality ? parseInt(quality) : 80; // Default quality
 
         // Process the image with Sharp
-        const outputBuffer = await sharp(absoluteImagePath)
-            .resize(resizeWidth, resizeHeight, { fit: "cover" }) // Resize image
-            .jpeg({ quality: resizeQuality }) // Compress image
-            .toBuffer();
+        let imageProcessor = sharp(absoluteImagePath)
+            .resize(resizeWidth, resizeHeight, { fit: "cover" });
 
+        if (convertToWebp) {
+            imageProcessor = imageProcessor.webp({ quality: resizeQuality });
+        } else {
+            imageProcessor = imageProcessor.jpeg({ quality: resizeQuality });
+        }
+
+        const outputBuffer = await imageProcessor.toBuffer();
+        
         // Return the processed image
         res.set("Content-Type", "image/jpeg");
         res.send(outputBuffer);
