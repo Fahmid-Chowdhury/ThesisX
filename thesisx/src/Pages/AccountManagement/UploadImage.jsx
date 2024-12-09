@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-
+import { GetStaticImage } from "../../utils/imageAPI";
 const UploadImage = ({ userData, setUserData }) => {
     const [selectedImage, setSelectedImage] = useState(null);
-    const [previewImage, setPreviewImage] = useState(userData.image || "/default-avatar.png");
+    const [previewImage, setPreviewImage] = useState(GetStaticImage(userData.image,"?format=true&width=160&height=160") || "/default-avatar.png");
     const [isUploading, setIsUploading] = useState(false);
 
     const handleImageChange = (e) => {
@@ -64,7 +64,7 @@ const UploadImage = ({ userData, setUserData }) => {
             <div className="h-[1px] w-full bg-black dark:bg-white opacity-15 mt-2"></div>
 
             <div className="flex items-center justify-between gap-4 mt-3">
-                <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-[hsl(210,80%,55%)]">
+                <div className="relative w-32 h-32 rounded-full overflow-hidden">
                     <img
                         src={previewImage}
                         alt="Profile"
@@ -94,7 +94,7 @@ const UploadImage = ({ userData, setUserData }) => {
                         disabled={!selectedImage || isUploading}
                         className={`px-4 py-2 rounded-md transition ${
                             !selectedImage || isUploading
-                                ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed text-gray-100"
+                                ? "bg-[hsl(0,0,70)] dark:bg-[hsl(0,0,30)] cursor-not-allowed"
                                 : "bg-themeColDark dark:bg-themeColLight text-white hover:bg-[hsl(210,70%,50%)]"
                         }`}
                     >
