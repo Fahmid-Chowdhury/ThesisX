@@ -128,7 +128,7 @@ async function login(req, res) {
 
             if (result) {
                 const token = jwt.sign({ 
-                    email: user.email, 
+                    id: user.id, 
                     role: user.role, 
                     dept: user.department,  
                 }, process.env.JWT_KEY);

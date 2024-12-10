@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import BarLoader from "react-spinners/BarLoader";
 import UploadImage from "./UploadImage";
-
+import BasicInfoUpdate from "./GeneralUpdate";
+import ResearchAndPublications from "./ResearchAndPublicationUpdate";
 const AccountManagement = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -71,8 +71,11 @@ const AccountManagement = () => {
         </>
     );
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto p-5 space-y-5">
+            <h1 className="text-[hsl(240,10%,20%)] dark:text-[hsl(240,10%,80%)] font-bold text-3xl mb-4">Account Management</h1>
             <UploadImage userData={userData} setUserData={setUserData}/>
+            <BasicInfoUpdate userData={userData} setUserData={setUserData} />
+            <ResearchAndPublications userData={userData} setUserData={setUserData} />
         </div>
     )
 }
