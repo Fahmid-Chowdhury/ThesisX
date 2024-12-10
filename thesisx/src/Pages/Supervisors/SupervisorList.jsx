@@ -2,6 +2,7 @@ import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 import {useStete, useContext} from 'react';
 import { SupervisorContext } from "../../Contexts/SupervisorContext/SupervisorContext";
 import { GetStaticImage } from "../../utils/imageAPI";
+import { getLabelByValue } from "../../utils/CommonUtility";
 
 const SupervisorCard = ({ supervisor }) => {
     return (
@@ -20,14 +21,15 @@ const SupervisorCard = ({ supervisor }) => {
                                 {supervisor.user.name}
                             </h3>
                             <p className="text-sm text-black dark:text-white opacity-50 mt-2 leading-none">
-                                Dept: {supervisor.user.department}
+                                Dept: {getLabelByValue(supervisor.user.department)}
                             </p>
                         </div>
                         <p className="text-sm text-black dark:text-white w-fit ">
                         
-                        {supervisor.availability > 0
-                            ? `${supervisor.availability} slots open`
+                        {supervisor.availability?.slots?.length > 0
+                            ? `${supervisor.availability.slots.length} slots open`
                             : "Not available"}
+
                         </p>
                     </div>
                 </div>

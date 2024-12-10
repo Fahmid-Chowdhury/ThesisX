@@ -6,13 +6,63 @@ import CustomSelect from "../../Components/CustomSelect/CustomSelect";
 
 
 const SearchBarWithFilters = () => {
-    const tags = ["Artificial Intelligence", "Machine Learning","Neural Network", "Deep Learning", "Natural Language Processing" ];
+    const tags = [
+        // Architecture (ARC)
+        "Urban Design",
+        "Sustainable Architecture",
+        "Building Information Modeling (BIM)",
+        "Landscape Design",
+        "Housing and Community Development",
+    
+        // Computer Science and Engineering (CSE)
+        "Artificial Intelligence",
+        "Cybersecurity",
+        "Data Science",
+        "Software Engineering",
+        "Machine Learning",
+    
+        // Economics and Social Sciences (ECO_SSC)
+        "Behavioral Economics",
+        "Development Economics",
+        "Public Policy",
+        "Social Justice",
+        "Game Theory",
+    
+        // Electrical and Electronic Engineering (EEE)
+        "Renewable Energy",
+        "Embedded Systems",
+        "Signal Processing",
+        "Power Systems",
+        "VLSI Design",
+    
+        // English and Humanities (ENG_HUM)
+        "Creative Writing",
+        "Linguistics",
+        "Postcolonial Studies",
+        "Cultural Studies",
+        "Literary Analysis",
+    
+        // Mathematics and Natural Sciences (MNS)
+        "Algebra",
+        "Differential Equations",
+        "Quantum Mechanics",
+        "Astrophysics",
+        "Biostatistics",
+    
+        // Pharmacy (PHR)
+        "Drug Formulation",
+        "Pharmacology",
+        "Clinical Pharmacy",
+        "Medicinal Chemistry",
+        "Pharmaceutical Biotechnology"
+    ];
 
     const {
         searchTerm,
         selectedDepartment,
         selectedTags,
         updateFilters,
+        fetchFaculties,
     } = useContext(SupervisorContext);
 
     const handleTagClick = (tag) => {
@@ -32,6 +82,8 @@ const SearchBarWithFilters = () => {
             department: selectedDepartment,
             tags: selectedTags
         });
+        fetchFaculties()
+
     };
 
     return (
@@ -116,7 +168,6 @@ const SearchBarWithFilters = () => {
                                     })
                                 }}
                             >Clear</button>
-                            <button className="px-4 py-2 bg-themeColDark dark:bg-themeColLight rounded-md text-white">Filter</button>
                         </div>
                     </div>
                 </AdvancedFilter>

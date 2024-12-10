@@ -53,7 +53,7 @@ const SupervisorProvider = ({ children }) => {
     // Effect to fetch faculties whenever filters change
     useEffect(() => {
         fetchFaculties();
-    }, [searchTerm, selectedDepartment, selectedTags]);
+    }, [ selectedDepartment, selectedTags]);
 
     return (
         <SupervisorContext.Provider
@@ -67,6 +67,7 @@ const SupervisorProvider = ({ children }) => {
                 filteredFaculties,
                 updateFilters,
                 loading,
+                fetchFaculties
             }}
         >
             {children}

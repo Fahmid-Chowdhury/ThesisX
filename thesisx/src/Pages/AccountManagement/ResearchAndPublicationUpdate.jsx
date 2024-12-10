@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const ResearchAndPublications = ({ userData, setUserData }) => {
     const { role, facultyDetails, studentDetails } = userData;
@@ -101,9 +102,11 @@ const ResearchAndPublications = ({ userData, setUserData }) => {
 
     return (
         <div className="bg-white dark:bg-black p-5 rounded-md shadow-md mt-6">
-            <h2 className="text-lg font-bold text-[hsl(240,10%,20%)] dark:text-[hsl(240,10%,80%)] mb-4">
-                Research Interests
+            <h2 className="text-lg font-bold text-[hsl(240,10%,20%)] dark:text-[hsl(240,10%,80%)] ">
+                Research Interests and publications
             </h2>
+            <div className="h-[1px] w-full bg-black dark:bg-white opacity-15 mt-2 mb-3"></div>
+
 
             {/* Error message */}
             {error && <p className="text-red-500 mb-2">{error}</p>}
@@ -112,15 +115,17 @@ const ResearchAndPublications = ({ userData, setUserData }) => {
             <div>
                 <h3 className="font-semibold mb-2">Research Interests</h3>
                 {researchInterests.length > 0 ? (
-                    <ul className="mb-4">
+                    <ul className="mb-4 flex gap-3">
                         {researchInterests.map((interest, index) => (
-                            <li key={index} className="list-disc ml-6 flex justify-between">
-                                {interest}
+                            <li key={index} className="flex justify-between items-center gap-2 px-1 py-1 border rounded-full">
+                                <p className="ml-2">
+                                    {interest}
+                                </p>
                                 <button
                                     onClick={() => handleRemoveInterest(interest)}
-                                    className="text-red-500 hover:underline ml-2"
+                                    className="p-1 bg-[hsl(0,70,50)] rounded-full"
                                 >
-                                    Remove
+                                    <XMarkIcon className="w-4 h-4 text-white " />
                                 </button>
                             </li>
                         ))}
@@ -137,12 +142,12 @@ const ResearchAndPublications = ({ userData, setUserData }) => {
                             value={newInterest}
                             onChange={(e) => setNewInterest(e.target.value)}
                             placeholder="Add new interest"
-                            className="w-full p-2 border rounded mb-2"
+                            className="w-full p-2 rounded-lg bg-[hsl(0,0,100%)] dark:bg-transparent  dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight"
                             disabled={isLoading}
                         />
                         <button
                             onClick={handleAddInterest}
-                            className="bg-[hsl(210,80%,55%)] text-white py-2 px-4 rounded hover:bg-[hsl(210,70%,45%)]"
+                            className="bg-[hsl(210,80%,55%)] text-white py-2 px-4 rounded hover:bg-[hsl(210,70%,45%)] mt-3"
                             disabled={isLoading}
                         >
                             {isLoading ? "Adding..." : "Add Interest"}
