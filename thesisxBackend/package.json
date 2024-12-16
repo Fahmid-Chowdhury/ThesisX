@@ -5,12 +5,16 @@
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
+<<<<<<< Updated upstream
         "start": "node server.js",
         "dev": "nodemon server.js"
+=======
+        "start": "node server.js"
+>>>>>>> Stashed changes
     },
     "author": "",
     "license": "ISC",
-    "description": "",
+    "description": "| Method  | Endpoint                                         | Description                      |\r |-------- |--------------------------------------------------|----------------------------------|\r | POST    | [/api/auth/verifyEmail](#post-apiauthverifyemail)| Verify email step before signup  |\r | POST    | [/api/auth/signup](#post-apiauthsignup)          | Create new User                  |\r | POST    | [/api/auth/login](#post-apiauthlogin)            | Login                            |",
     "dependencies": {
         "@prisma/client": "^6.0.1",
         "axios": "^1.7.8",
@@ -28,5 +32,6 @@
     },
     "devDependencies": {
         "prisma": "^6.0.1"
-    }
+    },
+    "keywords": []
 }
