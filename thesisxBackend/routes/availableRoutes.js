@@ -1,9 +1,9 @@
 import express from 'express';
 import { checkAuth } from '../middleware/checkAuth.js';
 import { 
-    getAvailability, 
-    updateAvailability, 
-    getAllFacultiesAvailability 
+    getAvailability,
+    addAvailability,
+    updateAvailability
 } from '../controllers/availabilityController.js';
 
 const router = express.Router();
@@ -11,8 +11,8 @@ const router = express.Router();
 // Get the logged-in faculty's availability
 router.get('/get-availability', checkAuth, getAvailability);
 // Update the logged-in faculty's availability
-router.put('/update-availability', checkAuth, updateAvailability);
+router.put('/add-availability', checkAuth, addAvailability);
 // Get availability of all faculties (optional filters: department, tags)
-router.get('/get-all-faculties-availability', checkAuth, getAllFacultiesAvailability);
+router.get('/update-availability', checkAuth, updateAvailability);
 
 export default router;

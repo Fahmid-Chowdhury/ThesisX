@@ -8,23 +8,44 @@ const getAvailability = async (req, res) => {
         const userId = req.userData?.id; // Assuming user ID comes from authentication middleware
         const role = req.userData?.role;
 
-        if (!userId || role !== "FACULTY") {
-            return res.status(403).json({ success: false, message: "Forbidden: Only faculty can access availability." });
+        if (!userId || role !== "STUDENT") {
+            return res.status(403).json({ success: false, message: "Unauthorized" });
         }
 
-        // Fetch availability from the database
-        const faculty = await DB.Faculty.findUnique({
-            where: { userId },
-            select: { availability: true },
+        // Fetch user and student data from DB 
+        const student = await DB.student.findUnique({
+            where: { userId: userId },
+            include: { thesis: true },
         });
 
-        if (!faculty) {
+        if (!student || !student.thesis) {
+            return res.status(404).json({ success: false, message: "Student or thesis not found." });
+        }
+
+        // check and retrive facultyID from thesis
+        const facultyId = student.thesis.facultyId;
+        if (!facultyId) {
             return res.status(404).json({ success: false, message: "Faculty not found." });
+        }
+
+        // Fetch faculty availability data from availability table
+        const availability = await DB.availability.findMany({
+            where: { facultyId: facultyId },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                type: true,
+            },
+        });
+
+        if (!availability.length) {
+            return res.status(404).json({ success: false, message: "No availability data found for this faculty." });
         }
 
         return res.status(200).json({
             success: true,
-            data: faculty.availability || [],
+            data: availability,
         });
     } catch (error) {
         console.error("Error fetching availability:", error);
@@ -32,40 +53,101 @@ const getAvailability = async (req, res) => {
     }
 };
 
-// Function to update faculty availability
-const updateAvailability = async (req, res) => {
+
+// Function to add availability for a faculty
+
+const addAvailability = async (req, res) => {
     try {
-        const userId = req.userData?.id;
+        const userId = req.userData?.id; // Assuming user ID comes from authentication middleware
         const role = req.userData?.role;
-        const { availability } = req.body; // Expects an array of date ranges or periods
 
         if (!userId || role !== "FACULTY") {
-            return res.status(403).json({ success: false, message: "Forbidden: Only faculty can update availability." });
+            return res.status(403).json({ success: false, message: "Unauthorized" });
         }
 
-        if (!availability || !Array.isArray(availability)) {
-            return res.status(400).json({ success: false, message: "Invalid availability format. It must be an array." });
+        const { startTime, endTime, type } = req.body;
+
+        // Validate request body
+        if (!startTime || !endTime || !type) {
+            return res.status(400).json({ success: false, message: "Missing required fields." });
         }
 
-        // Validate availability periods (basic validation example)
-        const isValidAvailability = availability.every(period => {
-            return period.start && period.end && new Date(period.start) <= new Date(period.end);
+        const faculty = await DB.faculty.findUnique({
+            where: { userId },
         });
 
-        if (!isValidAvailability) {
-            return res.status(400).json({ success: false, message: "Invalid availability periods provided." });
+        if (!faculty) {
+            return res.status(404).json({ success: false, message: "Faculty not found." });
         }
 
-        // Update the faculty's availability in the database
-        const updatedFaculty = await DB.Faculty.update({
+        // Create a new availability entry
+        const availability = await DB.availability.create({
+            data: {
+                facultyId: faculty.id,
+                startTime: new Date(startTime),
+                endTime: new Date(endTime),
+                type,
+            },
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Availability added successfully.",
+            availability,
+        });
+    } catch (error) {
+        console.error("Error adding availability:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
+// Function to update availability for a faculty
+const updateAvailability = async (req, res) => {
+    try {
+        const userId = req.userData?.id; // Assuming user ID comes from authentication middleware
+        const role = req.userData?.role;
+
+        if (!userId || role !== "FACULTY") {
+            return res.status(403).json({ success: false, message: "Unauthorized" });
+        }
+
+        const { availabilityId, startTime, endTime, type } = req.body;
+
+        // Validate request body
+        if (!availabilityId || (!startTime && !endTime && !type)) {
+            return res.status(400).json({ success: false, message: "Missing required fields." });
+        }
+
+        const faculty = await DB.faculty.findUnique({
             where: { userId },
-            data: { availability },
+        });
+
+        if (!faculty) {
+            return res.status(404).json({ success: false, message: "Faculty not found." });
+        }
+
+        // Check if the availability entry exists and belongs to the faculty
+        const existingAvailability = await DB.availability.findUnique({
+            where: { id: availabilityId },
+        });
+
+        if (!existingAvailability || existingAvailability.facultyId !== faculty.id) {
+            return res.status(404).json({ success: false, message: "Availability entry not found or unauthorized." });
+        }
+
+        // Update availability entry
+        const updatedAvailability = await DB.availability.update({
+            where: { id: availabilityId },
+            data: {
+                startTime: startTime ? new Date(startTime) : existingAvailability.startTime,
+                endTime: endTime ? new Date(endTime) : existingAvailability.endTime,
+                type: type || existingAvailability.type,
+            },
         });
 
         return res.status(200).json({
             success: true,
             message: "Availability updated successfully.",
-            data: updatedFaculty.availability,
+            availability: updatedAvailability,
         });
     } catch (error) {
         console.error("Error updating availability:", error);
@@ -73,52 +155,9 @@ const updateAvailability = async (req, res) => {
     }
 };
 
-// Function to get all faculties' availability
-const getAllFacultiesAvailability = async (req, res) => {
-    try {
-        const { department, tags } = req.query;
-
-        // Build filters dynamically
-        const filters = {};
-        if (department) {
-            filters.user = { department };
-        }
-        if (tags) {
-            const tagsArray = tags.split(",");
-            filters.researchInterests = { hasSome: tagsArray };
-        }
-
-        // Fetch faculties with availability
-        const faculties = await DB.Faculty.findMany({
-            where: filters,
-            select: {
-                id: true,
-                availability: true,
-                user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        department: true,
-                        email: true,
-                        image: true,
-                    },
-                },
-            },
-        });
-
-        return res.status(200).json({
-            success: true,
-            data: faculties,
-        });
-    } catch (error) {
-        console.error("Error fetching all faculties' availability:", error);
-        return res.status(500).json({ success: false, message: "Failed to fetch faculties' availability." });
-    }
-};
-
 // Export functions
 export {
     getAvailability,
+    addAvailability,
     updateAvailability,
-    getAllFacultiesAvailability,
 };
