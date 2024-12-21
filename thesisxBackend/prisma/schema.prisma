@@ -20,6 +20,11 @@ enum Role {
     FACULTY
     ADMIN
 }
+
+enum AvailabilityType {
+    Online
+    Offline
+}
 model User{
     id          Int     @id @default(autoincrement())
     email       String  @unique
@@ -42,9 +47,10 @@ model Faculty {
   id                Int           @id @default(autoincrement())
   userId            Int           @unique
   researchInterests String[]
-  availability      Json?
+  available_slot    Int
   publications      Publication[]
   user              User          @relation(fields: [userId], references: [id])
+  availability      Availability[]
 
   @@map("faculty")
 }
@@ -91,7 +97,7 @@ model Availability {
   facultyId   Int
   startTime   DateTime
   endTime     DateTime
-  description String?  
+  type        AvailabilityType
   faculty     Faculty  @relation(fields: [facultyId], references: [id])
 
   @@map("availability")
