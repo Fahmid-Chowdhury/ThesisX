@@ -26,30 +26,32 @@ enum AvailabilityType {
     Offline
 }
 model User{
-    id          Int     @id @default(autoincrement())
-    email       String  @unique
-    password    String
-    name        String 
-    role        Role
-    department  String?
-    bio         String?
-    image       String?
-    verified    Boolean    @default(false)
-    createdAt   DateTime   @default(now())
-    updatedAt   DateTime   @updatedAt
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  password    String
+  name        String 
+  role        Role
+  department  String?
+  bio         String?
+  image       String?
+  verified    Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
-    faculty     Faculty?
-    student     Student?
-    @@map("user") // Explicitly set the table name as "user"
+  faculty     Faculty?
+  student     Student?
+  documents   Document[]
+
+  @@map("user") // Explicitly set the table name as "user"
 }
 
 model Faculty {
-  id                Int           @id @default(autoincrement())
-  userId            Int           @unique
+  id                Int             @id @default(autoincrement())
+  userId            Int             @unique
   researchInterests String[]
   available_slot    Int
   publications      Publication[]
-  user              User          @relation(fields: [userId], references: [id])
+  user              User            @relation(fields: [userId], references: [id])
   availability      Availability[]
   thesis            Thesis[]
 
@@ -57,13 +59,13 @@ model Faculty {
 }
 
 model Student {
-  id                Int          @id @default(autoincrement())
-  userId            Int          @unique
+  id                Int             @id @default(autoincrement())
+  userId            Int             @unique
   researchInterests String[]
   contributions     Contribution[]
   thesisID          Int?
-  user              User         @relation(fields: [userId], references: [id])
-  thesis            Thesis?      @relation(fields: [thesisID], references: [id])
+  user              User            @relation(fields: [userId], references: [id])
+  thesis            Thesis?         @relation(fields: [thesisID], references: [id])
 
 
 
@@ -71,10 +73,10 @@ model Student {
 }
 
 model Thesis {
-  id              Int      @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   title           String
   supervisorId    Int?
-  createdAt       DateTime @default(now())
+  createdAt       DateTime  @default(now())
   faculty         Faculty?  @relation(fields: [supervisorId], references: [id])
   student         Student[]
 
@@ -95,6 +97,20 @@ model Publication {
   @@map("publication")
 }
 
+model Document {
+  id              Int      @id @default(autoincrement())
+  title           String
+  authors         String[]
+  uploadDate      DateTime @default(now())
+  url             String
+  type            String
+  uploadedById    Int
+  uploadedBy      User     @relation(fields: [uploadedById], references: [id])
+
+  @@map("document")
+}
+
+
 model Contribution {
     id              Int      @id @default(autoincrement())
     title           String
@@ -109,12 +125,12 @@ model Contribution {
 }
 
 model Availability {
-  id          Int      @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   facultyId   Int
   startTime   DateTime
   endTime     DateTime
   type        AvailabilityType
-  faculty     Faculty  @relation(fields: [facultyId], references: [id])
+  faculty     Faculty           @relation(fields: [facultyId], references: [id])
 
   @@map("availability")
 }

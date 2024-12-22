@@ -134,7 +134,7 @@ const uploadUserImage = async (req, res) => {
 
         // Update the user's image path in the database
         await DB.user.update({
-            where: { id:userId },
+            where: { id: userId },
             data: { image: relativePath },
         });
 
