@@ -100,6 +100,7 @@ model Publication {
 model Document {
   id              Int      @id @default(autoincrement())
   title           String
+  abstract        String
   authors         String[]
   uploadDate      DateTime @default(now())
   url             String
@@ -109,7 +110,6 @@ model Document {
 
   @@map("document")
 }
-
 
 model Contribution {
     id              Int      @id @default(autoincrement())
