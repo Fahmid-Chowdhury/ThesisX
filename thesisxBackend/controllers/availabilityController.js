@@ -21,9 +21,9 @@ const getAvailability = async (req, res) => {
         if (!student || !student.thesis) {
             return res.status(404).json({ success: false, message: "Student or thesis not found." });
         }
-
-        // check and retrive facultyID from thesis
-        const facultyId = student.thesis.facultyId;
+        console.log(student.thesis)
+        const facultyId = student.thesis.supervisorId;
+        console.log(facultyId)
         if (!facultyId) {
             return res.status(404).json({ success: false, message: "Faculty not found." });
         }
@@ -39,7 +39,7 @@ const getAvailability = async (req, res) => {
             },
         });
 
-        if (!availability.length) {
+        if (!availability) {
             return res.status(404).json({ success: false, message: "No availability data found for this faculty." });
         }
 

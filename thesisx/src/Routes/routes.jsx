@@ -12,6 +12,7 @@ import Notifications from '../Pages/Notifications/Notifications';
 import Profile from '../Pages/Profile/Profile';
 import AccountManagement from '../Pages/AccountManagement/AccountManagement';
 import SupervisorProfile from '../Pages/Supervisors/SupervisorProfile/SupervisorProfile';
+import Extra from '../Pages/Extra/Extra';
 // ===============================
 
 const ProtectedRoute = ({ element }) => {
@@ -76,8 +77,8 @@ const AppRouter = () => {
         <Routes>
             <Route path="/signin" element={<Signin />} />
             <Route path="/signup" element={<Signup />} />
-
             <Route element={<Layout />}>
+                <Route path = "/extra" element = {<Extra />}/>
                 <Route path="/" element={<ProtectedRoute element={<Home />} />} />
                 <Route path="/thesis" element={<ProtectedRoute element={<Thesis />} />} />
                 <Route path="/supervisors" element={<ProtectedRoute element={<Supervisors />} />} />
