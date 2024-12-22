@@ -304,7 +304,7 @@ const getFaculties = async (req, res) => {
                         image: true, // Only selecting the image field from the user
                     },
                 },
-                availability: true, // Select availability directly from faculty
+                available_slot:true, // Select availability directly from faculty
             },
         });
 

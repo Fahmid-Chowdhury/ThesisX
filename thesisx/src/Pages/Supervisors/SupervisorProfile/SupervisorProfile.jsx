@@ -67,12 +67,11 @@ const SupervisorProfile = () => {
 
             <div className="flex items-start gap-4 sm:flex-row flex-col">
 
-                <div className="bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] p-5 rounded-lg flex max-h-max w-full sm:max-w-80">
-                    <div className="flex flex-col w-full">
+                <div className="  flex flex-col max-h-max w-full sm:max-w-80 gap-4">
+                    <div className="flex flex-col w-full bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] p-5 rounded-lg">
                         <div className="w-full flex flex-col items-center">
 
                             <div className="aspect-square w-40 rounded-full overflow-hidden flex">
-
                                 <img
                                     src={GetStaticImage(userData.image,"?format=true&width=160&height=160") || "profile.webp"}
                                     alt={`${userData.name}'s profile`}
@@ -91,14 +90,11 @@ const SupervisorProfile = () => {
                                 <span>Email</span>
                                 {userData.email}
                             </p>
-
-                            
                         </div>
-                        
-
                     </div>
-
-
+                    <div className="flex flex-col w-full bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] p-5 rounded-lg">
+                        items
+                    </div>
                 </div>
                 
                 <div className="bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] p-5 rounded-lg flex flex-col w-full">
