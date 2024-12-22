@@ -224,6 +224,7 @@ const updateResearchInterest = async (req, res) => {
                 updatedUser = await DB.Faculty.create({
                     data: {
                         userId, // Assuming the user ID is passed to create a faculty record
+                        available_slot:0,
                         researchInterests: interests,
                     },
                 });

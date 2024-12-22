@@ -11,6 +11,7 @@ import Appointments from '../Pages/Appointments/Appointments';
 import Notifications from '../Pages/Notifications/Notifications';
 import Profile from '../Pages/Profile/Profile';
 import AccountManagement from '../Pages/AccountManagement/AccountManagement';
+import SupervisorProfile from '../Pages/Supervisors/SupervisorProfile/SupervisorProfile';
 // ===============================
 
 const ProtectedRoute = ({ element }) => {
@@ -80,6 +81,7 @@ const AppRouter = () => {
                 <Route path="/" element={<ProtectedRoute element={<Home />} />} />
                 <Route path="/thesis" element={<ProtectedRoute element={<Thesis />} />} />
                 <Route path="/supervisors" element={<ProtectedRoute element={<Supervisors />} />} />
+                <Route path="/supervisors/:id" element={<ProtectedRoute element={<SupervisorProfile />} />} />
                 <Route path="/appointments" element={<ProtectedRoute element={<Appointments />} />} />
                 <Route path="/notifications" element={<ProtectedRoute element={<Notifications />} />} />
                 <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />

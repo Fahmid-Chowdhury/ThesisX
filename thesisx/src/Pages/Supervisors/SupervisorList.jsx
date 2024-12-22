@@ -1,10 +1,12 @@
 import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
-import {useStete, useContext} from 'react';
+import { useContext } from 'react';
 import { SupervisorContext } from "../../Contexts/SupervisorContext/SupervisorContext";
 import { GetStaticImage } from "../../utils/imageAPI";
 import { getLabelByValue } from "../../utils/CommonUtility";
+import { useNavigate } from "react-router-dom";
 
 const SupervisorCard = ({ supervisor }) => {
+    const navigate = useNavigate();
     return (
         <div className="bg-white dark:bg-black shadow-md rounded-lg p-4 flex flex-col justify-between">
             <div className="flex justify-between">
@@ -26,14 +28,16 @@ const SupervisorCard = ({ supervisor }) => {
                         </div>
                         <p className="text-sm text-black dark:text-white w-fit ">
                         
-                        {supervisor.availability?.slots?.length > 0
-                            ? `${supervisor.availability.slots.length} slots open`
+                        {supervisor.available_slot > 0
+                            ? `${supervisor.available_slot} slots open`
                             : "Not available"}
 
                         </p>
                     </div>
                 </div>
-                <button>
+                <button onClick={() => {
+                    navigate(`/supervisors/${supervisor.id}`)
+                }}>
                     <ArrowRightCircleIcon className="w-10 h-10 opacity-50 hover:opacity-100" />
                 </button>
 
