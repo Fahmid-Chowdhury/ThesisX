@@ -67,7 +67,7 @@ async function getProfile(req, res) {
                 faculty: {
                     select: {
                         researchInterests: true,
-                        availability: true,
+                        available_slot: true,
                         publications: {
                             select: {
                                 id: true,

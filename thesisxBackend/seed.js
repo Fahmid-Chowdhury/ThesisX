@@ -36,7 +36,7 @@ async function seedDatabase() {
             data: {
                 userId: 2, // ID of the faculty user
                 researchInterests: ["Artificial Intelligence", "Machine Learning"],
-                availability: { slots: ["Monday 10 AM", "Thursday 2 PM"] },
+                availabe_slot: 3,
                 publications: {
                     create: [
                         {
