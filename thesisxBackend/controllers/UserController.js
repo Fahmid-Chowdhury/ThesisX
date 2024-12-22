@@ -298,6 +298,7 @@ const getFaculties = async (req, res) => {
                 id: true,
                 user: {
                     select: {
+                        id:true,
                         name: true,
                         department: true,
                         image: true, // Only selecting the image field from the user

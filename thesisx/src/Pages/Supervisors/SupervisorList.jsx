@@ -36,7 +36,7 @@ const SupervisorCard = ({ supervisor }) => {
                     </div>
                 </div>
                 <button onClick={() => {
-                    navigate(`/supervisors/${supervisor.id}`)
+                    navigate(`/supervisors/${supervisor.user.id}`)
                 }}>
                     <ArrowRightCircleIcon className="w-10 h-10 opacity-50 hover:opacity-100" />
                 </button>
