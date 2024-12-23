@@ -6,7 +6,8 @@ import UserRoutes from './routes/UserRoutes.js'
 import PublicRoutes from './routes/PublicRoutes.js'
 import FacultyRoutes from './routes/FacultyRoutes.js'
 import AvailibilityRoutes from './routes/AvailableRoutes.js'
-import DocumentRoutes from './routes/documentRoutes.js'
+import DocumentRoutes from './routes/DocumentRoutes.js'
+import AIRoutes from './routes/AIRoutes.js'
 //=======================================
 const app = express();
 app.use(cors());
@@ -17,4 +18,5 @@ app.use('/api/public', PublicRoutes);
 app.use('/api/faculty', FacultyRoutes);
 app.use('/api/availability', AvailibilityRoutes);
 app.use("/api/document", DocumentRoutes);
+app.use("/api/ai", AIRoutes);
 export default app;
