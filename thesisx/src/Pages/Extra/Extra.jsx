@@ -1,23 +1,10 @@
 import { useState, useEffect } from "react";
-import { ScheduleXCalendar, useCalendarApp } from "@schedule-x/react"
-import '@schedule-x/theme-default/dist/index.css'
-import {
-    createViewDay,
-    createViewMonthAgenda,
-    createViewMonthGrid,
-    createViewWeek,
-} from '@schedule-x/calendar'
+import { Scheduler } from "@aldabil/react-scheduler";
 
 const Extra = ({ facultyId }) => {
-    const [event, setEvents] = useState([]);
+    const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    const calendar = useCalendarApp({
-        views: [createViewDay(), createViewWeek(), createViewMonthGrid(), createViewMonthAgenda()],
-        events: event
-    })
-
 
     useEffect(() => {
         const fetchAvailability = async () => {
@@ -25,24 +12,24 @@ const Extra = ({ facultyId }) => {
                 setLoading(true);
                 setError(null);
 
-                // Fetch availability data from your API
                 const apiDomain = import.meta.env.VITE_API_DOMAIN;
                 const token = localStorage.getItem("authToken");
                 const response = await fetch(`${apiDomain}/api/availability/get-availability`, {
                     method: "GET",
                     headers: {
-                        Authorization: `Bearer ${token}`, // Add token for authentication
+                        Authorization: `Bearer ${token}`,
                     },
-
                 });
+
                 if (!response.ok) {
                     throw new Error("Failed to fetch availability data");
                 }
 
                 const data = await response.json();
 
-                // Map availability data to events for the calendar
+                // Format the data for Scheduler
                 const formattedEvents = data.data.map((availability) => ({
+                    event_id: availability.id, // Ensure a unique ID exists
                     title: availability.type === "Online" ? "Available (Online)" : "Available (Offline)",
                     start: new Date(availability.startTime),
                     end: new Date(availability.endTime),
@@ -58,6 +45,36 @@ const Extra = ({ facultyId }) => {
 
         fetchAvailability();
     }, [facultyId]);
+
+    const handleEventUpdate = async (updatedEvent) => {
+        try {
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+            const token = localStorage.getItem("authToken");
+
+            const response = await fetch(`${apiDomain}/api/availability/update-availability`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    availabilityId: updatedEvent.event_id, // Event ID from the backend
+                    startTime: updatedEvent.start.toISOString(), // Convert to ISO string
+                    endTime: updatedEvent.end.toISOString(),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update availability");
+            }
+
+            const data = await response.json();
+            console.log("Availability updated successfully:", data);
+        } catch (err) {
+            console.error("Error updating availability:", err);
+            alert("Failed to update availability.");
+        }
+    };
 
     if (loading) {
         return (
@@ -77,7 +94,24 @@ const Extra = ({ facultyId }) => {
 
     return (
         <div className="p-6 bg-gray-100">
-            <ScheduleXCalendar calendarApp={calendar} />
+            <Scheduler
+                view="month" // Default view
+                events={events}
+                onEventChange={(updatedEvent) => {
+                    // Update events in state
+                    setEvents((prevEvents) =>
+                        prevEvents.map((event) =>
+                            event.event_id === updatedEvent.event_id ? updatedEvent : event
+                        )
+                    );
+
+                    // Call API to update in the backend
+                    handleEventUpdate(updatedEvent);
+                }}
+                editable={true} // Disable editing if not needed
+                deletable={true} // Disable deleting events
+                draggable={true} // Disable drag-and-drop
+            />
         </div>
     );
 };
