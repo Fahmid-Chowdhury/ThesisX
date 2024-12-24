@@ -1,14 +1,23 @@
 import { useState, useEffect } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import moment from "moment";
+import { ScheduleXCalendar, useCalendarApp } from "@schedule-x/react"
+import '@schedule-x/theme-default/dist/index.css'
+import {
+    createViewDay,
+    createViewMonthAgenda,
+    createViewMonthGrid,
+    createViewWeek,
+} from '@schedule-x/calendar'
 
 const Extra = ({ facultyId }) => {
-    const [events, setEvents] = useState([]);
+    const [event, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const localizer = momentLocalizer(moment);
+    const calendar = useCalendarApp({
+        views: [createViewDay(), createViewWeek(), createViewMonthGrid(), createViewMonthAgenda()],
+        events: event
+    })
+
 
     useEffect(() => {
         const fetchAvailability = async () => {
@@ -24,7 +33,7 @@ const Extra = ({ facultyId }) => {
                     headers: {
                         Authorization: `Bearer ${token}`, // Add token for authentication
                     },
-                    
+
                 });
                 if (!response.ok) {
                     throw new Error("Failed to fetch availability data");
@@ -37,7 +46,6 @@ const Extra = ({ facultyId }) => {
                     title: availability.type === "Online" ? "Available (Online)" : "Available (Offline)",
                     start: new Date(availability.startTime),
                     end: new Date(availability.endTime),
-                    allDay: false,
                 }));
 
                 setEvents(formattedEvents);
@@ -69,15 +77,7 @@ const Extra = ({ facultyId }) => {
 
     return (
         <div className="p-6 bg-gray-100">
-            <h1 className="text-2xl font-bold mb-4 text-center">Availability Schedule</h1>
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 500 }}
-                className="bg-white dark:bg-black shadow-md rounded-md"
-            />
+            <ScheduleXCalendar calendarApp={calendar} />
         </div>
     );
 };

@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@schedule-x/calendar": "^2.12.1",
+    "@schedule-x/react": "^2.12.0",
+    "@schedule-x/theme-default": "^2.12.1",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "moment": "^2.30.1",
