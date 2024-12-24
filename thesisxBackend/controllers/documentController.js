@@ -23,7 +23,7 @@ const extractMetadata = async (req, res) => {
         metadata.url = `/documents/${req.file.filename}`;
         metadata.type = req.file.mimetype;
 
-        res.status(200).json({ metadata });
+        res.status(200).json({ data: metadata });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

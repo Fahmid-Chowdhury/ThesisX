@@ -77,10 +77,25 @@ model Thesis {
   title           String
   supervisorId    Int?
   createdAt       DateTime  @default(now())
+
   faculty         Faculty?  @relation(fields: [supervisorId], references: [id])
   student         Student[]
+  invitation      Invitation[]
 
   @@map("thesis")
+}
+
+model Invitation {
+  id           Int       @id @default(autoincrement())
+  email        String    
+  code         String    @unique 
+  thesisId     Int       
+  createdAt    DateTime  @default(now())
+  expiresAt    DateTime  
+  used         Boolean   @default(false) 
+  thesis       Thesis    @relation(fields: [thesisId], references: [id]) 
+
+  @@map("invitation") 
 }
 
 model Publication {
