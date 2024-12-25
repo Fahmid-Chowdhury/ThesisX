@@ -6,7 +6,7 @@ import {
     // uploadDocument,
     getAllDocuments,
     getDocumentById,
-} from "../controllers/DocumentController.js";
+} from "../controllers/documentController.js";
 import { checkAuth } from '../middleware/checkAuth.js';
 
 const router = express.Router();
