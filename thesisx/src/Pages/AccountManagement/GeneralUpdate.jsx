@@ -65,7 +65,7 @@ const BasicInfoUpdate = ({ userData, setUserData }) => {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full p-2 rounded-lg bg-[hsl(0,0,100%)] dark:bg-transparent  dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight"
+                        className="w-full p-2 rounded-lg bg-[hsl(0,0,100%)] dark:bg-transparent  dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight dark:border-[hsl(0,0%,50%)]"
                         required
                     />
                 </div>
@@ -76,7 +76,7 @@ const BasicInfoUpdate = ({ userData, setUserData }) => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full p-2 rounded-lg bg-[hsl(0,0,100%)] dark:bg-transparent dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight"
+                        className="w-full p-2 rounded-lg bg-[hsl(0,0,100%)] dark:bg-transparent dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight dark:border-[hsl(0,0%,50%)]"
                         required
                     />
                 </div>
@@ -86,7 +86,7 @@ const BasicInfoUpdate = ({ userData, setUserData }) => {
                         name="bio"
                         value={formData.bio}
                         onChange={handleInputChange}
-                        className="w-full p-2 rounded-lg bg-[hsl(0,0,100%)] dark:bg-transparent dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight"
+                        className="w-full p-2 rounded-lg bg-[hsl(0,0,100%)] dark:bg-transparent dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight dark:border-[hsl(0,0%,50%)]"
                         rows="3"
                     ></textarea>
                 </div>

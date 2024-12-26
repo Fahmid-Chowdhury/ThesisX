@@ -117,7 +117,7 @@ const ResearchAndPublications = ({ userData, setUserData }) => {
                 {researchInterests.length > 0 ? (
                     <ul className="mb-4 flex gap-3">
                         {researchInterests.map((interest, index) => (
-                            <li key={index} className="flex justify-between items-center gap-2 px-1 py-1 border rounded-full">
+                            <li key={index} className="flex justify-between items-center gap-2 px-1 py-1 border rounded-full dark:border-[hsl(0,0%,50%)]">
                                 <p className="ml-2">
                                     {interest}
                                 </p>
@@ -142,7 +142,7 @@ const ResearchAndPublications = ({ userData, setUserData }) => {
                             value={newInterest}
                             onChange={(e) => setNewInterest(e.target.value)}
                             placeholder="Add new interest"
-                            className="w-full p-2 rounded-lg bg-[hsl(0,0,100%)] dark:bg-transparent  dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight"
+                            className="w-full p-2 rounded-lg bg-[hsl(0,0,100%)] dark:bg-transparent  dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight dark:border-[hsl(0,0%,50%)]"
                             disabled={isLoading}
                         />
                         <button

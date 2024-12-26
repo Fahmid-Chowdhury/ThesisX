@@ -47,59 +47,74 @@ async function GetThesis(req, res) {
     if (!userData) {
         return res.status(401).json({
             success: false,
-            message: "Unauthorized"
-        })
+            message: "Unauthorized",
+        });
     }
+
     try {
         const { id, role } = userData;
 
+        // Ensure only students can access this endpoint
         if (role !== "STUDENT") {
-            return res.status(401).json({
+            return res.status(403).json({
                 success: false,
-                message: "Unauthorized"
-            })
-        }
-        
-
-        const thesisId = await DB.student.findUnique({
-            where: {
-                userId: id, // Replace 'userId' with the actual userId value
-            },
-            select: {
-                thesisID: true, // Select only the thesisId
-            },
-        });
-
-        console.log(thesisId)
-
-        if (!thesisId.thesisID) {
-            return res.status(404).json({
-                success: false,
-                message: "No thesis found for this student",
+                message: "Forbidden: Access is restricted to students",
             });
         }
 
-        const thesis = await GetThesisByID(thesisId.thesisID)
+        // Find the student's profile
+        const student = await DB.student.findUnique({
+            where: {
+                userId: id,
+            },
+            select: {
+                thesisID: true,
+            },
+        });
 
-        if (!thesis) {
-            return res.status(500).json({
+        // Check if the student profile exists
+        if (!student) {
+            return res.status(404).json({
                 success: false,
-                message:"Error fetching thesis data"
-            })
+                profileIncomplete: true,
+                message: "Student profile is incomplete. Please complete your profile.",
+            });
+        }
+
+        // Check if the student is enrolled in a thesis
+        if (!student.thesisID) {
+            return res.status(200).json({
+                success: true,
+                thesisID: null,
+                message: "No thesis found for this student. Create or join a thesis.",
+            });
+        }
+
+        // Fetch the thesis details
+        const thesis = await GetThesisByID(student.thesisID)
+
+        // If thesis details are not found
+        if (!thesis) {
+            return res.status(404).json({
+                success: false,
+                message: "Thesis details not found. Please contact your supervisor.",
+            });
         }
 
         return res.status(200).json({
             success: true,
-            data: thesis
-        })
-
+            data: thesis,
+        });
 
     } catch (err) {
-        console.error(err)
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
     }
-
-
 }
+
 
 async function CreateThesis(req, res) {
     const userData = req.userData;

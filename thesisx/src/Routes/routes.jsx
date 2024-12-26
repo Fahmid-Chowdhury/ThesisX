@@ -6,6 +6,8 @@ import Signup from "../Authentication/Signup/Signup";
 import Navbar from '../Components/Navbar/Navbar';
 import Home from '../Pages/Home/Home';
 import Thesis from '../Pages/Thesis/Thesis';
+import ThesisCreate from '../Pages/Thesis/ThesisCreate';
+import ThesisJoin from '../Pages/Thesis/ThesisJoin';
 import Supervisors from '../Pages/Supervisors/Supervisors';
 import Appointments from '../Pages/Appointments/Appointments';
 import Notifications from '../Pages/Notifications/Notifications';
@@ -80,12 +82,18 @@ const AppRouter = () => {
             <Route element={<Layout />}>
                 <Route path = "/extra" element = {<Extra />}/>
                 <Route path="/" element={<ProtectedRoute element={<Home />} />} />
+
                 <Route path="/thesis" element={<ProtectedRoute element={<Thesis />} />} />
+                <Route path="/thesis/create" element={<ProtectedRoute element={<ThesisCreate />} />} />
+                <Route path="/thesis/join" element={<ProtectedRoute element={<ThesisJoin />} />} />
+
                 <Route path="/supervisors" element={<ProtectedRoute element={<Supervisors />} />} />
                 <Route path="/supervisors/:id" element={<ProtectedRoute element={<SupervisorProfile />} />} />
+
                 <Route path="/appointments" element={<ProtectedRoute element={<Appointments />} />} />
-                <Route path="/notifications" element={<ProtectedRoute element={<Notifications />} />} />
+
                 <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+                <Route path="/notifications" element={<ProtectedRoute element={<Notifications />} />} />
                 <Route path="/accountmanagement" element={<ProtectedRoute element={<AccountManagement />} />} />
             </Route>
         </Routes>
