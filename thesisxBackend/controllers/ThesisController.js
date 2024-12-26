@@ -103,6 +103,7 @@ async function GetThesis(req, res) {
 
         return res.status(200).json({
             success: true,
+            thesisID: thesis.id,
             data: thesis,
         });
 
@@ -148,7 +149,6 @@ async function CreateThesis(req, res) {
             });
         }
 
-        console.log(student)
         const { title } = req.body;
 
         if (!title) {

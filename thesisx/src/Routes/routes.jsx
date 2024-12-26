@@ -14,6 +14,7 @@ import Notifications from '../Pages/Notifications/Notifications';
 import Profile from '../Pages/Profile/Profile';
 import AccountManagement from '../Pages/AccountManagement/AccountManagement';
 import SupervisorProfile from '../Pages/Supervisors/SupervisorProfile/SupervisorProfile';
+import ThesisDashboard from '../Pages/Thesis/ThesisPage/ThesisDashboard';
 import Extra from '../Pages/Extra/Extra';
 // ===============================
 
@@ -86,6 +87,7 @@ const AppRouter = () => {
                 <Route path="/thesis" element={<ProtectedRoute element={<Thesis />} />} />
                 <Route path="/thesis/create" element={<ProtectedRoute element={<ThesisCreate />} />} />
                 <Route path="/thesis/join" element={<ProtectedRoute element={<ThesisJoin />} />} />
+                <Route path="/thesis/t/:id" element={<ProtectedRoute element={<ThesisDashboard />} />} />
 
                 <Route path="/supervisors" element={<ProtectedRoute element={<Supervisors />} />} />
                 <Route path="/supervisors/:id" element={<ProtectedRoute element={<SupervisorProfile />} />} />

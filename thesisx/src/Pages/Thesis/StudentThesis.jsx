@@ -31,7 +31,7 @@ const StudentThesis = () => {
                 const data = await response.json();
 
                 if (data.success && data.thesisID) {
-                    navigate(`/thesis/${data.thesisID}`);
+                    navigate(`/thesis/t/${data.thesisID}`);
 
                 } else if (data.profileIncomplete) {
                     setMessage("Your student profile is incomplete. Please update your profile in Account Management.");
