@@ -13,5 +13,9 @@ const getLabelByValue = (value) => {
     return department ? department.label : null; // Return the label if found, otherwise return null
 };
 
+const ConvertToReadableDate = (date) => {
+    const dateObj = new Date(date);
+    return dateObj.toDateString();
+}
 
-export { getLabelByValue }
+export { getLabelByValue, ConvertToReadableDate }

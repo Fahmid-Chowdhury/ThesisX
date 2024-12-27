@@ -116,6 +116,71 @@ async function GetThesis(req, res) {
     }
 }
 
+async function GetThesisbyID(req, res) {
+    const userData = req.userData;
+
+    if (!userData) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized",
+        });
+    }
+    try{
+        // check if the user is realated to the thesis
+        const thesisID = req.params.id;
+        const thesis = await GetThesisByID(thesisID);
+        if (!thesis) {
+            return res.status(404).json({
+                success: false,
+                message: "Thesis not found",
+            });
+        }
+
+        if (userData.role === "FACULTY") {
+            // get faculty id
+            const faculty = await DB.faculty.findUnique({
+                where: { userId: userData.id },
+                select: { id: true },
+            });
+
+            if (thesis.supervisorId !== faculty.id) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: Access is restricted to the faculty supervisor",
+                });
+            }
+        }
+
+        if (userData.role === "STUDENT") {
+            const student = await DB.student.findUnique({
+                where: { userId: userData.id },
+                select: { id: true, thesisID: true },
+            });
+
+            console.log(student)
+
+            if (student.thesisID !== thesis.id) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: Access is restricted to the student enrolled in the thesis",
+                });
+            }
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: thesis,
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+
+}
 
 async function CreateThesis(req, res) {
     const userData = req.userData;
@@ -193,4 +258,5 @@ async function CreateThesis(req, res) {
 export {
     GetThesis,
     CreateThesis,
+    GetThesisbyID,
 }

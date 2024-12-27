@@ -8,13 +8,14 @@ datasource db {
 }
 
 model Otp {
-    id        Int      @id @default(autoincrement())
-    email     String   @unique
+    id       Int      @id @default(autoincrement())
+    email    String   @unique
     otp      String
-    expireAt  DateTime
+    expireAt DateTime
 
     @@map("otp") // Explicitly set the table name as "otp"
 }
+
 enum Role {
     STUDENT
     FACULTY
@@ -25,105 +26,106 @@ enum AvailabilityType {
     Online
     Offline
 }
-model User{
-  id          Int       @id @default(autoincrement())
-  email       String    @unique
-  password    String
-  name        String 
-  role        Role
-  department  String?
-  bio         String?
-  image       String?
-  verified    Boolean    @default(false)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
 
-  faculty     Faculty?
-  student     Student?
-  documents   Document[]
+model User {
+    id         Int      @id @default(autoincrement())
+    email      String   @unique
+    password   String
+    name       String
+    role       Role
+    department String?
+    bio        String?
+    image      String?
+    verified   Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 
-  @@map("user") // Explicitly set the table name as "user"
+    faculty   Faculty?
+    student   Student?
+    documents Document[]
+    posts     Post[]
+    comments  Comment[]
+
+    @@map("user") // Explicitly set the table name as "user"
 }
 
 model Faculty {
-  id                Int             @id @default(autoincrement())
-  userId            Int             @unique
-  researchInterests String[]
-  available_slot    Int
-  publications      Publication[]
-  user              User            @relation(fields: [userId], references: [id])
-  availability      Availability[]
-  thesis            Thesis[]
+    id                Int            @id @default(autoincrement())
+    userId            Int            @unique
+    researchInterests String[]
+    available_slot    Int
+    publications      Publication[]
+    user              User           @relation(fields: [userId], references: [id])
+    availability      Availability[]
+    thesis            Thesis[]
 
-  @@map("faculty")
+    @@map("faculty")
 }
 
 model Student {
-  id                Int             @id @default(autoincrement())
-  userId            Int             @unique
-  researchInterests String[]
-  contributions     Contribution[]
-  thesisID          Int?
-  user              User            @relation(fields: [userId], references: [id])
-  thesis            Thesis?         @relation(fields: [thesisID], references: [id])
+    id                Int            @id @default(autoincrement())
+    userId            Int            @unique
+    researchInterests String[]
+    contributions     Contribution[]
+    thesisID          Int?
+    user              User           @relation(fields: [userId], references: [id])
+    thesis            Thesis?        @relation(fields: [thesisID], references: [id])
 
-
-
-  @@map("student")
+    @@map("student")
 }
 
 model Thesis {
-  id              Int       @id @default(autoincrement())
-  title           String
-  supervisorId    Int?
-  createdAt       DateTime  @default(now())
+    id           Int      @id @default(autoincrement())
+    title        String
+    supervisorId Int?
+    createdAt    DateTime @default(now())
 
-  faculty         Faculty?  @relation(fields: [supervisorId], references: [id])
-  student         Student[]
-  invitation      Invitation[]
+    faculty    Faculty?     @relation(fields: [supervisorId], references: [id])
+    student    Student[]
+    invitation Invitation[]
 
-  @@map("thesis")
+    @@map("thesis")
 }
 
 model Invitation {
-  id           Int       @id @default(autoincrement())
-  email        String    
-  code         String    @unique 
-  thesisId     Int       
-  createdAt    DateTime  @default(now())
-  expiresAt    DateTime  
-  used         Boolean   @default(false) 
-  thesis       Thesis    @relation(fields: [thesisId], references: [id]) 
+    id        Int      @id @default(autoincrement())
+    email     String
+    code      String   @unique
+    thesisId  Int
+    createdAt DateTime @default(now())
+    expiresAt DateTime
+    used      Boolean  @default(false)
+    thesis    Thesis   @relation(fields: [thesisId], references: [id])
 
-  @@map("invitation") 
+    @@map("invitation")
 }
 
 model Publication {
-  id              Int      @id @default(autoincrement())
-  title           String
-  abstract        String?
-  authors         String[]
-  publicationDate DateTime
-  url             String?
-  facultyId       Int
-  createdAt       DateTime @default(now())
-  faculty         Faculty  @relation(fields: [facultyId], references: [id])
+    id              Int      @id @default(autoincrement())
+    title           String
+    abstract        String?
+    authors         String[]
+    publicationDate DateTime
+    url             String?
+    facultyId       Int
+    createdAt       DateTime @default(now())
+    faculty         Faculty  @relation(fields: [facultyId], references: [id])
 
-  @@map("publication")
+    @@map("publication")
 }
 
 model Document {
-  id              Int      @id @default(autoincrement())
-  title           String
-  abstract        String
-  authors         String[]
-  uploadDate      DateTime @default(now())
-  url             String
-  type            String
-  uploadedById    Int
-  uploadedBy      User     @relation(fields: [uploadedById], references: [id])
+    id           Int      @id @default(autoincrement())
+    title        String
+    abstract     String
+    authors      String[]
+    uploadDate   DateTime @default(now())
+    url          String
+    type         String
+    uploadedById Int
+    uploadedBy   User     @relation(fields: [uploadedById], references: [id])
 
-  @@map("document")
+    @@map("document")
 }
 
 model Contribution {
@@ -136,16 +138,41 @@ model Contribution {
     studentId       Int
     createdAt       DateTime @default(now())
     student         Student  @relation(fields: [studentId], references: [id])
-
 }
 
 model Availability {
-  id          Int               @id @default(autoincrement())
-  facultyId   Int
-  startTime   DateTime
-  endTime     DateTime
-  type        AvailabilityType
-  faculty     Faculty           @relation(fields: [facultyId], references: [id])
+    id        Int              @id @default(autoincrement())
+    facultyId Int
+    startTime DateTime
+    endTime   DateTime
+    type      AvailabilityType
+    faculty   Faculty          @relation(fields: [facultyId], references: [id])
 
-  @@map("availability")
+    @@map("availability")
+}
+
+model Post {
+    id        Int      @id @default(autoincrement())
+    title     String
+    content   String
+    authorId  Int
+    createdAt DateTime @default(now())
+
+
+    author    User     @relation(fields: [authorId], references: [id])
+    comments  Comment[]
+
+    @@map("post")
+}
+
+model Comment {
+    id        Int      @id @default(autoincrement())
+    content   String
+    postId    Int
+    authorId  Int
+    createdAt DateTime @default(now())
+    post      Post     @relation(fields: [postId], references: [id])
+    author    User     @relation(fields: [authorId], references: [id])
+
+    @@map("comment")
 }

@@ -97,9 +97,9 @@ const Profile = () => {
                 <div className="mb-6 p-4 bg-[hsl(50,90%,95%)] dark:bg-[hsl(50,90%,5%)] border border-[hsl(50,80%,70%)] dark:border-[hsl(50,80%,30%)] rounded-lg">
                     <p className="text-[hsl(50,70%,30%)] dark:text-[hsl(50,70%,70%)]">
                         Your profile is incomplete. Please{" "}
-                        <a href="/accountmanagement" className="underline text-themeColDark dark:text-themeColLight">
+                        <Link to="/accountmanagement" className="underline text-themeColDark dark:text-themeColLight">
                             set up your profile
-                        </a>{" "}
+                        </Link>{" "}
                         to ensure all features are accessible.
                     </p>
                 </div>

@@ -14,8 +14,13 @@ import Notifications from '../Pages/Notifications/Notifications';
 import Profile from '../Pages/Profile/Profile';
 import AccountManagement from '../Pages/AccountManagement/AccountManagement';
 import SupervisorProfile from '../Pages/Supervisors/SupervisorProfile/SupervisorProfile';
-import ThesisDashboard from '../Pages/Thesis/ThesisPage/ThesisDashboard';
 import Extra from '../Pages/Extra/Extra';
+
+import ThesisDashboard from '../Pages/Thesis/ThesisPage/ThesisDashboard';
+import ThesisStream from '../Pages/Thesis/ThesisPage/ThesisStream/ThesisStream';
+import ThesisSubmissions from '../Pages/Thesis/ThesisPage/ThesisSubmissions/ThesisSubmissions';
+import ThesisPeople from '../Pages/Thesis/ThesisPage/ThesisPeople/ThesisPeople';
+import ThesisInfo from '../Pages/Thesis/ThesisPage/ThesisInfo/ThesisInfo';
 // ===============================
 
 const ProtectedRoute = ({ element }) => {
@@ -34,13 +39,13 @@ const Layout = () => {
     const shouldShowNav = !noNavRoutes.includes(location.pathname);
 
     return (
-        <>  
+        <>
             <div className='transition-colors h-screen w-screen bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] flex flex-col text-black dark:text-white'>
                 <div>
                     {shouldShowNav && <Navbar />}
                 </div>
                 <div className='h-full overflow-auto '>
-                    <Outlet /> 
+                    <Outlet />
                 </div>
             </div>
         </>
@@ -81,13 +86,20 @@ const AppRouter = () => {
             <Route path="/signin" element={<Signin />} />
             <Route path="/signup" element={<Signup />} />
             <Route element={<Layout />}>
-                <Route path = "/extra" element = {<Extra />}/>
+                <Route path="/extra" element={<Extra />} />
                 <Route path="/" element={<ProtectedRoute element={<Home />} />} />
 
                 <Route path="/thesis" element={<ProtectedRoute element={<Thesis />} />} />
                 <Route path="/thesis/create" element={<ProtectedRoute element={<ThesisCreate />} />} />
                 <Route path="/thesis/join" element={<ProtectedRoute element={<ThesisJoin />} />} />
-                <Route path="/thesis/t/:id" element={<ProtectedRoute element={<ThesisDashboard />} />} />
+                
+                <Route path="/thesis/t/:id" element={<ProtectedRoute element={<ThesisDashboard />} />}>
+                    <Route path="" element={<ThesisStream />} />
+                    <Route path="submissions" element={<ThesisSubmissions />} />
+                    <Route path="people" element={<ThesisPeople />} />
+                    <Route path="info" element={<ThesisInfo />} />
+                </Route>
+                
 
                 <Route path="/supervisors" element={<ProtectedRoute element={<Supervisors />} />} />
                 <Route path="/supervisors/:id" element={<ProtectedRoute element={<SupervisorProfile />} />} />
