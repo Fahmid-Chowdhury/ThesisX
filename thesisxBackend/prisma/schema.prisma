@@ -83,6 +83,7 @@ model Thesis {
     faculty    Faculty?     @relation(fields: [supervisorId], references: [id])
     student    Student[]
     invitation Invitation[]
+    posts      Post[]
 
     @@map("thesis")
 }
@@ -156,10 +157,12 @@ model Post {
     title     String
     content   String
     authorId  Int
+    thesisId  Int?
     createdAt DateTime @default(now())
 
 
     author    User     @relation(fields: [authorId], references: [id])
+    thesis    Thesis?  @relation(fields: [thesisId], references: [id])
     comments  Comment[]
 
     @@map("post")

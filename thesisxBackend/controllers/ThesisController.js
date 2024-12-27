@@ -255,8 +255,94 @@ async function CreateThesis(req, res) {
     }
 }
 
+const getThesisPosts = async (req, res) => {
+    const { id } = req.params; // Thesis ID from URL params
+    const { page = 1, limit = 10 } = req.query; // Pagination parameters
+    const userId = req.userData?.id; // Assuming user ID is extracted from a middleware
+
+    try {
+        // Ensure the user is authorized to view this thesis
+        const thesis = await DB.thesis.findUnique({
+            where: {
+                id: parseInt(id),
+            },
+            include: {
+                student: true, // Include related students
+                faculty: true, // Include related faculty
+            },
+        });
+
+        if (!thesis) {
+            return res.status(404).json({
+                success: false,
+                message: "Thesis not found",
+            });
+        }
+
+        // Check if the user is related to this thesis (either as student or faculty)
+        const isAuthorized =
+            thesis.supervisorId === userId || // User is the supervisor
+            thesis.student.some((student) => student.userId === userId); // User is one of the students
+
+        if (!isAuthorized) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to access these posts",
+            });
+        }
+
+        // Parse pagination values
+        const pageNumber = parseInt(page, 10);
+        const pageSize = parseInt(limit, 10);
+        const offset = (pageNumber - 1) * pageSize;
+
+        // Fetch posts for the specified thesis ID with pagination
+        const posts = await DB.post.findMany({
+            where: {
+                thesisId: parseInt(id),
+            },
+            skip: offset,
+            take: pageSize,
+            orderBy: {
+                createdAt: "desc", // Sort posts by newest first
+            },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+                comments: true, // Include associated comments
+            },
+        });
+
+        // Get the total number of posts for pagination info
+        const totalPosts = await DB.post.count({
+            where: {
+                thesisId: parseInt(id),
+            },
+        });
+
+        res.status(200).json({
+            success: true,
+            posts,
+            totalPosts,
+            totalPages: Math.ceil(totalPosts / pageSize),
+            currentPage: pageNumber,
+        });
+    } catch (error) {
+        console.error("Error fetching thesis posts:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch posts",
+        });
+    }
+};
 export {
     GetThesis,
     CreateThesis,
     GetThesisbyID,
+    getThesisPosts
 }

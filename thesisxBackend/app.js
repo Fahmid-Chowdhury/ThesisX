@@ -21,4 +21,5 @@ app.use('/api/availability', AvailibilityRoutes);
 app.use("/api/document", DocumentRoutes);
 app.use("/api/ai", AIRoutes);
 app.use("/api/thesis", ThesisRoutes);
+
 export default app;
