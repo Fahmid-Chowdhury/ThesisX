@@ -12,7 +12,7 @@ const PostList = () => {
         if (newComment[postId]?.trim()) {
             socket.emit(
                 'createComment',
-                { roomId: posts[0]?.thesisId, commentData: { postId, content: newComment[postId], token } },
+                { roomId: posts[0]?.thesisId, commentData: { postId, content: newComment[postId] }, token },
                 (response) => {
                     if (response.success) {
                         setNewComment((prev) => ({ ...prev, [postId]: '' })); // Clear the comment input

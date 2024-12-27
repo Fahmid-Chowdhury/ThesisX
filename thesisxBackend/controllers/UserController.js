@@ -20,12 +20,10 @@ async function getUser(req, res) {
                 id:true,
                 email: true,
                 name: true,
+                image: true,
                 department: true,
                 role: true,
-                bio: true,
-                verified: true,
                 createdAt: true,
-                updatedAt: true
             }
         })
 

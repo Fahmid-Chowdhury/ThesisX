@@ -63,13 +63,13 @@ const StudentThesis = () => {
             {message.includes("Create or join a thesis") && (
                 <div className="mt-4">
                     <button
-                        className=" px-4 py-2 rounded text-themeColDark dark:text-themeColLight border border-themeColDark dark:border-themeColLight"
+                        className="px-4 py-2 rounded text-themeColDark dark:text-themeColLight border border-themeColDark dark:border-themeColLight"
                         onClick={() => navigate('/thesis/create')}
                     >
                         Create Thesis
                     </button>
                     <button
-                        className="ml-4 bg-themeColDark dark:bg-themeColLight text-white px-4 py-2 rounded "
+                        className="ml-4 bg-themeColDark dark:bg-themeColLight text-white px-4 py-2 rounded"
                         onClick={() => navigate('/thesis/join')}
                     >
                         Join Thesis

@@ -6,10 +6,10 @@ export default function socketHandler(io) {
         console.log('A user connected:', socket.id);
 
         // Handle joining a room with a token verification
-        socket.on('joinRoom', async ({ roomId, token }) => {
+        socket.on('joinRoom', async ({ roomId, token, type }) => {
+            let room = '';
             try {
                 // Verify the token
-                console.log('Token:', token);
                 const decoded = jwt.verify(token, process.env.JWT_KEY); // Replace with your secret key
                 const userId = decoded.id; // Assuming the user ID is stored in the token
 
@@ -28,9 +28,18 @@ export default function socketHandler(io) {
                     throw new Error('Unauthorized: You are not allowed to join this room');
                 }
 
+                if (type === 'post') {
+                    room = `thesis-post-${roomId}`;
+                } else if (type === 'chat') {
+                    room = `thesis-chat-${roomId}`;
+                } else if (type === 'comment') {
+                    room = `thesis-comment-${roomId}`;
+                }
+
+
                 // Join the room
-                socket.join(roomId);
-                console.log(`User ${socket.id} joined room: ${roomId}`);
+                socket.join(room);
+                console.log(`User ${socket.id} joined room: ${room}`);
 
                 // Optionally, you can send the user data or other info to the client
                 socket.emit('roomJoined', { roomId, userId });
@@ -46,13 +55,10 @@ export default function socketHandler(io) {
                 // Verify the token
                 const decoded = jwt.verify(token, process.env.JWT_KEY);
                 const userId = decoded.id;
-                console.log('User ID:', userId);
-                console.log('Room ID:', roomId);
-                console.log('Post Data:', postData);
+                
                 // Save the post to the database
                 const newPost = await DB.post.create({
                     data: {
-                        title: postData.title,
                         content: postData.content,
                         authorId: userId, // Use the user ID from the token
                         thesisId: parseInt(roomId),
@@ -60,7 +66,8 @@ export default function socketHandler(io) {
                 });
 
                 // Broadcast the new post to everyone in the room
-                io.to(roomId).emit('newPost', newPost);
+                io.to(`thesis-post-${roomId}`).emit('newPost', newPost);
+                console.log(`Room ${`thesis-post-${roomId}`} members:`, Array.from(io.sockets.adapter.rooms.get(`thesis-post-${roomId}`) || []));
 
                 // Acknowledge success
                 callback({ success: true, post: newPost });
@@ -77,10 +84,6 @@ export default function socketHandler(io) {
                 const decoded = jwt.verify(token, process.env.JWT_KEY);
                 const userId = decoded.id;
 
-                console.log('User ID:', userId);
-                console.log('Room ID:', roomId);
-                console.log('Comment Data:', commentData);
-
                 // Save the comment to the database
                 const newComment = await DB.comment.create({
                     data: {
@@ -90,11 +93,14 @@ export default function socketHandler(io) {
                     },
                 });
 
+                
+
                 // Broadcast the new comment to everyone in the room
-                io.to(roomId).emit('newComment', {
+                io.to(`thesis-comment-${roomId}`).emit('newComment', {
                     postId: commentData.postId,
                     comment: newComment,
                 });
+                console.log(`Room ${roomId} members:`, Array.from(io.sockets.adapter.rooms.get(`thesis-comment-${roomId}`) || []));
 
                 // Acknowledge success
                 callback({ success: true, comment: newComment });

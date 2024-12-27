@@ -28,6 +28,7 @@ async function GetThesisByID(thesisID) {
                             select: {
                                 name: true,
                                 email: true,
+                                image:true
                             },
                         },
                     },

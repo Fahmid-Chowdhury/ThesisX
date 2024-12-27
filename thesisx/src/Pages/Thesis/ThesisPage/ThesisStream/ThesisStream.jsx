@@ -9,8 +9,7 @@ const ThesisStream = () => {
 
     return (
         <ThesisStreamProvider roomId={id}>
-            <div className="thesis-stream">
-                <h1>Thesis Stream</h1>
+            <div className="flex flex-col gap-4 mt-3">
                 <PostForm />
                 <PostList />
             </div>

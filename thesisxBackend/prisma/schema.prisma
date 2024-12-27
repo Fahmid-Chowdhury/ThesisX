@@ -154,12 +154,10 @@ model Availability {
 
 model Post {
     id        Int      @id @default(autoincrement())
-    title     String
     content   String
     authorId  Int
     thesisId  Int?
     createdAt DateTime @default(now())
-
 
     author    User     @relation(fields: [authorId], references: [id])
     thesis    Thesis?  @relation(fields: [thesisId], references: [id])

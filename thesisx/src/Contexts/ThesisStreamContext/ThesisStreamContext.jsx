@@ -8,20 +8,35 @@ const ThesisStreamProvider = ({ roomId, children }) => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const newSocket = io('http://localhost:8080'); // Replace with your server URL
+        const newSocket = io('http://localhost:8080');
         setSocket(newSocket);
-
+    
         const token = localStorage.getItem('authToken');
-        newSocket.emit('joinRoom', { roomId, token });
-
+        newSocket.emit('joinRoom', { roomId, token, type:"post" });
+        newSocket.emit('joinRoom', { roomId, token, type:"comment" });
+    
         newSocket.on('newPost', (post) => {
-            setPosts((prevPosts) => [post, ...prevPosts]); // Prepend new post
+            setPosts((prevPosts) => [post, ...prevPosts]);
         });
-
+    
+        newSocket.on('newComment', ({ postId, comment }) => {
+            setPosts((prevPosts) =>
+                prevPosts.map((post) =>
+                    post.id === postId
+                        ? {
+                            ...post,
+                            comments: post.comments ? [...post.comments, comment] : [comment],
+                        }
+                        : post
+                )
+            );
+        });
+    
         return () => {
             newSocket.disconnect();
         };
     }, [roomId]);
+    
 
     const fetchPosts = async () => {
         try {
