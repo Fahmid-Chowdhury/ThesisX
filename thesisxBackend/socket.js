@@ -55,6 +55,11 @@ export default function socketHandler(io) {
                 // Verify the token
                 const decoded = jwt.verify(token, process.env.JWT_KEY);
                 const userId = decoded.id;
+
+                const user = await DB.user.findUnique({
+                    where: { id: userId },
+                    select: { image: true, name: true },
+                });
                 
                 // Save the post to the database
                 const newPost = await DB.post.create({
@@ -64,6 +69,8 @@ export default function socketHandler(io) {
                         thesisId: parseInt(roomId),
                     },
                 });
+
+                newPost.author = user;
 
                 // Broadcast the new post to everyone in the room
                 io.to(`thesis-post-${roomId}`).emit('newPost', newPost);
@@ -77,12 +84,55 @@ export default function socketHandler(io) {
             }
         });
 
+        socket.on('deleteComment', async ({roomId, commentId, token }) => {
+            try {
+                // Verify the token
+                const decoded = jwt.verify(token, process.env.JWT_KEY);
+                const userId = decoded.id;
+
+                
+                // Find the comment to ensure it exists and belongs to the user
+                const comment = await DB.comment.findUnique({
+                    where: { id: commentId },
+                });
+                console.log(comment)
+
+                if (!comment) {
+                    throw new Error('Comment not found');
+                }
+
+                if (comment.authorId !== userId) {
+                    throw new Error('Unauthorized to delete this comment');
+                }
+
+                // Delete the comment from the database
+                await DB.comment.delete({
+                    where: { id: commentId },
+                });
+
+                console.log(roomId)
+                // Optionally, you can broadcast the deletion to the room
+                io.to(`thesis-post-${roomId}`).emit('commentDeleted', {postId:comment.postId, commentId });
+
+                // Acknowledge success
+                
+            } catch (error) {
+                console.error('Error deleting comment:', error.message);
+            }
+        });
+
         // Handle creating a new comment on a post
         socket.on('createComment', async ({ roomId, commentData, token }, callback) => {
             try {
                 // Verify the token
                 const decoded = jwt.verify(token, process.env.JWT_KEY);
                 const userId = decoded.id;
+
+                const user = await DB.user.findUnique({
+                    where: { id: userId },
+                    select: { image: true, name: true },
+                });
+
 
                 // Save the comment to the database
                 const newComment = await DB.comment.create({
@@ -92,6 +142,8 @@ export default function socketHandler(io) {
                         authorId: userId,
                     },
                 });
+
+                newComment.author = user;
 
                 
 
@@ -109,6 +161,8 @@ export default function socketHandler(io) {
                 callback({ success: false, message: error.message });
             }
         });
+
+        
 
         // Handle user disconnect
         socket.on('disconnect', () => {

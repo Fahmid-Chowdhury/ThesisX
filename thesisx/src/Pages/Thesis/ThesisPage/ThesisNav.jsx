@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom"
 const ThesisNav = () => {
     return (
 
-        <div className="bg-white dark:bg-[hsl(0,0%,15%)] dark:shadow-none flex justify-between items-center sm:px-5 mt-3 h-10">
+        <div className="bg-[hsl(0,0,100)] dark:bg-[hsl(0,0%,15%)] dark:shadow-none flex justify-between items-center sm:px-5 mt-3 h-10 rounded ">
             <div className="flex">
                 <NavLink
                     key={""}

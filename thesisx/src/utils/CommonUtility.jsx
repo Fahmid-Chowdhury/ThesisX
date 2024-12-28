@@ -1,3 +1,5 @@
+import { format, isToday, isYesterday } from 'date-fns';
+
 const departments = [
     { label: 'Architecture', value: 'ARC' },
     { label: 'Computer Science and Engineering', value: 'CSE' },
@@ -18,4 +20,15 @@ const ConvertToReadableDate = (date) => {
     return dateObj.toDateString();
 }
 
-export { getLabelByValue, ConvertToReadableDate }
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    if (isToday(date)) {
+        return format(date, 'p'); // 'p' is for time with AM/PM
+    } else if (isYesterday(date)) {
+        return 'Yesterday';
+    } else {
+        return format(date, 'MMM dd'); // 'MMM dd' is for date like Dec 23
+    }
+};
+
+export { getLabelByValue, ConvertToReadableDate, formatDate };

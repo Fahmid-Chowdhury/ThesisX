@@ -18,6 +18,20 @@ const ThesisStreamProvider = ({ roomId, children }) => {
         newSocket.on('newPost', (post) => {
             setPosts((prevPosts) => [post, ...prevPosts]);
         });
+
+        newSocket.on('commentDeleted', ({ postId, commentId }) => {
+            console.log('commentDeleted', postId, commentId);
+            setPosts((prevPosts) =>
+                prevPosts.map((post) =>
+                    post.id === postId
+                        ? {
+                            ...post,
+                            comments: post.comments.filter(comment => comment.id !== commentId),
+                        }
+                        : post
+                )
+            );
+        });
     
         newSocket.on('newComment', ({ postId, comment }) => {
             setPosts((prevPosts) =>
@@ -31,6 +45,8 @@ const ThesisStreamProvider = ({ roomId, children }) => {
                 )
             );
         });
+
+        
     
         return () => {
             newSocket.disconnect();

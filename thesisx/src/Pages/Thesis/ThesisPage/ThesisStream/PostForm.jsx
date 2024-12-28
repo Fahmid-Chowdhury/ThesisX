@@ -38,7 +38,7 @@ const PostForm = () => {
     };
 
     return (
-        <div className='bg-white dark:bg-black p-4 rounded-lg'>
+        <div className='bg-[hsl(0,0,100)] dark:bg-black border border-[hsl(0,0%,80%)] dark:border-[hsl(0,0%,20%)] p-4 rounded-lg'>
             {
                 open ? (
                     <form onSubmit={handlePostSubmit}>

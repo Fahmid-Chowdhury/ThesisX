@@ -12,6 +12,7 @@ const ResearchAndPublications = ({ userData, setUserData }) => {
     
     const [researchInterests, setResearchInterests] = useState(initialResearchInterests);
     const [newInterest, setNewInterest] = useState("");
+    
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 

@@ -310,12 +310,20 @@ const getThesisPosts = async (req, res) => {
             include: {
                 author: {
                     select: {
-                        id: true,
                         name: true,
-                        email: true,
+                        image: true,
                     },
                 },
-                comments: true, // Include associated comments
+                comments: {
+                    include: {
+                        author: {
+                            select: {
+                                name: true,
+                                image: true,
+                            },
+                        },
+                    },
+                }, // Include associated comments
             },
         });
 
