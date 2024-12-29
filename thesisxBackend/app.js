@@ -9,6 +9,7 @@ import AvailibilityRoutes from './routes/AvailableRoutes.js'
 import DocumentRoutes from './routes/DocumentRoutes.js'
 import AIRoutes from './routes/AIRoutes.js'
 import ThesisRoutes from './routes/ThesisRoutes.js'
+import AppointmentRoutes from './routes/AppointmentRoutes.js'
 //=======================================
 const app = express();
 app.use(cors());
@@ -21,5 +22,6 @@ app.use('/api/availability', AvailibilityRoutes);
 app.use("/api/document", DocumentRoutes);
 app.use("/api/ai", AIRoutes);
 app.use("/api/thesis", ThesisRoutes);
+app.use("/api/appointment", AppointmentRoutes);
 
 export default app;
