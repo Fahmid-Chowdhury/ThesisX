@@ -33,6 +33,11 @@ async function GetFacultyInfo (req, res ){
     }
 }
 
+async function SetSupervisorRequest (req, res) {
+    
+}
+
 export {
-    GetFacultyInfo
+    GetFacultyInfo,
+    SetSupervisorRequest
 }

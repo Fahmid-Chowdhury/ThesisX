@@ -1,10 +1,12 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../Contexts/Authentication/AuthContext";
 
 const CreateThesis = () => {
     const [title, setTitle] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const { setRefresh } = useContext(AuthContext);
 
     const navigate = useNavigate();
     const formRef = useRef(null); // Create a ref for the form
@@ -38,6 +40,7 @@ const CreateThesis = () => {
             }
 
             const data = await response.json();
+            setRefresh(true);
             console.log("Thesis created:", data);
             navigate(`/thesis/t/${data.thesis.id}`); 
         } catch (error) {

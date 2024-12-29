@@ -7,7 +7,6 @@ import { useParams } from 'react-router-dom';
 const PostForm = () => {
     const { socket, setPosts } = useContext(ThesisStreamContext);
     const [newPost, setNewPost] = useState({ content: '' });
-    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 

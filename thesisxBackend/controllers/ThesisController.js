@@ -15,6 +15,7 @@ async function GetThesisByID(thesisID) {
                         id: true,
                         user: {
                             select: {
+                                image: true,
                                 name: true,
                                 email: true,
                             },

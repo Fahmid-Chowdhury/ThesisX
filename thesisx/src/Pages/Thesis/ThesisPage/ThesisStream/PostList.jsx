@@ -42,7 +42,9 @@ const PostList = () => {
                     </div>
                 ))
             ) : (
-                <p>No posts available. Start by creating one!</p>
+                <div className="flex items-center justify-center">
+                    <p className='opacity-50'>No posts available. Start by creating one!</p>
+                </div>
             )}
         </div>
     );
@@ -172,7 +174,7 @@ const CommentPost = ({postId}) => {
                         value={newComment}
                         required
                     ></textarea>
-                    <button type='submit' className='px-4 py-2 bg-themColDark dark:bg-themeColLight text-white rounded-full mt-2'>Comment</button>
+                    <button type='submit' className='px-4 py-2 bg-themeColDark dark:bg-themeColLight text-white rounded-full mt-2'>Comment</button>
                 </form>
             </div>
         </div>

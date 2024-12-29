@@ -1,14 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams } from "react-router-dom";
 import NotFound from '../../../Components/NotFound/NotFound';
 import LoaderSVG from '../../../assets/LoaderSVG';
 import { GetStaticImage } from '../../../utils/imageAPI';
+import { AuthContext } from '../../../Contexts/Authentication/AuthContext';
 
 const SupervisorProfile = () => {
     const { id } = useParams();
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [message, setMessage] = useState(null);
+    const { thesis, setRefresh, user } = useContext(AuthContext);
+
+    const handleRequestSupervision = async () => { 
+        try {
+            const token = localStorage.getItem("authToken");
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+
+            const response = await fetch(`${apiDomain}/api/faculty/request-supervision`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ facultyID: id, thesisID: thesis.data.id }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message);
+            }
+
+            console.log("Request for supervision sent:", data);
+        } catch (err) {
+            console.error("Failed to send request for supervision:", err.message);
+            setMessage(err.message);
+        }
+    };
 
 
     useEffect(() => {
@@ -92,9 +121,19 @@ const SupervisorProfile = () => {
                             </p>
                         </div>
                     </div>
-                    <div className="flex flex-col w-full bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] p-5 rounded-lg">
-                        items
-                    </div>
+                    {
+                        thesis && (
+                            !thesis.data.faculty && (
+                                <div className="flex flex-col w-full bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] p-5 rounded-lg">
+                                    {/* write a component to request for supervision */}
+                                    <div className="flex flex-col items-center">
+                                        <button className="bg-themeColDark dark:bg-themeColLight text-white py-2 px-4 rounded-md w-full">Request for Supervision</button>
+                                    </div>
+                                </div>
+                            )
+                        )
+                    }
+                    
                 </div>
                 
                 <div className="bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] p-5 rounded-lg flex flex-col w-full">

@@ -50,14 +50,17 @@ model User {
 }
 
 model Faculty {
-    id                Int            @id @default(autoincrement())
-    userId            Int            @unique
+    id                Int                 @id @default(autoincrement())
+    userId            Int                 @unique
     researchInterests String[]
     available_slot    Int
+
+    user              User                @relation(fields: [userId], references: [id])
     publications      Publication[]
-    user              User           @relation(fields: [userId], references: [id])
     availability      Availability[]
     thesis            Thesis[]
+    RequestSupervisor RequestSupervisor[]
+    Appointment       Appointment[]
 
     @@map("faculty")
 }
@@ -80,10 +83,12 @@ model Thesis {
     supervisorId Int?
     createdAt    DateTime @default(now())
 
-    faculty    Faculty?     @relation(fields: [supervisorId], references: [id])
-    student    Student[]
-    invitation Invitation[]
-    posts      Post[]
+    faculty           Faculty?            @relation(fields: [supervisorId], references: [id])
+    student           Student[]
+    invitation        Invitation[]
+    posts             Post[]
+    RequestSupervisor RequestSupervisor[]
+    Appointment       Appointment[]
 
     @@map("thesis")
 }
@@ -159,9 +164,9 @@ model Post {
     thesisId  Int?
     createdAt DateTime @default(now())
 
-    author    User     @relation(fields: [authorId], references: [id])
-    thesis    Thesis?  @relation(fields: [thesisId], references: [id])
-    comments  Comment[]
+    author   User      @relation(fields: [authorId], references: [id])
+    thesis   Thesis?   @relation(fields: [thesisId], references: [id])
+    comments Comment[]
 
     @@map("post")
 }
@@ -176,4 +181,32 @@ model Comment {
     author    User     @relation(fields: [authorId], references: [id])
 
     @@map("comment")
+}
+
+model RequestSupervisor {
+    id              Int       @id @default(autoincrement())
+    thesisId        Int
+    facultyId       Int
+    appointmentDate DateTime?
+    notes           String?
+    createdAt       DateTime  @default(now())
+
+    thesis  Thesis  @relation(fields: [thesisId], references: [id])
+    faculty Faculty @relation(fields: [facultyId], references: [id])
+
+    @@map("request_supervisor")
+}
+
+model Appointment {
+    id              Int       @id @default(autoincrement())
+    thesisId        Int
+    facultyId       Int
+    appointmentDate DateTime
+    notes           String?
+    createdAt       DateTime  @default(now())
+
+    thesis  Thesis  @relation(fields: [thesisId], references: [id])
+    faculty Faculty @relation(fields: [facultyId], references: [id])
+
+    @@map("appointment")
 }
