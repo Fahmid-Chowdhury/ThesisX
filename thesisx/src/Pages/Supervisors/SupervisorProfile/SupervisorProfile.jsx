@@ -4,17 +4,24 @@ import NotFound from '../../../Components/NotFound/NotFound';
 import LoaderSVG from '../../../assets/LoaderSVG';
 import { GetStaticImage } from '../../../utils/imageAPI';
 import { AuthContext } from '../../../Contexts/Authentication/AuthContext';
+import { formatDate } from '../../../utils/CommonUtility';
 
 const SupervisorProfile = () => {
     const { id } = useParams();
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [comment, setComment] = useState("");
     const [message, setMessage] = useState(null);
+    const [request, setRequest] = useState(false);
+    const [success, setSuccess] = useState(null);
+    const [submissionLoading, setSubmissionLoading] = useState(false);
+
     const { thesis, setRefresh, user } = useContext(AuthContext);
 
-    const handleRequestSupervision = async () => { 
+    const handleRequestSupervision = async () => {
         try {
+            setSubmissionLoading(true);
             const token = localStorage.getItem("authToken");
             const apiDomain = import.meta.env.VITE_API_DOMAIN;
 
@@ -24,7 +31,7 @@ const SupervisorProfile = () => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ facultyID: id, thesisID: thesis.data.id }),
+                body: JSON.stringify({ facultyID: id, thesisID: thesis.data.id, notes: comment }),
             });
 
             const data = await response.json();
@@ -32,10 +39,16 @@ const SupervisorProfile = () => {
                 throw new Error(data.message);
             }
 
+            setSuccess(data.data);
+            setMessage(null)
+            
+
             console.log("Request for supervision sent:", data);
         } catch (err) {
             console.error("Failed to send request for supervision:", err.message);
             setMessage(err.message);
+        } finally {
+            setSubmissionLoading(false);
         }
     };
 
@@ -102,7 +115,7 @@ const SupervisorProfile = () => {
 
                             <div className="aspect-square w-40 rounded-full overflow-hidden flex">
                                 <img
-                                    src={GetStaticImage(userData.image,"?format=true&width=160&height=160") || "profile.webp"}
+                                    src={GetStaticImage(userData.image, "?format=true&width=160&height=160") || "profile.webp"}
                                     alt={`${userData.name}'s profile`}
                                     className=" object-cover"
                                 />
@@ -122,20 +135,87 @@ const SupervisorProfile = () => {
                         </div>
                     </div>
                     {
+                        message && (
+                            <div className="p-4 bg-[hsl(0,90%,95%)] dark:bg-[hsl(0,90%,5%)] border border-[hsl(0,80%,70%)] dark:border-[hsl(0,80%,30%)] rounded-lg">
+                                <p className='text-[hsl(0,70%,30%)] dark:text-[hsl(0,70%,70%)]'>
+                                    {message}
+                                </p>
+
+                            </div>
+                        )
+                    }
+                    {
                         thesis && (
                             !thesis.data.faculty && (
-                                <div className="flex flex-col w-full bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] p-5 rounded-lg">
-                                    {/* write a component to request for supervision */}
-                                    <div className="flex flex-col items-center">
-                                        <button className="bg-themeColDark dark:bg-themeColLight text-white py-2 px-4 rounded-md w-full">Request for Supervision</button>
-                                    </div>
-                                </div>
+                                <>
+                                    {
+                                        !request && (
+                                            <button className="bg-themeColDark dark:bg-themeColLight text-white py-2 px-4 rounded-md w-full" onClick={() => setRequest(true)}>
+                                                {request ? "Cancel" : "Request Supervision"}
+                                            </button>
+                                        )
+                                    }
+                                    {
+                                        request && (
+                                            <div className="p-4 bg-[hsl(0,0%,95%)] dark:bg-[hsl(0,0%,5%)] border border-[hsl(0,0%,70%)] dark:border-[hsl(0,0%,30%)] rounded-lg">
+                                                
+                                                <p className='text-[hsl(0,0%,30%)] dark:text-[hsl(0,0%,70%)]'>
+                                                    Are you sure you want to request supervision from <span className='font-bold'>{userData.name}</span>?
+                                                </p>
+                                                {/* comment form */}
+                                                <div className="mt-4">
+                                                    <textarea
+                                                        id="comment"
+                                                        className="w-full p-2 border border-[hsl(0,0%,70%)] dark:border-[hsl(0,0%,30%)] bg-transparent rounded-md outline-none focus:outline-themeColDark dark:focus:outline-themeColLight"
+                                                        placeholder="Add a comment for the faculty"
+                                                        value={comment}
+                                                        onChange={(e) => setComment(e.target.value)}
+                                                    ></textarea>
+                                                </div>
+                                                <div className="h-[1px] w-full bg-black dark:bg-white opacity-15 mt-2"></div>
+                                    
+                                                <div className="flex gap-4 mt-4">
+                                                    {submissionLoading ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <LoaderSVG color={"CornflowerBlue"} />
+                                                            <span className="text-[hsl(0,0%,30%)] dark:text-[hsl(0,0%,70%)]">Sending request...</span>
+                                                        </div>
+                                                    ):(
+                                                        success ? (
+                                                            <div className="">
+                                                                <p className='text-xl'>
+                                                                    Request sent successfully
+                                                                </p>
+                                                                <div className='mt-2'>
+                                                                    <p>Request status {success.status}</p>
+                                                                    <p>Request created { formatDate(success.createdAt)}</p>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <button className="bg-themeColDark dark:bg-themeColLight text-white py-2 px-4 rounded-md w-full" disabled={submissionLoading} onClick={handleRequestSupervision}>
+                                                                    Confirm
+                                                                </button>
+                                                                <button className="bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] text-[hsl(0,0%,30%)] dark:text-[hsl(0,0%,70%)] py-2 px-4 rounded-md w-full" onClick={() => setRequest(false)} disabled={submissionLoading}>
+                                                                    Cancel
+                                                                </button>
+                                                            </>
+
+                                                        )
+
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                </>
+
                             )
                         )
                     }
-                    
+
                 </div>
-                
+
                 <div className="bg-[hsl(0,0%,90%)] dark:bg-[hsl(0,0%,10%)] p-5 rounded-lg flex flex-col w-full">
                     <h3 className="text-xl font-semibold">
                         Faculty Details
@@ -162,7 +242,7 @@ const SupervisorProfile = () => {
                                     No tags added
                                 </div>
                             )}
-                            
+
                         </div>
                     </div>
                     <div className="mt-3">
@@ -198,7 +278,7 @@ const SupervisorProfile = () => {
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     )

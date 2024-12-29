@@ -43,6 +43,62 @@ async function GetThesisByID(thesisID) {
     }
 }
 
+async function GetFacultyThesis(req, res) {
+    const userData = req.userData;
+
+    if (!userData) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized",
+        });
+    }
+
+    try {
+        const { id, role } = userData;
+
+        // Ensure only students can access this endpoint
+        if (role !== "FACULTY") {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden: Access is restricted to Faculties",
+            });
+        }
+
+        // Find the student's profile
+        const faculty = await DB.faculty.findUnique({
+            where: { userId: id } // Correct object syntax
+        });
+
+
+        // Check if the student profile exists
+        if (!faculty) {
+            return res.status(404).json({
+                success: false,
+                profileIncomplete: true,
+                message: "Faculty profile is incomplete. Please complete your profile.",
+            });
+        }
+
+        // Check if the student is enrolled in a thesis
+        const thesis = await DB.thesis.findMany({
+            where: {
+                supervisorId: faculty.id
+            }
+        })
+
+        return res.status(200).json({
+            success: true,
+            data: thesis,
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
 async function GetThesis(req, res) {
     const userData = req.userData;
 
@@ -274,6 +330,8 @@ const getThesisPosts = async (req, res) => {
             },
         });
 
+        console.log(thesis)
+
         if (!thesis) {
             return res.status(404).json({
                 success: false,
@@ -283,7 +341,7 @@ const getThesisPosts = async (req, res) => {
 
         // Check if the user is related to this thesis (either as student or faculty)
         const isAuthorized =
-            thesis.supervisorId === userId || // User is the supervisor
+            thesis.faculty?.userId === userId || // User is the supervisor
             thesis.student.some((student) => student.userId === userId); // User is one of the students
 
         if (!isAuthorized) {
@@ -352,6 +410,7 @@ const getThesisPosts = async (req, res) => {
 };
 export {
     GetThesis,
+    GetFacultyThesis,
     CreateThesis,
     GetThesisbyID,
     getThesisPosts

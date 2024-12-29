@@ -61,7 +61,7 @@ const PostForm = () => {
                     <div className='flex items-center gap-4 ml-2' onClick={() => setOpen(true)}>
                         <div className='flex-shrink-0 aspect-square w-12 rounded-full overflow-hidden flex'>
                             <img
-                                src={GetStaticImage(user.image, "?format=true&width=160&height=160") || "/profile.webp"}
+                                src={GetStaticImage(user.image, "?format=true&width=60&height=60") || "/profile.webp"}
                                 alt={`${user.name}'s profile`}
                                 className=" object-cover"
                             />

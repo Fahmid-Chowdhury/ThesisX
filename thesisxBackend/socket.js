@@ -22,7 +22,7 @@ export default function socketHandler(io) {
                 // Ensure that the user is either a student or faculty member of the thesis
                 const isAuthorized =
                     thesis.student.some((student) => student.userId === userId) ||
-                    thesis.faculty.some((faculty) => faculty.userId === userId);
+                    thesis.faculty.userId === userId;
 
                 if (!isAuthorized) {
                     throw new Error('Unauthorized: You are not allowed to join this room');

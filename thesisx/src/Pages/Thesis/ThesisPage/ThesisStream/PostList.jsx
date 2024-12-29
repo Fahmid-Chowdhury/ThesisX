@@ -20,7 +20,7 @@ const PostList = () => {
                             <div className='flex items-center gap-2 mb-2'>
                                 <div className='flex-shrink-0 aspect-square w-12 rounded-full overflow-hidden flex'>
                                     <img
-                                        src={GetStaticImage(post.author.image, "?format=true&width=160&height=160") || "/profile.webp"}
+                                        src={GetStaticImage(post.author.image, "?format=true&width=60&height=60") || "/profile.webp"}
                                         alt={`${post.author.name}'s profile`}
                                         className=" object-cover"
                                     />
@@ -161,7 +161,7 @@ const CommentPost = ({postId}) => {
             <div className='flex gap-4 mb-4'>
                 <div className='flex-shrink-0 aspect-square w-8 h-8 rounded-full overflow-hidden flex'>
                     <img
-                        src={GetStaticImage(user.image, "?format=true&width=160&height=160") || "/profile.webp"}
+                        src={GetStaticImage(user.image, "?format=true&width=60&height=60") || "/profile.webp"}
                         alt={`${user.name}'s profile`}
                         className=" object-cover"
                     />

@@ -34,7 +34,81 @@ async function GetFacultyInfo (req, res ){
 }
 
 async function SetSupervisorRequest (req, res) {
+    const userData = req.userData; // Extract user data from the request
+
+    const { facultyID, thesisID, notes } = req.body; // Extract faculty ID, thesis ID, and notes from the request body
     
+    console.log("Request body:", req.body);
+    if (!facultyID || !thesisID) {
+        return res.status(400).json({ 
+            success: false,
+            message: "Faculty ID and Thesis ID are required." 
+        });
+    }
+
+
+    try {
+        const student = await DB.Student.findUnique({ where: { userId: userData.id } });
+
+        if (!student) {
+            return res.status(404).json({ success: false, message: "Student not found." });
+        }
+
+        if ( student.thesisID !== parseInt(thesisID) ) {
+            return res.status(400).json({ success: false, message: "Thesis ID does not match." });
+        }
+        // check if thesis is already assigned to a supervisor
+        const thesis = await DB.Thesis.findUnique({ where: { id: parseInt(thesisID) } });
+
+        if (!thesis) {
+            return res.status(404).json({ success: false, message: "Thesis not found." });
+        }
+
+        if (thesis.supervisorId) {
+            return res.status(400).json({ success: false, message: "Thesis is already assigned to a supervisor." });
+        }
+
+        const faculty = await DB.Faculty.findUnique({ where: { userId: parseInt(facultyID) } })
+
+        if (!faculty) {
+            return res.status(400).json({ success: false, message: "Faculty not found"})
+        }
+
+        // check for existing request that is still pending
+        const existingRequest = await DB.RequestSupervisor.findFirst({
+            where: {
+                thesisId: parseInt(thesisID),
+                facultyId: faculty.id,
+                status: "PENDING"
+            }
+        });
+
+        if (existingRequest) {
+            return res.status(400).json({ success: false, message: `Request already exists. Status: ${existingRequest.status}` });
+        }
+
+        // Create a new supervisor request
+        const request = await DB.RequestSupervisor.create({
+            data: {
+                facultyId: faculty.id,
+                thesisId: parseInt(thesisID),
+                notes: notes
+            }
+        });
+
+        // Respond with the request data
+        res.status(201).json({
+            success: true,
+            data: request
+        });
+
+    } catch (error) {
+        console.error("Error setting supervisor request:", error);
+        res.status(500).json({ 
+            success: false,
+            message: "An error occurred while setting supervisor request." 
+        });
+    }
 }
 
 export {

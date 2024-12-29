@@ -183,12 +183,19 @@ model Comment {
     @@map("comment")
 }
 
+enum requestStatus {
+    PENDING
+    ACCEPTED
+    REJECTED
+}
+
 model RequestSupervisor {
     id              Int       @id @default(autoincrement())
     thesisId        Int
     facultyId       Int
     appointmentDate DateTime?
     notes           String?
+    status          requestStatus @default(PENDING)
     createdAt       DateTime  @default(now())
 
     thesis  Thesis  @relation(fields: [thesisId], references: [id])
