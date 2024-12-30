@@ -29,7 +29,7 @@ export const AppointmentProvider = ({ children }) => {
             }
 
             const data = await response.json();
-            setAppointments(data);
+            setAppointments(data.data);
         } catch (err) {
             setError(err.message);
         }
@@ -56,7 +56,7 @@ export const AppointmentProvider = ({ children }) => {
             }
 
             const data = await response.json();
-            setRequests(data);
+            setRequests(data.data);
         } catch (err) {
             setError(err.message);
         }
