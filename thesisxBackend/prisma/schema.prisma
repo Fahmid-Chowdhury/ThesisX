@@ -45,6 +45,7 @@ model User {
     documents Document[]
     posts     Post[]
     comments  Comment[]
+    interactions Interaction[]
 
     @@map("user") // Explicitly set the table name as "user"
 }
@@ -89,6 +90,7 @@ model Thesis {
     posts             Post[]
     RequestSupervisor RequestSupervisor[]
     Appointment       Appointment[]
+    interactions Interaction[]
 
     @@map("thesis")
 }
@@ -216,4 +218,15 @@ model Appointment {
     faculty Faculty @relation(fields: [facultyId], references: [id])
 
     @@map("appointment")
+}
+
+model Interaction {
+    id          Int      @id @default(autoincrement())
+    userId      Int
+    thesisId    Int
+    question    String
+    answer      String
+    createdAt   DateTime @default(now())
+    user        User     @relation(fields: [userId], references: [id])
+    thesis      Thesis   @relation(fields: [thesisId], references: [id])
 }

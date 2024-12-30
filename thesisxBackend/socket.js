@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken'; // To verify the token
 import DB from './DB/db.js'; // Import your DB connection or query functions
 
+import axios from 'axios';
+
 export default function socketHandler(io) {
     io.on('connection', (socket) => {
         console.log('A user connected:', socket.id);
@@ -162,6 +164,60 @@ export default function socketHandler(io) {
             }
         });
 
+        // // Handle chat messages
+        // socket.on('chatWithAI', async ({ model, prompt, token }, callback) => {
+        //     try {
+        //         // Verify token and fetch user ID
+        //         // const decoded = jwt.verify(token, process.env.JWT_KEY);
+        //         // const userId = decoded.id;
+        
+        //         // Fetch or initialize conversation
+        //         // let chat = await DB.chat.findUnique({
+        //         //     where: { userId_model: { userId, model } },
+        //         // });
+        
+        //         // if (!chat) {
+        //         //     chat = await DB.chat.create({
+        //         //         data: {
+        //         //             userId,
+        //         //             model,
+        //         //             conversationHistory: [],
+        //         //         },
+        //         //     });
+        //         // }
+        
+        //         // const conversationHistory = chat.conversationHistory || [];
+                
+        //         const conversationHistory = [];
+
+        //         // Add user message to history
+        //         const userMessage = { role: 'user', content: prompt };
+        //         conversationHistory.push(userMessage);
+        
+        //         // Request AI response
+        //         const aiResponse = await axios.post('http://localhost:11434/api/generate', {
+        //             model : 'ThesisX',
+        //             prompt: conversationHistory.map((msg) => `${msg.role}: ${msg.content}`).join('\n'),
+        //             stream: false,
+        //         });
+        
+        //         const assistantMessage = { role: 'assistant', content: aiResponse.data.response };
+        //         conversationHistory.push(assistantMessage);
+        
+        //         // // Update conversation history
+        //         // await DB.chat.update({
+        //         //     where: { id: chat.id },
+        //         //     data: { conversationHistory },
+        //         // });
+        
+        //         // Emit response to the user
+        //         socket.emit('aiResponse', { response: assistantMessage.content });
+        //         callback({ success: true, response: assistantMessage.content });
+        //     } catch (error) {
+        //         console.error('Error during AI chat:', error.message);
+        //         callback({ success: false, error: error.message });
+        //     }
+        // });        
         
 
         // Handle user disconnect

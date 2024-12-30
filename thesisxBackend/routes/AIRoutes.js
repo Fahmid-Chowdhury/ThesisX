@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post("/summarize", checkAuth, summarizeAbstract);
 router.post("/reset", checkAuth, resetConversation);
-router.post("/chat", checkAuth, chat);
+router.post("/chat", //checkAuth,
+           chat);
 
 export default router;
