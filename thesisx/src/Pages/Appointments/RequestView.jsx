@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const RequestView = () => {
     const [requestData, setRequestData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { id } = useParams();
 
     useEffect(() => {
+        
         const apiDomain = import.meta.env.VITE_API_DOMAIN;
         const token = localStorage.getItem('authToken'); // Assuming the token is stored under 'authToken'
 
@@ -17,8 +19,7 @@ const RequestView = () => {
         }
 
         // Construct the URL for the request
-        const requestId = 1; // You may want to pass this as a prop or use a router parameter
-        const url = `${apiDomain}/api/appointment/request/getrequestdetails/${requestId}`;
+        const url = `${apiDomain}/api/appointment/request/getrequestdetails/${id}`;
 
         // Fetch data from API
         const fetchRequestData = async () => {
