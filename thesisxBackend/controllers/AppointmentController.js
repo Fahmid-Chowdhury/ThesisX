@@ -1,10 +1,10 @@
 import DB from "../DB/db.js";
 
-async function GetAppointment (req, res) {
+async function GetAppointment(req, res) {
     const user = req.userData
 
     try {
-        if ( user.role === "STUDENT" ){
+        if (user.role === "STUDENT") {
             const student = await DB.student.findUnique({
                 where: { userId: user.id },
                 include: { thesis: true },
@@ -26,7 +26,7 @@ async function GetAppointment (req, res) {
                 success: true,
                 data: appointments
             })
-        } else if ( user.role === "FACULTY") {
+        } else if (user.role === "FACULTY") {
 
             const faculty = await DB.faculty.findUnique({
                 where: { userId: user.id },
@@ -52,7 +52,7 @@ async function GetAppointment (req, res) {
 
         return res.status(403).json({
             success: false,
-            message:'Unauthorized'
+            message: 'Unauthorized'
         })
     } catch (err) {
         return res.status(500).json({
@@ -61,11 +61,11 @@ async function GetAppointment (req, res) {
         })
     }
 }
-async function GetRequests (req, res) {
+async function GetRequests(req, res) {
     const user = req.userData
 
     try {
-        if ( user.role === "STUDENT" ){
+        if (user.role === "STUDENT") {
             const student = await DB.student.findUnique({
                 where: { userId: user.id },
                 include: { thesis: true },
@@ -87,7 +87,7 @@ async function GetRequests (req, res) {
                 success: true,
                 data: appointments
             })
-        } else if ( user.role === "FACULTY") {
+        } else if (user.role === "FACULTY") {
 
             const faculty = await DB.faculty.findUnique({
                 where: { userId: user.id },
@@ -113,7 +113,7 @@ async function GetRequests (req, res) {
 
         return res.status(403).json({
             success: false,
-            message:'Unauthorized'
+            message: 'Unauthorized'
         })
     } catch (err) {
         return res.status(500).json({
@@ -123,9 +123,86 @@ async function GetRequests (req, res) {
     }
 }
 
+async function GetRequestDetails(req, res) {
+    const { id } = req.params
+    const userData = req.userData
+    if (!id) {
+        res.status(400).json({
+            success: false,
+            message: "Invalid request"
+        })
+    }
+
+    if (!userData.role){
+        res.status(400).json({
+            success: false,
+            message: "Invalid request"
+        })
+    }
+    try {
+        const request = await DB.RequestSupervisor.findUnique(
+            {
+                where: { id: parseInt(id) },
+                include: {
+                    thesis: {
+                        include: {
+                            student: {
+                                select: {
+                                    id: true,
+                                    user: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                            email: true,
+                                            image: true
+                                        },
+                                    },
+                                },
+                            },
+                        }
+                    }
+                }
+
+            }
+        )
+        if (!request) {
+            return res.status(404).json({
+                success: false,
+                message: "Request not found."
+            });
+        }
+
+        if (userData.role === 'STUDENT') {
+            const isStudent = request.thesis.student.some(student => student.id === userData.id);
+
+            if (!isStudent) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Access denied: You can only view your own request."
+                });
+            }
+        }
+
+        if (userData.role === 'FACULTY') {
+
+        }
+        res.status(200).json({
+            data: request
+        })
+    } catch (error) {
+        // Handle unexpected errors
+        console.error(error);  // Log the error for debugging
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error. Please try again later."
+        });
+    }
+
+}
 
 export {
     GetAppointment,
     GetRequests,
+    GetRequestDetails,
 
 };
