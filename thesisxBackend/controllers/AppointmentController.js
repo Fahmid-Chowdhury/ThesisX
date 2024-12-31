@@ -126,6 +126,7 @@ async function GetRequests(req, res) {
 async function GetRequestDetails(req, res) {
     const { id } = req.params
     const userData = req.userData
+    console.log(id, userData)
     if (!id) {
         res.status(400).json({
             success: false,
@@ -172,8 +173,11 @@ async function GetRequestDetails(req, res) {
             });
         }
 
+        console.log(request.thesis.student)
+
         if (userData.role === 'STUDENT') {
-            const isStudent = request.thesis.student.some(student => student.id === userData.id);
+            const isStudent = request.thesis.student.some(student => student.user.id === userData.id);
+            console.log(isStudent)
 
             if (!isStudent) {
                 return res.status(403).json({

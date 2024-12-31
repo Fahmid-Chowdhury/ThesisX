@@ -1,7 +1,7 @@
 //============= imports =================
 import express from 'express';
 import { checkAuth } from '../middleware/checkAuth.js';
-import { getUser, getProfile, uploadUserImage, updateBasicInfo, updateResearchInterest, getFaculties } from '../controllers/UserController.js';
+import { getUser, getProfile, uploadUserImage, updateBasicInfo, updateResearchInterest, getFaculties, getStudentProfile } from '../controllers/UserController.js';
 import { imageUpload } from '../middleware/imageUpload.js';
 import multer from 'multer';
 //=======================================
@@ -38,6 +38,7 @@ const router = express.Router();
 
 router.get('/getuser', checkAuth, getUser);
 router.get('/getprofile', checkAuth, getProfile);
+router.get('/getstudentbyid/:id', checkAuth, getStudentProfile);
 router.post('/upload-image',checkAuth, multerMiddleware, uploadUserImage);
 router.put("/update-basic-info", checkAuth, updateBasicInfo);
 router.put("/update-research-interests", checkAuth, updateResearchInterest );

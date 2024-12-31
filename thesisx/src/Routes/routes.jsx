@@ -21,6 +21,9 @@ import ThesisStream from '../Pages/Thesis/ThesisPage/ThesisStream/ThesisStream';
 import ThesisSubmissions from '../Pages/Thesis/ThesisPage/ThesisSubmissions/ThesisSubmissions';
 import ThesisPeople from '../Pages/Thesis/ThesisPage/ThesisPeople/ThesisPeople';
 import ThesisInfo from '../Pages/Thesis/ThesisPage/ThesisInfo/ThesisInfo';
+import RequestLayout from '../Pages/Appointments/RequestLayout';
+import RequestView from '../Pages/Appointments/RequestView';
+import StudentProfileView from '../Pages/Appointments/StudentProfileView';
 // ===============================
 
 const ProtectedRoute = ({ element }) => {
@@ -105,6 +108,10 @@ const AppRouter = () => {
                 <Route path="/supervisors/:id" element={<ProtectedRoute element={<SupervisorProfile />} />} />
 
                 <Route path="/appointments" element={<ProtectedRoute element={<Appointments />} />} />
+                <Route path="/appointments/r/:id" element={<ProtectedRoute element={<RequestLayout />} />}>
+                    <Route path="" element={<RequestView/>}/>
+                    <Route path="student/:id" element={<StudentProfileView/>}/>
+                </Route>
 
                 <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
                 <Route path="/notifications" element={<ProtectedRoute element={<Notifications />} />} />

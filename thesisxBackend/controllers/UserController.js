@@ -41,6 +41,75 @@ async function getUser(req, res) {
     }
 }
 
+async function getStudentProfile(req, res) {
+    try {
+        const { id } = req.params; // Get the id from the URL params
+
+        // Validate if the id is a valid number
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'Invalid student ID' });
+        }
+
+        // Fetch user data from the database based on the provided id
+        const user = await DB.User.findUnique({
+            where: { id: parseInt(id) },  // Ensure the ID is an integer
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                department: true,
+                bio: true,
+                verified: true,
+                createdAt: true,
+                updatedAt: true,
+                image: true,
+                student: {
+                    select: {
+                        researchInterests: true,
+                        contributions: {
+                            select: {
+                                id: true,
+                                title: true,
+                                authors: true,
+                                url: true,
+                                publicationDate: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        // If no user is found with the given id, return 404
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if the user is a student
+        if (user.role !== 'STUDENT') {
+            return res.status(403).json({ message: 'The requested profile is not a student' });
+        }
+
+        // Prepare the profile data
+        let profile = {
+            ...user,
+            studentDetails: user.student
+        };
+
+        delete profile.student; // This line may not be needed if studentDetails already contains the student data
+
+        return res.status(200).json({
+            success: true,
+            data: profile,
+        });
+    } catch (error) {
+        console.error('Error in getStudentProfile:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+
 async function getProfile(req, res) {
     try {
         const userId = req.userData?.id;
@@ -318,6 +387,7 @@ const getFaculties = async (req, res) => {
 export { 
     getUser, 
     getProfile,
+    getStudentProfile,
     uploadUserImage,
     updateBasicInfo,
     updateResearchInterest,
