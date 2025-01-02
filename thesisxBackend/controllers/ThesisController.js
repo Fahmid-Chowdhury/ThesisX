@@ -505,7 +505,108 @@ async function CreateSubmissions ( req, res ) {
     
 }
 async function UpdateSubmissions ( req, res ) {
+    const userData = req.userData;
 
+    if ( userData.role !== "FACULTY"){
+        return res.status(403).json({
+            success: false,
+            message: "Forbidden: Access is restricted to Faculty"
+        })
+    }
+
+    try {
+        const faculty = await DB.faculty.findUnique({
+            where: { userId: userData.id }
+        });
+
+        if (!faculty) {
+            return res.status(404).json({
+                success: false,
+                message: "Faculty not found"
+            });
+        }
+
+        const { submissionId, title, instructions, deadline, type } = req.body;
+
+        
+        console.log(submissionId, title, instructions, deadline, type);
+        if (!submissionId || !title || !instructions || !deadline || !type) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields"
+            });
+        }
+
+        const submission = await DB.submission.findUnique({
+            where: { id: submissionId },
+            include: {
+                thesis: {
+                    select: {
+                        supervisorId: true
+                    }
+                }
+            }
+        });
+
+        if (!submission) {
+            return res.status(404).json({
+                success: false,
+                message: "Submission not found"
+            });
+        }
+
+        if (submission.thesis.supervisorId !== faculty.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden: Access is restricted to the faculty supervisor"
+            });
+        }
+
+        const validTypes = [
+            "Normal",
+            "P1",
+            "P2",
+            "Final"
+        ]
+
+        if (!validTypes.includes(type)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid submission type"
+            });
+        }
+
+        const updatedSubmission = await DB.submission.update({
+            where: { id: submissionId },
+            data: {
+                title,
+                instructions: instructions,
+                deadline,
+                type
+            }
+        });
+
+        if (!updatedSubmission) {
+            return res.status(500).json({
+                success: false,
+                message: "Failed to update submission"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Submission updated successfully",
+            data: updatedSubmission
+        });
+        
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: (err.message || "Internal server error"),
+        });
+    }
 }
 async function GetSubmissions ( req, res ) {
     const userData = req.userData;

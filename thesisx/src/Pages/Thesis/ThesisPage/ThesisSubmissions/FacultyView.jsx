@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useThesis } from '../../../../Contexts/ThesisContext/ThesisContext';
 import CustomSelect from '../../../../Components/CustomSelect/CustomSelect';
+import { set } from 'date-fns';
 
 const CreateSubmissionForm = ({ submission, onSubmit }) => {
     const [title, setTitle] = useState(submission ? submission.title : '');
@@ -104,6 +105,8 @@ const SubmissionCard = ({ submission }) => {
     const [instruction, setInstruction] = useState(submission.instructions);
     const [type, setType] = useState(submission.type);
     const [deadline, setDeadline] = useState(submission.deadline);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleEdit = () => {
         setIsEditing(true);
@@ -127,9 +130,45 @@ const SubmissionCard = ({ submission }) => {
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsEditing(false);
+        setLoading(true);
+        const deadlineDate = new Date(deadline).toISOString();
+        const updatedSubmission = {
+            submissionId: submission.id,
+            title,
+            instructions: instruction,
+            type,
+            deadline: deadlineDate,
+        }
+
+        try {
+            const token = localStorage.getItem("authToken");
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+
+            const response = await fetch(`${apiDomain}/api/thesis/update-submissions`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(updatedSubmission),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to update submission");
+            }
+
+            setIsEditing(false);
+            setLoading(false);
+        }
+        catch (err) {
+            setError(err);
+            handleCancel();
+            setLoading(false);
+        }
     };
 
     return (
