@@ -504,6 +504,7 @@ async function CreateSubmissions ( req, res ) {
     }
     
 }
+
 async function UpdateSubmissions ( req, res ) {
     const userData = req.userData;
 
@@ -608,6 +609,7 @@ async function UpdateSubmissions ( req, res ) {
         });
     }
 }
+
 async function GetSubmissions ( req, res ) {
     const userData = req.userData;
 
@@ -675,6 +677,7 @@ async function GetSubmissions ( req, res ) {
         });
     }
 }
+
 export {
     GetThesis,
     GetFacultyThesis,

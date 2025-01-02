@@ -15,5 +15,6 @@ router.get("/posts/:id", checkAuth, getThesisPosts);
 router.post("/create-submissions", checkAuth, CreateSubmissions);
 router.post("/update-submissions", checkAuth, UpdateSubmissions);
 router.get("/get-submissions/:id", checkAuth, GetSubmissions);
+router.post("/submit-work")
 
 export default router;

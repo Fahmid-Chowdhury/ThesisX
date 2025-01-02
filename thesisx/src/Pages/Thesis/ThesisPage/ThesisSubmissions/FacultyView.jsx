@@ -173,6 +173,8 @@ const SubmissionCard = ({ submission }) => {
 
     return (
         <div className="bg-[hsl(0,0,100)] dark:bg-black shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-800 mb-4">
+            {loading && <div className="text-center text-gray-500">Loading...</div>}
+            {error && <div className="text-center text-red-500">{error.message}</div>}
             {isEditing ? (
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
