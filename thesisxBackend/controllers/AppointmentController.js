@@ -204,9 +204,163 @@ async function GetRequestDetails(req, res) {
 
 }
 
+async function RejectRequest(req, res) {
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid request"
+        })
+    }
+
+    const userData = req.userData;
+
+    if (userData.role !== "FACULTY"){
+        return res.status(403).json({
+            success: false,
+            message:"Unauthorized"
+        })
+    }
+
+    const request = await DB.RequestSupervisor.findUnique({
+        where: { id: parseInt(id)},
+        include:{
+            faculty: {
+                include:{
+                    user:{
+                        select:{
+                            id:true
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    if (!request){
+        return res.status(404).json({
+            success: false,
+            message: "Request not found."
+        })
+    }
+
+    if (request.faculty.user.id !== userData.id){
+        return res.status(403).json({
+            success:false,
+            message:"Unauthorized"
+        })
+    }
+
+    if (request.status !== "PENDING"){
+        return res.status(400).json({
+            success: false,
+            message: "Request is already processed."
+        })
+    }
+    console.log("authorized")
+
+    
+}
+async function AcceptRequest(req, res) {
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid request"
+        })
+    }
+
+    const userData = req.userData;
+
+    if (userData.role !== "FACULTY"){
+        return res.status(403).json({
+            success: false,
+            message:"Unauthorized"
+        })
+    }
+
+    const request = await DB.RequestSupervisor.findUnique({
+        where: { id: parseInt(id)},
+        include:{
+            faculty: {
+                include:{
+                    user:{
+                        select:{
+                            id:true
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    if (!request){
+        return res.status(404).json({
+            success: false,
+            message: "Request not found."
+        })
+    }
+
+    if (request.faculty.user.id !== userData.id){
+        return res.status(403).json({
+            success:false,
+            message:"Unauthorized"
+        })
+    }
+
+    if (request.status !== "PENDING"){
+        return res.status(400).json({
+            success: false,
+            message: "Request is already processed."
+        })
+    }
+
+    const updatedRequest = await DB.RequestSupervisor.update(
+        {
+            where: { id: parseInt(id)},
+            data:{
+                status: "ACCEPTED"
+            }
+        }
+    )
+
+    if (!updatedRequest){
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+
+    const updatedThesis = await DB.thesis.update({
+        where: { id: request.thesisId},
+        data:{
+            supervisorId: request.facultyId
+        }
+    })
+
+    if (!updatedThesis){
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "Request accepted successfully."
+    })
+
+}
+
+
+
 export {
     GetAppointment,
     GetRequests,
     GetRequestDetails,
+    AcceptRequest,
+    RejectRequest,
 
 };

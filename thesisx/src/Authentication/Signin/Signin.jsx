@@ -30,7 +30,7 @@ function LeftBanner() {
 
 
 const Signin = () => {
-    const { fetchUserData } = useContext(AuthContext);
+    const { fetchUserData, setRefresh, refresh } = useContext(AuthContext);
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false); // To manage loading state
     const [error, setError] = useState(null)
@@ -68,7 +68,7 @@ const Signin = () => {
                 throw new Error(data.message || 'Sign-in failed');
             }
             localStorage.setItem("authToken", data.token)
-            fetchUserData(data.token);
+            setRefresh(!refresh)
             navigate('/')
 
         } catch (err) {
