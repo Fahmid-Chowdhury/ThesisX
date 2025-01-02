@@ -408,10 +408,179 @@ const getThesisPosts = async (req, res) => {
         });
     }
 };
+
+async function CreateSubmissions ( req, res ) {
+    const userData = req.userData;
+
+    if ( userData.role !== "FACULTY"){
+        return res.status(403).json({
+            success: false,
+            message: "Forbidden: Access is restricted to Faculty"
+        })
+    }
+
+    try {
+        const faculty = await DB.faculty.findUnique({
+            where: { userId: userData.id }
+        });
+
+        if (!faculty) {
+            return res.status(404).json({
+                success: false,
+                message: "Faculty not found"
+            });
+        }
+
+        const { thesisId, title, instruction, deadline, type } = req.body;
+
+        if (!thesisId || !title || !instruction || !deadline || !type) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields"
+            });
+        }
+
+        const thesis = await DB.thesis.findUnique({
+            where: { id: thesisId }
+        });
+
+        if (!thesis) {
+            return res.status(404).json({
+                success: false,
+                message: "Thesis not found"
+            });
+        }
+
+        if (thesis.supervisorId !== faculty.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden: Access is restricted to the faculty supervisor"
+            });
+        }
+
+        const validTypes = [
+            "Normal",
+            "P1",
+            "P2",
+            "Final"
+        ]
+
+        if (!validTypes.includes(type)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid submission type"
+            });
+        }
+
+        const submission = await DB.submission.create({
+            data:{
+                title,
+                instructions: instruction,
+                deadline,
+                type,
+                thesisId,
+            }
+        });
+
+        if (!submission) {
+            return res.status(500).json({
+                success: false,
+                message: "Failed to create submission"
+            });
+        }
+
+        return res.status(201).json({
+            success: true,
+            message: "Submission created successfully",
+            data: submission
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: (err.message || "Internal server error"),
+        });
+    }
+    
+}
+async function UpdateSubmissions ( req, res ) {
+
+}
+async function GetSubmissions ( req, res ) {
+    const userData = req.userData;
+
+    try{
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid request"
+            });
+        }
+
+        const thesis = await DB.thesis.findUnique({
+            where: { id: parseInt(id) }
+        });
+
+        if (!thesis) {
+            return res.status(404).json({
+                success: false,
+                message: "Thesis not found"
+            });
+        }
+
+        if (userData.role === "FACULTY") {
+            const faculty = await DB.faculty.findUnique({
+                where: { userId: userData.id }
+            });
+
+            if (thesis.supervisorId !== faculty.id) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: Access is restricted to the faculty supervisor"
+                });
+            }
+        }
+
+        if (userData.role === "STUDENT") {
+            const student = await DB.student.findUnique({
+                where: { userId: userData.id }
+            });
+
+            if (student.thesisID !== thesis.id) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: Access is restricted to the student enrolled in the thesis"
+                });
+            }
+        }
+
+        const submissions = await DB.submission.findMany({
+            where: { thesisId: parseInt(id) }
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: submissions
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: (err.message || "Internal server error"),
+        });
+    }
+}
 export {
     GetThesis,
     GetFacultyThesis,
     CreateThesis,
     GetThesisbyID,
-    getThesisPosts
+    getThesisPosts,
+    CreateSubmissions,
+    UpdateSubmissions,
+    GetSubmissions
 }

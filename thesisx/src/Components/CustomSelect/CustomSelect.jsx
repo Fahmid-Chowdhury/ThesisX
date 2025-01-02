@@ -17,7 +17,7 @@ const CustomSelect = ({ value, options, onChange }) => {
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex justify-between items-center border outline-1 border-[hsl(0,0,30%)] dark:border-[hsl(0,0,70%)] rounded-lg py-2 px-4 bg-transparent text-left"
+                className="w-full flex justify-between items-center border outline-1 border-[hsl(0,0,75%)] dark:border-[hsl(0,0,25%)] rounded-lg py-2 px-4 bg-transparent text-left"
             >
                 <span>{selectedLabel || 'Select an option'}</span>
                 <svg
@@ -36,7 +36,7 @@ const CustomSelect = ({ value, options, onChange }) => {
             </button>
             {isOpen && (
                 <ul
-                    className="absolute w-full animate-into-view-1 mt-1 bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] border border-[hsl(0,0,30%)] dark:border-[hsl(0,0,70%)] rounded-lg shadow-md z-10 overflow-visible"
+                    className="absolute w-full animate-into-view-1 mt-1 bg-[hsl(0,0,95%)] dark:bg-[hsl(0,0,5%)] border border-[hsl(0,0,75%)] dark:border-[hsl(0,0,25%)] rounded-lg shadow-md z-10 overflow-visible"
                     role="listbox"
                     
                 >

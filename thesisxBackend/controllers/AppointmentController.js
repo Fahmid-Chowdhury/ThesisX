@@ -262,6 +262,7 @@ async function RejectRequest(req, res) {
 
     
 }
+
 async function AcceptRequest(req, res) {
     const { id } = req.params;
 

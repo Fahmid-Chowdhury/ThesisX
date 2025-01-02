@@ -40,19 +40,19 @@ model User {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
 
-    faculty   Faculty?
-    student   Student?
-    documents Document[]
-    posts     Post[]
-    comments  Comment[]
+    faculty      Faculty?
+    student      Student?
+    documents    Document[]
+    posts        Post[]
+    comments     Comment[]
     interactions Interaction[]
 
     @@map("user") // Explicitly set the table name as "user"
 }
 
 model Faculty {
-    id                Int                 @id @default(autoincrement())
-    userId            Int                 @unique
+    id                Int      @id @default(autoincrement())
+    userId            Int      @unique
     researchInterests String[]
     available_slot    Int
 
@@ -90,7 +90,8 @@ model Thesis {
     posts             Post[]
     RequestSupervisor RequestSupervisor[]
     Appointment       Appointment[]
-    interactions Interaction[]
+    interactions      Interaction[]
+    submission        Submission[]
 
     @@map("thesis")
 }
@@ -192,13 +193,13 @@ enum requestStatus {
 }
 
 model RequestSupervisor {
-    id              Int       @id @default(autoincrement())
+    id              Int           @id @default(autoincrement())
     thesisId        Int
     facultyId       Int
     appointmentDate DateTime?
     notes           String?
     status          requestStatus @default(PENDING)
-    createdAt       DateTime  @default(now())
+    createdAt       DateTime      @default(now())
 
     thesis  Thesis  @relation(fields: [thesisId], references: [id])
     faculty Faculty @relation(fields: [facultyId], references: [id])
@@ -207,12 +208,12 @@ model RequestSupervisor {
 }
 
 model Appointment {
-    id              Int       @id @default(autoincrement())
+    id              Int      @id @default(autoincrement())
     thesisId        Int
     facultyId       Int
     appointmentDate DateTime
     notes           String?
-    createdAt       DateTime  @default(now())
+    createdAt       DateTime @default(now())
 
     thesis  Thesis  @relation(fields: [thesisId], references: [id])
     faculty Faculty @relation(fields: [facultyId], references: [id])
@@ -221,12 +222,32 @@ model Appointment {
 }
 
 model Interaction {
-    id          Int      @id @default(autoincrement())
-    userId      Int
-    thesisId    Int
-    question    String
-    answer      String
-    createdAt   DateTime @default(now())
-    user        User     @relation(fields: [userId], references: [id])
-    thesis      Thesis   @relation(fields: [thesisId], references: [id])
+    id        Int      @id @default(autoincrement())
+    userId    Int
+    thesisId  Int
+    question  String
+    answer    String
+    createdAt DateTime @default(now())
+    user      User     @relation(fields: [userId], references: [id])
+    thesis    Thesis   @relation(fields: [thesisId], references: [id])
+}
+
+enum SubmissionType {
+    Normal
+    P1
+    P2
+    Final
+}
+
+model Submission {
+    id           Int            @id @default(autoincrement())
+    title        String
+    instructions String
+    deadline     DateTime
+    type         SubmissionType
+    file         String?
+    thesisId     Int
+
+    createdAt DateTime @default(now())
+    thesis    Thesis   @relation(fields: [thesisId], references: [id])
 }

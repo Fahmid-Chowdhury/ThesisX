@@ -1,6 +1,6 @@
 //============= imports =================
 import express from 'express';
-import { CreateThesis, GetFacultyThesis, GetThesis, GetThesisbyID, getThesisPosts } from '../controllers/ThesisController.js';
+import { CreateSubmissions, CreateThesis, GetFacultyThesis, GetSubmissions, GetThesis, GetThesisbyID, getThesisPosts, UpdateSubmissions } from '../controllers/ThesisController.js';
 import { checkAuth } from '../middleware/checkAuth.js';
 
 //=======================================
@@ -12,5 +12,8 @@ router.get("/get-faculty-thesis", checkAuth, GetFacultyThesis);
 router.get("/get-thesis-by-id/:id", checkAuth, GetThesisbyID);
 router.post("/create-thesis", checkAuth, CreateThesis);
 router.get("/posts/:id", checkAuth, getThesisPosts);
+router.post("/create-submissions", checkAuth, CreateSubmissions);
+router.post("/update-submissions", checkAuth, UpdateSubmissions);
+router.get("/get-submissions/:id", checkAuth, GetSubmissions);
 
 export default router;
