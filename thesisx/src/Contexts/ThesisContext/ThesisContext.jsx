@@ -35,7 +35,7 @@ export const ThesisProvider = ({ children, thesisId }) => {
     }, [thesisId]);
 
     return (
-        <ThesisContext.Provider value={{ thesisData, loading, error }}>
+        <ThesisContext.Provider value={{ thesisData, setThesisData, loading, error }}>
             {children}
         </ThesisContext.Provider>
     );

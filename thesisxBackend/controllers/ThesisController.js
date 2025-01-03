@@ -678,6 +678,78 @@ async function GetSubmissions ( req, res ) {
     }
 }
 
+async function EditThesis ( req, res ) {
+    const userData = req.userData;
+
+    if ( userData.role === "FACULTY"){
+        return res.status(403).json({
+            success: false,
+            message: "Forbidden: Access is restricted to Students"
+        })
+    }
+
+    try {
+        const student = await DB.student.findUnique({
+            where: { userId: userData.id }
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+        }
+
+        if (!student.thesisID) {
+            return res.status(404).json({
+                success: false,
+                message: "No thesis found for this student"
+            });
+        }
+
+        const { title, abstract } = req.body;
+
+        if ( !title ) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields"
+            });
+        }
+
+        const thesis = await DB.thesis.findUnique({
+            where: { id: student.thesisID }
+        });
+
+        if (!thesis) {
+            return res.status(404).json({
+                success: false,
+                message: "Thesis not found"
+            });
+        }
+
+
+        const updatedThesis = await DB.thesis.update({
+            where: { id: student.thesisID },
+            data: {
+                title,
+                abstract
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Thesis updated successfully",
+            data: updatedThesis
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: (err.message || "Internal server error"),
+        });
+    }
+}
 export {
     GetThesis,
     GetFacultyThesis,
@@ -686,5 +758,6 @@ export {
     getThesisPosts,
     CreateSubmissions,
     UpdateSubmissions,
-    GetSubmissions
+    GetSubmissions,
+    EditThesis,
 }

@@ -1,15 +1,18 @@
-import { useState } from 'react'
-import { useThesis } from '../../../../Contexts/ThesisContext/ThesisContext'
-import { GetStaticImage } from '../../../../utils/imageAPI'
+import { useState } from 'react';
+import { useThesis } from '../../../../Contexts/ThesisContext/ThesisContext';
+import { GetStaticImage } from '../../../../utils/imageAPI';
 
 const ThesisInfo = () => {
-    const { thesisData } = useThesis();
+    const { thesisData, setThesisData } = useThesis();
+    
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         title: thesisData?.title || "",
         abstract: thesisData?.abstract || "",
-        supervisorId: thesisData?.supervisorId || "",
     });
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -19,10 +22,39 @@ const ThesisInfo = () => {
         }));
     };
 
-    const handleSave = () => {
-        // Logic to save updated thesis data
-        console.log("Saving thesis data:", formData);
-        setIsEditing(false);
+    const handleSave = async () => {
+        setLoading(true);
+        
+        try{
+            const token = localStorage.getItem("authToken");
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+            const response = await fetch(`${apiDomain}/api/thesis/edit-thesis`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to save thesis data");
+            }
+
+            setThesisData({
+                ...thesisData,
+                title: formData.title,
+                abstract: formData.abstract,
+            })
+            
+            setIsEditing(false);
+        } catch (err) {
+            setError(err);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancel = () => {
