@@ -25,7 +25,9 @@ const AccountManagementLayout = () => {
                     <h2 className="hidden md:block text-lg font-semibold mb-6">Account Management</h2>
                     <nav className="flex flex-col space-y-2">
                         <NavLink
+                            key={""}
                             to=""
+                            end
                             className={({ isActive }) =>
                                 `px-4 py-2 rounded-lg hover:bg-gray-700 ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
                             }
@@ -33,6 +35,7 @@ const AccountManagementLayout = () => {
                             General
                         </NavLink>
                         <NavLink
+                            key={"publication"}
                             to="publication"
                             className={({ isActive }) =>
                                 `px-4 py-2 rounded-lg hover:bg-gray-700 ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
@@ -41,6 +44,7 @@ const AccountManagementLayout = () => {
                             Publication
                         </NavLink>
                         <NavLink
+                            key="addresearchpaper"
                             to="addresearchpaper"
                             className={({ isActive }) =>
                                 `px-4 py-2 rounded-lg hover:bg-gray-700 ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
@@ -51,8 +55,6 @@ const AccountManagementLayout = () => {
                         
                     </nav>
                 </div>
-
-                {/* Hamburger Button */}
                 {
                     !isSidebarOpen && (
                         <button
@@ -61,7 +63,6 @@ const AccountManagementLayout = () => {
                         >
                             <Bars3Icon className="w-6 h-6" />
                         </button>
-
                     )
                 }
             </div>
