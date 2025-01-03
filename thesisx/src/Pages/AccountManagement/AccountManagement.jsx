@@ -3,6 +3,7 @@ import BarLoader from "react-spinners/BarLoader";
 import UploadImage from "./UploadImage";
 import BasicInfoUpdate from "./GeneralUpdate";
 import ResearchAndPublications from "./ResearchAndPublicationUpdate";
+
 const AccountManagement = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);

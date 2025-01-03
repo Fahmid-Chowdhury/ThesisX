@@ -327,7 +327,6 @@ const updateResearchInterest = async (req, res) => {
 
 }
 
-
 const getFaculties = async (req, res) => {
     const { searchTerm, department, tags } = req.query;
 

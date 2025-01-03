@@ -111,7 +111,136 @@ async function SetSupervisorRequest (req, res) {
     }
 }
 
+const addPublication = async (req, res) => {
+    const userId = req.userData?.id;
+
+    const { title, abstract, authors, publicationDate, url } = req.body;
+
+    if (!userId || !title || !authors || !publicationDate) {
+        return res.status(400).json({ error: 'Missing required fields.' });
+    }
+
+    try {
+        // Check if the faculty exists
+        const faculty = await DB.faculty.findUnique({
+            where: { userId: userId },
+        });
+
+        if (!faculty) {
+            return res.status(404).json({ error: 'Faculty record not found for the provided user.' });
+        }
+
+        const publication = await DB.publication.create({
+            data: {
+                title,
+                abstract,
+                authors,
+                publicationDate: new Date(publicationDate),
+                url,
+                facultyId: faculty.id,
+            },
+        });
+
+        res.status(201).json({ message: 'Publication added successfully.', publication });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Failed to add publication.' });
+    }
+};
+
+const editPublication = async (req, res) => {
+    const userId = req.userData?.id; // User ID from token
+    const { id } = req.params; // Publication ID from request params
+    const { title, abstract, authors, publicationDate, url } = req.body;
+
+    if (!userId || !id) {
+        return res.status(400).json({ error: 'Missing required fields.' });
+    }
+
+    try {
+        // Check if the user is a valid faculty member
+        const faculty = await DB.faculty.findUnique({
+            where: { userId: userId },
+        });
+
+        if (!faculty) {
+            return res.status(403).json({ error: 'You are not authorized to edit publications.' });
+        }
+
+        // Fetch the publication to check if the facultyId matches
+        const publication = await DB.publication.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (!publication || publication.facultyId !== faculty.id) {
+            return res.status(403).json({ error: 'You are not authorized to edit this publication.' });
+        }
+
+        // Update the publication
+        const updatedPublication = await DB.publication.update({
+            where: { id: Number(id) },
+            data: {
+                title,
+                abstract,
+                authors,
+                publicationDate: publicationDate ? new Date(publicationDate) : undefined,
+                url,
+            },
+        });
+
+        res.status(200).json({ message: 'Publication updated successfully.', updatedPublication });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to edit publication.' });
+    }
+};
+
+
+const removePublication = async (req, res) => {
+    const userId = req.userData?.id; // User ID from token
+    const { id } = req.params; // Publication ID from request params
+
+    if (!userId || !id) {
+        return res.status(400).json({ error: 'Missing required fields.' });
+    }
+
+    try {
+        // Check if the user is a valid faculty member
+        const faculty = await DB.faculty.findUnique({
+            where: { userId: userId },
+        });
+
+        if (!faculty) {
+            return res.status(403).json({ error: 'You are not authorized to delete publications.' });
+        }
+
+        // Fetch the publication to check if the facultyId matches
+        const publication = await DB.publication.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (!publication || publication.facultyId !== faculty.id) {
+            return res.status(403).json({ error: 'You are not authorized to delete this publication.' });
+        }
+
+        // Delete the publication
+        await DB.publication.delete({
+            where: { id: Number(id) },
+        });
+
+        res.status(200).json({ message: 'Publication deleted successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete publication.' });
+    }
+};
+
+
+
 export {
     GetFacultyInfo,
-    SetSupervisorRequest
+    SetSupervisorRequest,
+    addPublication,
+    editPublication,
+    removePublication
 }
