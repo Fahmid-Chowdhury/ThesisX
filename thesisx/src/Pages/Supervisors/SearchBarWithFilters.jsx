@@ -101,7 +101,7 @@ const SearchBarWithFilters = () => {
                             tags: selectedTags
                         })
                     }
-                    className="w-full px-4 py-3 rounded-lg bg-[hsl(220,15%,95%)] dark:bg-[hsl(0,0%,10%)] dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight border border-[hsl(0,0,85%)] dark:border-[hsl(0,0,15%)]"
+                    className="w-full px-4 py-3 rounded-lg bg-[hsl(220,15%,95%)] dark:bg-[hsl(0,0%,10%)] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight border border-[hsl(0,0,85%)] dark:border-[hsl(0,0,15%)]"
                 />
                 <button
                     onClick={handleSearch}

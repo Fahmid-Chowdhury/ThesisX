@@ -50,7 +50,7 @@ const ThesisInfo = () => {
             
             setIsEditing(false);
         } catch (err) {
-            setError(err);
+            setError(err.message);
             setLoading(false);
         } finally {
             setLoading(false);
@@ -81,6 +81,7 @@ const ThesisInfo = () => {
 
             {isEditing ? (
                 <div className="space-y-4 mt-3">
+                    {error && <p className="text-red-500">{error}</p>}
                     <div>
                         <label className="block text-sm font-medium mb-1">Title</label>
                         <input
@@ -98,7 +99,7 @@ const ThesisInfo = () => {
                             name="abstract"
                             value={formData.abstract}
                             onChange={handleInputChange}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 dark:bg-black dark:border-gray-700"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 dark:bg-black dark:border-gray-700 h-48"
                         ></textarea>
                     </div>
 
