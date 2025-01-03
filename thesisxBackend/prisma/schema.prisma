@@ -81,6 +81,7 @@ model Student {
 model Thesis {
     id           Int      @id @default(autoincrement())
     title        String
+    abstract     String?
     supervisorId Int?
     createdAt    DateTime @default(now())
 
