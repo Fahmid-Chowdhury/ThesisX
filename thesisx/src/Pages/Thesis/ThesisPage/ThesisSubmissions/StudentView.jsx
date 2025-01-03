@@ -1,61 +1,118 @@
 import { useState, useEffect } from 'react';
 import { useThesis } from '../../../../Contexts/ThesisContext/ThesisContext';
+import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 
 const SubmissionCard = ({ submission }) => {
+    const [selectedFile, setSelectedFile] = useState(null);
+
     // Format the deadline for display
     const formatDate = (isoDate) => {
         const date = new Date(isoDate);
         return date.toLocaleString(); // Example: "1/13/2025, 5:59 PM"
     };
 
+    const handleSubmitWork = () => {
+        // Add your logic for submitting work here
+    };
+
+    const handleRemoveFile = () => {
+        // Add your logic for removing submitted work here
+    };
+
+    const handleFileSelect = (e) => {
+        setSelectedFile(e.target.files[0]);
+    };
+
+    const isDeadlineOver = new Date(submission.deadline) <= new Date();
+
     return (
-        <>
-            {/* Debugging JSON Output */}
-            <pre className="text-xs bg-gray-100 dark:bg-gray-800 p-2 rounded mb-4 overflow-auto">
-                {JSON.stringify(submission, null, 4)}
-            </pre>
+        <div className="bg-[hsl(0,0,100)] dark:bg-black border border-[hsl(0,0,75%)] dark:border-[hsl(0,0,25%)] rounded-lg p-4 shadow-lg">
+            {/* Title */}
+            <h3 className="text-lg font-semibold mb-2">{submission.title}</h3>
 
-            {/* Submission Card */}
-            <div className="bg-[hsl(0,0,100)] dark:bg-black border border-[hsl(0,0,75%)] dark:border-[hsl(0,0,25%)] rounded-lg p-4 shadow-lg">
-                {/* Title */}
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                    {submission.title}
-                </h3>
+            {/* Instructions */}
+            <p className="text-sm text-[hsl(0,0,20%)] dark:text-[hsl(0,0,80%)] mb-4 whitespace-pre-wrap">
+                {submission.instructions}
+            </p>
 
-                {/* Instructions */}
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 whitespace-pre-wrap">
-                    {submission.instructions}
+            {/* Details */}
+            <div className="text-sm text-[hsl(0,0,20%)] dark:text-[hsl(0,0,80%)] mb-4">
+                <p>
+                    <span className="font-medium">Type:</span> {submission.type}
                 </p>
+                <p>
+                    <span className="font-medium">Deadline:</span> {formatDate(submission.deadline)}
+                </p>
+            </div>
 
-                {/* Details */}
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    <p>
-                        <span className="font-medium">Type:</span> {submission.type}
-                    </p>
-                    <p>
-                        <span className="font-medium">Deadline:</span> {formatDate(submission.deadline)}
-                    </p>
-                </div>
-
-                {/* File Link */}
-                {submission.file ? (
+            {/* File Link */}
+            {submission.file ? (
+                <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                     <a
                         href={submission.file}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                        className="flex justify-center space-x-2 px-5 py-3 text-sm text-blue-600 dark:text-blue-400 hover:underline border border-blue-600 dark:border-blue-400 rounded-lg"
                     >
-                        View Attached File
+                        <p className="text-sm truncate">View Work</p>
                     </a>
-                ) : (
-                    <p className="text-sm italic text-gray-500 dark:text-gray-400">
-                        No file attached.
-                    </p>
-                )}
-            </div>
-        </>
+                    {!isDeadlineOver && (
+                        <button
+                            onClick={handleRemoveFile}
+                            className="text-sm text-red-600 dark:text-red-400 hover:underline px-5 py-3 border border-red-600 dark:border-red-400 rounded-lg"
+                        >
+                            Remove Work
+                        </button>
+                    )}
+                </div>
+            ) : (
+                <>
+                    {isDeadlineOver ? (
+                        <p className="text-sm text-red-600 dark:text-red-400">No work submitted</p>
+                    ) : (
+                        <div className="flex flex-col space-y-2 sm:items-start">
+                            {selectedFile && (
+                                <div className='flex justify-between space-x-2 px-5 py-3 border border-[hsl(0,0,75%)] dark:border-[hsl(0,0,25%)] rounded-lg'>
+                                    <p className="text-sm text-[hsl(0,0,20%)] dark:text-[hsl(0,0,80%)] truncate">
+                                        {selectedFile.name}
+                                    </p>
+                                    <button
+                                        onClick={() => setSelectedFile(null)}
+                                        className="text-sm text-red-600 dark:text-red-400 hover:underline"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            )}
+                            {!selectedFile && (
+                                <label className="flex justify-center text-sm text-blue-600 dark:text-blue-400 hover:underline py-3 px-5 border border-blue-600 dark:border-blue-400 rounded-lg cursor-pointer">
+                                    <span className='flex items-center space-x-2 gap-2'>
+                                        <ArrowUpTrayIcon className="w-5 h-5" />
+                                        Add Work
+                                    </span>
+                                    <input
+                                        type="file"
+                                        onChange={handleFileSelect}
+                                        className="hidden"
+                                    />
+                                </label>
+                            )}
+                            {selectedFile && (
+                                <button
+                                    onClick={handleSubmitWork}
+                                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline py-3 px-5 border border-blue-600 dark:border-blue-400 rounded-lg"
+                                >
+                                    Submit Work
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </>
+            )}
+        </div>
     );
 };
+
 
 const StudentView = () => {
     const [submissions, setSubmissions] = useState([]);
@@ -103,7 +160,7 @@ const StudentView = () => {
 
     return (
         <>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-4 mt-4">
                 {submissions.map((submission) => (
                     <SubmissionCard key={submission.id} submission={submission} />
                 ))}
