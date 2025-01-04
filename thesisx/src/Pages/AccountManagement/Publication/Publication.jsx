@@ -242,7 +242,7 @@ const PublicationCard = ({ publication, setPublications }) => {
                         />
                     </div>
                     <div className="flex justify-between mt-3">
-                        <button onClick={handleSave} className="text-themeColDark dark:text-themeColLight border border-themeColDark dark:border-themeColLight px-6 py-2 rounded-lg">
+                        <button onClick={handleSave} disabled={loading} className="text-themeColDark dark:text-themeColLight border border-themeColDark dark:border-themeColLight px-6 py-2 rounded-lg">
                             Save
                         </button>
                         <button onClick={handleCancel} className="text-[hsl(0,50,50)] border border-[hsl(0,50,50)] px-5 py-2 rounded-lg">

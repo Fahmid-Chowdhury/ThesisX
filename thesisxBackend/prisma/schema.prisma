@@ -240,6 +240,15 @@ enum SubmissionType {
     Final
 }
 
+model Feedback {
+    id           Int      @id @default(autoincrement())
+    submissionId Int
+    content      String
+    createdAt    DateTime @default(now())
+
+    submission Submission @relation(fields: [submissionId], references: [id])
+}
+
 model Submission {
     id           Int            @id @default(autoincrement())
     title        String
@@ -249,6 +258,7 @@ model Submission {
     file         String?
     thesisId     Int
 
-    createdAt DateTime @default(now())
-    thesis    Thesis   @relation(fields: [thesisId], references: [id])
+    createdAt DateTime   @default(now())
+    thesis    Thesis     @relation(fields: [thesisId], references: [id])
+    feedback  Feedback[]
 }
