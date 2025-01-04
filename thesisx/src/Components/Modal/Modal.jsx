@@ -4,8 +4,8 @@ const Modal = ({ isOpen, onClose, onConfirm, title, message }) => {
     if (!isOpen) return null; // Do not render the modal if it's not open
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+        <div className="fixed inset-0 flex items-center justify-center bg-[hsl(0,0,20)] bg-opacity-50 z-50">
+            <div className="bg-[hsl(0,0,100)] dark:bg-black border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)] p-6 rounded-lg shadow-lg max-w-sm w-full">
                 <h2 className="text-xl font-bold mb-4">{title}</h2>
                 <p className="mb-6">{message}</p>
                 <div className="flex justify-between">
