@@ -14,7 +14,9 @@ import Notifications from '../Pages/Notifications/Notifications';
 import Profile from '../Pages/Profile/Profile';
 import AccountManagementLayout from '../Pages/AccountManagement/AccountManagementLayout';
 import AccountManagement from '../Pages/AccountManagement/AccountManagement';
-import Publication from '../Pages/AccountManagement/Publication/Publication';   
+import PublicationLayout from '../Pages/AccountManagement/Publication/PublicationLayout'; 
+import Publication from '../Pages/AccountManagement/Publication/Publication';  
+import PublicationForm from '../Pages/AccountManagement/Publication/PublicationForm';   
 import SupervisorProfile from '../Pages/Supervisors/SupervisorProfile/SupervisorProfile';
 import Extra from '../Pages/Extra/Extra';
 
@@ -119,7 +121,10 @@ const AppRouter = () => {
                 <Route path="/notifications" element={<ProtectedRoute element={<Notifications />} />} />
                 <Route path="/accountmanagement" element={<ProtectedRoute element={<AccountManagementLayout />} />}>
                     <Route path="" element={<AccountManagement />} />
-                    <Route path="publication" element={<Publication />} />
+                    <Route path="publication" element={<PublicationLayout />}>
+                        <Route path="" element={<Publication />} />
+                        <Route path="add" element={<PublicationForm />} />
+                    </Route>
                 </Route>
             </Route>
         </Routes>

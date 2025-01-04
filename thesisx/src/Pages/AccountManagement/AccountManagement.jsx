@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import BarLoader from "react-spinners/BarLoader";
 import UploadImage from "./UploadImage";
 import BasicInfoUpdate from "./GeneralUpdate";
@@ -9,6 +9,7 @@ const AccountManagement = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -72,8 +73,7 @@ const AccountManagement = () => {
         </>
     );
     return (
-        <div className="max-w-7xl mx-auto p-5 space-y-5">
-            <div className="h-7 md:h-0"></div>
+        <div className="max-w-5xl mx-auto space-y-5">
             <UploadImage userData={userData} setUserData={setUserData}/>
             <BasicInfoUpdate userData={userData} setUserData={setUserData} />
             <ResearchAndPublications userData={userData} setUserData={setUserData} />

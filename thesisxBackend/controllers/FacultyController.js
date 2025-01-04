@@ -195,7 +195,6 @@ const editPublication = async (req, res) => {
     }
 };
 
-
 const removePublication = async (req, res) => {
     const userId = req.userData?.id; // User ID from token
     const { id } = req.params; // Publication ID from request params
@@ -235,6 +234,32 @@ const removePublication = async (req, res) => {
     }
 };
 
+const getPublications = async (req, res) => {
+    const { id, role } = req.userData;
+
+    try {
+        let publications;
+
+        if (role === 'FACULTY') {
+            // If the user is a student, fetch publications related to them
+            publications = await DB.publication.findMany({
+                where: {
+                    faculty: {
+                        userId: id, // User ID in the student relation
+                    },
+                },
+            });
+        } else {
+            // If the user is not a student, return an empty array or handle appropriately
+            return res.status(403).json({ message: 'Forbidden: Only faculty can view publications.' });
+        }
+
+        return res.status(200).json({ success: true, data: publications });
+    } catch (error) {
+        console.error('Error fetching publications:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
 
 export {
@@ -242,5 +267,6 @@ export {
     SetSupervisorRequest,
     addPublication,
     editPublication,
-    removePublication
+    removePublication,
+    getPublications,
 }

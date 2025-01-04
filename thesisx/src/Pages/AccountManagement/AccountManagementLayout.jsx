@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import { useState, useContext } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { AuthContext } from "../../Contexts/Authentication/AuthContext";
 
 const AccountManagementLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { user } = useContext(AuthContext);
+
 
     return (
         <div className="flex h-full">
@@ -29,30 +32,37 @@ const AccountManagementLayout = () => {
                             to=""
                             end
                             className={({ isActive }) =>
-                                `px-4 py-2 rounded-lg hover:bg-gray-700 ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
+                                `px-4 py-2 rounded-lg hover:bg-white dark:hover:bg-[hsl(0,0,15)] ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
                             }
                         >
                             General
                         </NavLink>
-                        <NavLink
-                            key={"publication"}
-                            to="publication"
-                            className={({ isActive }) =>
-                                `px-4 py-2 rounded-lg hover:bg-gray-700 ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
-                            }
-                        >
-                            Publication
-                        </NavLink>
+                        {
+                           user && user.role !== "ADMIN" && (
+                                <NavLink
+                                    key={"publication"}
+                                    to="publication"
+                                    className={({ isActive }) =>
+                                        `px-4 py-2 rounded-lg hover:bg-white dark:hover:bg-[hsl(0,0,15)] ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
+                                    }
+                                >
+                                    {
+                                        user.role === "FACULTY" ? "Publications" : "Contributions"
+                                    }
+                                </NavLink>
+                            )
+                        }
+
                         <NavLink
                             key="addresearchpaper"
                             to="addresearchpaper"
                             className={({ isActive }) =>
-                                `px-4 py-2 rounded-lg hover:bg-gray-700 ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
+                                `px-4 py-2 rounded-lg hover:bg-white dark:hover:bg-[hsl(0,0,15)] ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
                             }
                         >
                             Add Research Paper
                         </NavLink>
-                        
+
                     </nav>
                 </div>
                 {
@@ -68,7 +78,7 @@ const AccountManagementLayout = () => {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto p-2 sm:p-5 mt-12 sm:mt-10 md:mt-0">
                 <Outlet />
             </div>
         </div>

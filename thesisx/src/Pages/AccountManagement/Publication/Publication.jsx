@@ -1,210 +1,205 @@
-import React, { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
+import { AuthContext } from '../../../Contexts/Authentication/AuthContext';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Modal from '../../../Components/Modal/Modal';  // Import the Modal component
 
-const PublicationForm = () => {
-    const [formData, setFormData] = useState({
-        title: '',
-        abstract: '',
-        authors: [''],
-        publicationDate: '',
-        url: '',
-    });
+const PublicationCard = ({ publication, onDelete, onUpdate }) => {
+    const { user } = useContext(AuthContext);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedPublication, setEditedPublication] = useState({ ...publication });
+    const [isModalOpen, setIsModalOpen] = useState(false); // For controlling the modal visibility
 
-    const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(false);
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleCancel = () => {
+        setIsEditing(false);
+        setEditedPublication({ ...publication }); // Reset to initial state
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setEditedPublication((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
     };
 
-    const handleAuthorChange = (index, value) => {
-        const updatedAuthors = [...formData.authors];
-        updatedAuthors[index] = value;
-        setFormData({ ...formData, authors: updatedAuthors });
+    const handleSave = async () => {
+        await onUpdate(editedPublication);
+        setIsEditing(false);
     };
 
-    const addAuthorField = () => {
-        setFormData({ ...formData, authors: [...formData.authors, ''] });
+    const handleDelete = async () => {
+        setIsModalOpen(true); // Open the modal for confirmation
     };
 
-    const removeAuthorField = (index) => {
-        const updatedAuthors = formData.authors.filter((_, i) => i !== index);
-        setFormData({ ...formData, authors: updatedAuthors });
+    const handleConfirmDelete = async () => {
+        await onDelete(publication.id);
+        setIsModalOpen(false); // Close the modal after deletion
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setMessage('');
-    
-        // Remove empty authors and ensure there's at least one author
-        const validAuthors = formData.authors.filter((author) => author.trim() !== '');
-        if (validAuthors.length === 0) {
-            setMessage({ type: 'error', text: 'Please provide at least one author.' });
-            setLoading(false);
-            return;
-        }
-    
-        try {
-            const apiDomain = import.meta.env.VITE_API_DOMAIN;
-            const token = localStorage.getItem('authToken');
-    
-            if (!token) {
-                throw new Error('User not authenticated. Token not found.');
-            }
-    
-            const response = await axios.post(
-                `${apiDomain}/api/faculty/publications/add`,
-                { ...formData, authors: validAuthors },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-    
-            setMessage({ type: 'success', text: response.data.message });
-            setFormData({
-                title: '',
-                abstract: '',
-                authors: [''],
-                publicationDate: '',
-                url: '',
-            });
-        } catch (error) {
-            setMessage({
-                type: 'error',
-                text: error.response?.data?.error || 'Failed to add publication.',
-            });
-        } finally {
-            setLoading(false);
-        }
+    const handleCancelDelete = () => {
+        setIsModalOpen(false); // Close the modal if user cancels
     };
 
     return (
-        <div className="bg-[hsl(0,0,100)] dark:bg-black p-6 rounded-lg shadow-lg max-w-2xl mx-auto border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)]">
-            <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-                Add a New Publication
-            </h1>
-            {message && (
-                <p
-                    className={`p-2 rounded mb-4 ${message.type === 'success'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                        }`}
-                >
-                    {message.text}
-                </p>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-[hsl(0,0,100)] dark:bg-black p-4 rounded-lg border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)] mt-4">
+            {isEditing ? (
                 <div>
-                    <label htmlFor="title" className="block text-sm">
-                        Title
-                    </label>
                     <input
                         type="text"
-                        id="title"
                         name="title"
-                        value={formData.title}
+                        value={editedPublication.title}
                         onChange={handleChange}
-                        required
-                        className="mt-1 w-full p-2 border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)] rounded-md bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500"
+                        className="mb-2 p-2 border"
                     />
-                </div>
-
-                <div>
-                    <label htmlFor="abstract" className="block text-sm">
-                        Abstract
-                    </label>
                     <textarea
-                        id="abstract"
                         name="abstract"
-                        value={formData.abstract}
+                        value={editedPublication.abstract || ''}
                         onChange={handleChange}
-                        className="mt-1 w-full p-2 border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)] rounded-md bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500"
-                        rows="6"
+                        className="mb-2 p-2 border"
                     />
+                    <div className="flex justify-between">
+                        <button onClick={handleSave} className="bg-green-500 text-white p-2">
+                            Save
+                        </button>
+                        <button onClick={handleCancel} className="bg-gray-500 text-white p-2">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
-
+            ) : (
                 <div>
-                    <label className="block text-sm">Authors</label>
-                    {formData.authors.map((author, index) => (
-                        <div key={index} className="flex items-center space-x-2 mt-1">
-                            <input
-                                type="text"
-                                value={author}
-                                onChange={(e) => handleAuthorChange(index, e.target.value)}
-                                className="w-full p-2 border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)] rounded-md bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => removeAuthorField(index)}
-                                className="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-600"
-                            >
-                                <XMarkIcon className="w-5 h-5" />
-                            </button>
-                        </div>
-                    ))}
-                    <button
-                        type="button"
-                        onClick={addAuthorField}
-                        className="mt-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-600"
-                    >
-                        + Add Author
-                    </button>
-                </div>
+                    <h3 className="text-lg sm:text-xl font-bold">{publication.title}</h3>
+                    <div className='h-[1px] w-full bg-black dark:bg-white opacity-15 mt-3'></div>
+                    <h4 className='mt-2 font-semibold'>Abstract:</h4>
+                    <p className='mt-2 text-sm'>{publication.abstract}</p>
+                    <div className='h-[1px] w-full bg-black dark:bg-white opacity-15 mt-3'></div>
 
-                <div>
-                    <label htmlFor="publicationDate" className="block text-sm">
-                        Publication Date
-                    </label>
-                    <input
-                        type="date"
-                        id="publicationDate"
-                        name="publicationDate"
-                        value={formData.publicationDate}
-                        onChange={handleChange}
-                        required
-                        className="mt-1 w-full p-2 border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)] rounded-md bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500"
-                    />
+                    <p className='opacity-80 mt-2 text-sm'>Authors: {publication.authors.join(', ')}</p>
+                    <p className='opacity-80 mt-1 text-sm'>Published on: {new Date(publication.publicationDate).toLocaleDateString()}</p>
+                    <div className="flex justify-between mt-3">
+                        <button onClick={handleEdit} className="text-themeColDark dark:text-themeColLight border border-themeColDark dark:border-themeColLight px-6 py-2 rounded-lg">
+                            Edit
+                        </button>
+                        <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-lg">
+                            Delete
+                        </button>
+                    </div>
                 </div>
+            )}
 
-                <div>
-                    <label htmlFor="url" className="block text-sm">
-                        URL
-                    </label>
-                    <input
-                        type="url"
-                        id="url"
-                        name="url"
-                        value={formData.url}
-                        onChange={handleChange}
-                        className="mt-1 w-full p-2 border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)] rounded-md bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-500"
-                    />
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full py-2 px-4 text-white rounded-md ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
-                        } focus:outline-none focus:ring focus:ring-blue-500`}
-                >
-                    {loading ? 'Adding...' : 'Add Publication'}
-                </button>
-            </form>
+            {/* Modal Popup for Deletion Confirmation */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={handleCancelDelete}
+                onConfirm={handleConfirmDelete}
+                title="Confirm Deletion"
+                message="Are you sure you want to delete this publication?"
+            />
         </div>
     );
 };
 
 const Publication = () => {
+    const [publications, setPublications] = useState([]);
+    const { user } = useContext(AuthContext);
+    const [ loading, setLoading ] = useState(true);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    useEffect(() => {
+        // Fetch the publications from the server when the component mounts
+        const fetchPublications = async () => {
+            const token = localStorage.getItem('authToken');
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+
+            let url = `${apiDomain}/api/faculty/publications`;
+            if (user && user.role === 'STUDENT') {
+                url = `${apiDomain}/api/student/contributions`;
+            }
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.message);
+                return;
+            }
+
+            setPublications(data.data);
+            setLoading(false);
+        };
+
+        fetchPublications();
+    }, []);
+
+    const handleDeletePublication = async (id) => {
+        const response = await fetch(`/api/publications/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            setPublications((prev) => prev.filter((pub) => pub.id !== id));
+        } else {
+            console.error('Failed to delete publication');
+        }
+    };
+
+    const handleUpdatePublication = async (updatedPublication) => {
+        const response = await fetch(`/api/publications/${updatedPublication.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedPublication),
+        });
+
+        if (response.ok) {
+            setPublications((prev) =>
+                prev.map((pub) =>
+                    pub.id === updatedPublication.id ? updatedPublication : pub
+                )
+            );
+        } else {
+            console.error('Failed to update publication');
+        }
+    };
+
+    if (loading) return <p>Loading...</p>;
+
     return (
-        <div>
-            <div className="p-2 sm:p-5 mt-12 sm:mt-10 md:mt-0">
-                <PublicationForm />
+        <div className="max-w-5xl mx-auto">
+            <div className='flex justify-between items-center'>
+                <h2 className="text-2xl font-bold mb-4">{user && user.role === 'FACULTY' ? 'Publication' : 'Contribution'}</h2>
+                <button className='text-themeColDark dark:text-themeColLight border border-themeColDark dark:border-themeColLight px-4 py-2 rounded-lg' onClick={() => navigate("add")}>
+                    Add new
+                </button>
+
             </div>
+            {publications.length === 0 ? (
+                <p>No publications found.</p>
+            ) : (
+                publications.map((publication) => (
+                    <PublicationCard
+                        key={publication.id}
+                        publication={publication}
+                        onDelete={handleDeletePublication}
+                        onUpdate={handleUpdatePublication}
+                    />
+                ))
+            )}
         </div>
-    )
-}
+    );
+};
 
-export default Publication
-
+export default Publication;
