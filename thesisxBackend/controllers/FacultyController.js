@@ -188,7 +188,7 @@ const editPublication = async (req, res) => {
             },
         });
 
-        res.status(200).json({ message: 'Publication updated successfully.', updatedPublication });
+        res.status(200).json({ message: 'Publication updated successfully.', data: updatedPublication });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to edit publication.' });

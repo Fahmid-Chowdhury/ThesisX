@@ -79,7 +79,7 @@ const editContribution = async (req, res) => {
             },
         });
 
-        res.status(200).json({ message: 'contribution updated successfully.', updatedcontribution });
+        res.status(200).json({ message: 'contribution updated successfully.', data: updatedcontribution });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to edit contribution.' });
