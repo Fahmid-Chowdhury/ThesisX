@@ -69,6 +69,37 @@ const PublicationCard = ({ publication, setPublications }) => {
     };
 
     const onDelete = async () => {
+        setLoading(true);
+        const token = localStorage.getItem('authToken');
+        const apiDomain = import.meta.env.VITE_API_DOMAIN;
+
+        try {
+            let url = `${apiDomain}/api/faculty/publications/remove/${publication.id}`;
+            if (user && user.role === 'STUDENT') {
+                url = `${apiDomain}/api/student/contributions/remove/${publication.id}`;
+            }
+
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.message);
+                return;
+            }
+
+            setPublications((prev) => prev.filter((pub) => pub.id !== publication.id));
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCancel = () => {
@@ -121,6 +152,7 @@ const PublicationCard = ({ publication, setPublications }) => {
 
     return (
         <div className="bg-[hsl(0,0,100)] dark:bg-black p-4 rounded-lg border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)] mt-4">
+            {error && <p className="text-red-500">{error}</p>}
             {isEditing ? (
                 <div className='space-y-4'>
                     <div>
