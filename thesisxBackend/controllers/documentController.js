@@ -23,9 +23,16 @@ const extractMetadata = async (req, res) => {
         metadata.url = `/documents/${req.file.filename}`;
         metadata.type = req.file.mimetype;
 
-        res.status(200).json({ data: metadata });
+        // dlete the file after extracting metadata
+        fs.unlink(req.file.path, (err) => {
+            if (err) {
+                console.error("Error deleting file:", err);
+            }
+        });
+
+        res.status(200).json({ success:true, data: metadata });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ success:false, error: error.message });
     }
 };
 

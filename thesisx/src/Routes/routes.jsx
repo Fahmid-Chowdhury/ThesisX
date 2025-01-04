@@ -12,6 +12,9 @@ import Supervisors from '../Pages/Supervisors/Supervisors';
 import Appointments from '../Pages/Appointments/Appointments';
 import Notifications from '../Pages/Notifications/Notifications';
 import Profile from '../Pages/Profile/Profile';
+
+import PapersLayout from '../Pages/Papers/PapersLayout';
+
 import AccountManagementLayout from '../Pages/AccountManagement/AccountManagementLayout';
 import AccountManagement from '../Pages/AccountManagement/AccountManagement';
 import PublicationLayout from '../Pages/AccountManagement/Publication/PublicationLayout'; 
@@ -96,6 +99,8 @@ const AppRouter = () => {
                 <Route path="/extra" element={<Extra />} />
                 <Route path="/" element={<ProtectedRoute element={<Home />} />} />
 
+                <Route path="/papers" element={<ProtectedRoute element={<PapersLayout />} />} />
+                
                 <Route path="/thesis" element={<ProtectedRoute element={<Thesis />} />} />
                 <Route path="/thesis/create" element={<ProtectedRoute element={<ThesisCreate />} />} />
                 <Route path="/thesis/join" element={<ProtectedRoute element={<ThesisJoin />} />} />

@@ -71,6 +71,7 @@ const Navbar = () => {
                             { to: "/thesis", label: "Thesis" },
                             { to: "/supervisors", label: "Supervisors" },
                             { to: "/appointments", label: "Appointments" },
+                            { to: "/papers", label: "Papers" },
                         ].map(({ to, label }) => (
                             <NavLink
                                 key={to}
@@ -156,6 +157,7 @@ const Navbar = () => {
                             { to: "/thesis", label: "Thesis" },
                             { to: "/supervisors", label: "Supervisors" },
                             { to: "/appointments", label: "Appointments" },
+                            { to: "/papers", label: "Papers" },
                         ].map(({ to, label }) => (
                             <NavLink
                                 key={to}
