@@ -59,7 +59,7 @@ const AccountManagementLayout = () => {
                     !isSidebarOpen && (
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className="absolute top-4 left-5 z-50 text-gray-800 dark:text-white bg-white dark:bg-black p-2 rounded-md shadow-md md:hidden"
+                            className="absolute top-2 left-2 sm:top-2 sm:left-5 z-50 text-gray-800 dark:text-white bg-white dark:bg-black p-2 rounded-md shadow-md md:hidden"
                         >
                             <Bars3Icon className="w-6 h-6" />
                         </button>
