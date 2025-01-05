@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { GetStaticPreview } from "../../utils/imageAPI";
 
 const PaperCard = ({ paper }) => {
+    const navigate = useNavigate();
     return (
         <div className="bg-[hsl(0,0,100)] dark:bg-black p-6 rounded-lg border border-[hsl(0,0,80)] dark:border-[hsl(0,0,20)] w-full mx-auto">
             <div className="w-full h-48 overflow-hidden  rounded-md ">
@@ -14,30 +15,38 @@ const PaperCard = ({ paper }) => {
                     className="w-full object-cover"
                 />
             </div>
-            {/* Paper Image */}
 
-            {/* Paper Title */}
-            <h2 className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">{paper.title}</h2>
+            <h2 className="mt-4 text-xl font-semibold text-gray-900 dark:text-white"
+                style={{
+                    height: '4.5rem', // Approx. 2 lines height (2 x 1.5rem line height)
+                    lineHeight: '1.5rem',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3,
+                    overflow: 'hidden',
+                }}
+            >{paper.title}</h2>
 
-            {/* Authors */}
-            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+            <p className="mt-2 text-sm text-gray-700 opacity-70 dark:text-gray-300"
+                style={{
+                    height: '3rem', // Approx. 2 lines height (2 x 1.5rem line height)
+                    lineHeight: '1.5rem',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 2,
+                    overflow: 'hidden',
+                }}
+            >
                 <strong>Authors:</strong> {paper.authors.join(", ")}
             </p>
-
-            {/* Upload Date */}
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                <strong>Uploaded:</strong> {new Date(paper.uploadDate).toLocaleDateString()}
-            </p>
-
-            {/* Link to Paper */}
-            <a
-                href={paper.url}
-                className="mt-4 text-blue-600 dark:text-blue-400 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
+            
+            <button className="w-full mt-4 py-2 px-4 text-white rounded-md bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-500"
+                onClick={()=>{navigate(`/papers/${paper.id}`)}}
             >
                 Read Paper
-            </a>
+            </button>
+
+            
         </div>
     );
 };

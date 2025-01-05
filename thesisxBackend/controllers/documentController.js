@@ -155,14 +155,14 @@ const getDocumentById = async (req, res) => {
     try {
         const { id } = req.params;
         const document = await DB.document.findUnique({
-            where: { id: parseInt(id, 10) },
+            where: { id: parseInt(id) },
         });
 
-        if (!document) return res.status(404).json({ message: "Document not found" });
+        if (!document) return res.status(404).json({ success:false, message: "Document not found" });
 
-        res.status(200).json(document);
+        return res.status(200).json({success:true, data: document});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ success:false, message: "Document not found" });
     }
 };
 
