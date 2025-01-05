@@ -65,19 +65,6 @@ const checkAuth = async (req, res, next) => {  // Make this function async
                             message: "Forbidden: You are not the supervisor of this thesis"
                         });
                     }
-                } else if (req.userData.role === "STUDENT") {
-                    // Student can add or update feedback if they are enrolled in the thesis of the submission
-                    const student = await DB.student.findUnique({
-                        where: { userId: req.userData.id },
-                        select: { thesisID: true }
-                    });
-
-                    if (!student || student.thesisID !== submissionId) {
-                        return res.status(403).json({
-                            success: false,
-                            message: "Forbidden: You are not enrolled in this thesis"
-                        });
-                    }
                 } else {
                     return res.status(403).json({
                         success: false,
