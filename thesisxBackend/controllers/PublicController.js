@@ -94,4 +94,32 @@ const getPreviewImage = async (req, res) => {
     }
 };
 
-export { getPublicImage, getPreviewImage }
+const getDocument = async (req, res) => {
+    const { filename } = req.params;
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    try {
+        // Define the directory where documents are stored
+        const publicDirectory = path.resolve(__dirname, "../public/documents");
+        const absoluteDocumentPath = path.join(publicDirectory, filename);
+
+        if (!fs.existsSync(absoluteDocumentPath)) {
+            return res.status(404).json({ success: false, message: "Document not found" });
+        }
+
+        // Set headers to indicate a file download or inline display
+        res.setHeader('Content-Type', 'application/pdf'); // MIME type for PDF
+        res.setHeader('Content-Disposition', `inline; filename="${filename}"`); // Display inline
+
+        // Stream the file
+        const fileStream = fs.createReadStream(absoluteDocumentPath);
+        fileStream.pipe(res);
+    } catch (error) {
+        console.error("Error retrieving document:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+
+export { getPublicImage, getPreviewImage, getDocument }

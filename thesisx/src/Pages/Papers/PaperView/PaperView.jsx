@@ -1,21 +1,20 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import NotFound from '../../../Components/NotFound/NotFound';
 import LoaderSVG from '../../../assets/LoaderSVG';
 import { GetStaticPreview } from '../../../utils/imageAPI';
 import { formatDate } from '../../../utils/CommonUtility';
 
-
 const PaperView = () => {
     const { id } = useParams();
     const [paper, setPaper] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const apiDomain = import.meta.env.VITE_API_DOMAIN;
 
     const navigate = useNavigate();
     const fetchpaper = async () => {
         const token = localStorage.getItem('authToken');
-        const apiDomain = import.meta.env.VITE_API_DOMAIN;
         setLoading(true);
 
         try {
@@ -81,7 +80,7 @@ const PaperView = () => {
                         </ul>
                     </div>
                 </div>
-                
+
 
                 <div className="flex flex-col items-center gap-4 p-6 sm:w-1/3 flex-shrink-0">
                     <img
@@ -99,7 +98,7 @@ const PaperView = () => {
                             View Source
                         </a>
                         <button
-                            onClick={() => navigate(`/papers/${id}/view`)}
+                            onClick={() => navigate(`/papers/view/${paper.fileName}`)}
                             className="inline-block w-full px-4 py-2 text-center bg-gray-700 text-white rounded-md hover:bg-gray-800"
                         >
                             Read Paper
@@ -107,6 +106,7 @@ const PaperView = () => {
                     </div>
                 </div>
             </div>
+            
         </div>
 
     );
