@@ -33,6 +33,7 @@ import RequestView from '../Pages/Appointments/RequestView';
 import StudentProfileView from '../Pages/Appointments/StudentProfileView';
 import ResearchPaperLayout from '../Pages/AccountManagement/AddResearchPaper/ResearchPaperLayout';
 import PaperView from '../Pages/Papers/PaperView/PaperView';
+import PaperRead from '../Pages/Papers/PaperView/PaperRead';
 // ===============================
 
 const ProtectedRoute = ({ element }) => {
@@ -100,10 +101,10 @@ const AppRouter = () => {
             <Route element={<Layout />}>
                 <Route path="/extra" element={<Extra />} />
                 <Route path="/" element={<ProtectedRoute element={<Home />} />} />
-
                 <Route path="/papers" element={<ProtectedRoute element={<Papers />} />} />
                 <Route path="/papers/:id" element={<ProtectedRoute element={<PaperView />} />} />
-                
+                <Route path="/papers/view/:url" element={<ProtectedRoute element={<PaperRead />} />} />
+
                 <Route path="/thesis" element={<ProtectedRoute element={<Thesis />} />} />
                 <Route path="/thesis/create" element={<ProtectedRoute element={<ThesisCreate />} />} />
                 <Route path="/thesis/join" element={<ProtectedRoute element={<ThesisJoin />} />} />
