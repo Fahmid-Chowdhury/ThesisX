@@ -750,6 +750,97 @@ async function EditThesis ( req, res ) {
         });
     }
 }
+
+// Add Feedback
+async function AddFeedback(req, res) {
+    const { submissionId, content } = req.body;
+
+    if (!submissionId || !content) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing submissionId or content",
+        });
+    }
+
+    try {
+        // Check if the submission exists
+        const submission = await DB.submission.findUnique({
+            where: { id: submissionId },
+        });
+
+        if (!submission) {
+            return res.status(404).json({
+                success: false,
+                message: "Submission not found",
+            });
+        }
+
+        // Create the feedback
+        const feedback = await DB.feedback.create({
+            data: {
+                content,
+                submissionId,
+            },
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Feedback added successfully",
+            data: feedback,
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
+// Update Feedback
+async function UpdateFeedback(req, res) {
+    const { submissionId, content } = req.body;
+
+    if (!submissionId || !content) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing submissionId or content",
+        });
+    }
+
+    try {
+        // Find the feedback linked to the submission
+        const feedback = await DB.feedback.findUnique({
+            where: { submissionId },
+        });
+
+        if (!feedback) {
+            return res.status(404).json({
+                success: false,
+                message: "Feedback not found for this submission",
+            });
+        }
+
+        // Update the feedback content
+        const updatedFeedback = await DB.feedback.update({
+            where: { submissionId },
+            data: { content },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Feedback updated successfully",
+            data: updatedFeedback,
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
 export {
     GetThesis,
     GetFacultyThesis,
@@ -760,4 +851,6 @@ export {
     UpdateSubmissions,
     GetSubmissions,
     EditThesis,
+    AddFeedback,
+    UpdateFeedback
 }
