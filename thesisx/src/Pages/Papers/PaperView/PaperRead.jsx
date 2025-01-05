@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import NotFound from "../../../Components/NotFound/NotFound";
-import { useState } from 'react';
+import { useState, useRef,useEffect } from 'react';
 const PDFViewer = ({ pdfUrl }) => {
 
     return (
@@ -18,12 +18,15 @@ const AIChat = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
+    const [showJumpButton, setShowJumpButton] = useState(false);
+    const chatEndRef = useRef(null);
+    const chatContainerRef = useRef(null);
 
     const toggleChat = () => setIsOpen(!isOpen);
 
     const handleSendMessage = () => {
         if (!input.trim()) return;
-        setMessages([...messages, { sender: "user", text: input }]);
+        setMessages((prev) => [...prev, { sender: "user", text: input }]);
 
         // Simulate AI response
         setTimeout(() => {
@@ -31,10 +34,30 @@ const AIChat = () => {
                 ...prev,
                 { sender: "ai", text: "I'm here to help with your paper!" },
             ]);
+            scrollToBottom();
         }, 500);
 
         setInput("");
     };
+
+    const scrollToBottom = () => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const handleScroll = () => {
+        const container = chatContainerRef.current;
+        if (container) {
+            const isScrolledToBottom =
+                container.scrollHeight - container.scrollTop === container.clientHeight;
+            setShowJumpButton(!isScrolledToBottom);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            scrollToBottom();
+        }
+    }, [isOpen, messages]);
 
     return (
         <div>
@@ -48,17 +71,18 @@ const AIChat = () => {
 
             {/* Chat Box */}
             {isOpen && (
-                <div className="fixed bottom-20 right-5 max-w-96 bg-white dark:bg-gray-800 text-black dark:text-white shadow-lg rounded-lg max-h-[600px] flex flex-col transition-all ">
-                    <div className= "p-3 flex items-center justify-between">
-                        <h4 className="font-semibold">AI Assistant</h4>
-                        <button
-                            onClick={toggleChat}
-                            className="text-white hover:text-gray-300"
-                        >
+                <div className="fixed bottom-20 right-5 max-w-[360px] w-full bg-[hsl(0,0,100)] dark:bg-black border border-[hsl(0,0,85)] dark:border-[hsl(0,0,15)] shadow-lg rounded-lg max-h-[500px] flex flex-col transition-all">
+                    <div className="px-3 py-2 flex items-center justify-between">
+                        <h4 className="">AI Assistant</h4>
+                        <button onClick={toggleChat} className="text-2xl">
                             ×
                         </button>
                     </div>
-                    <div className="flex-1 p-3 overflow-y-auto space-y-2">
+                    <div
+                        ref={chatContainerRef}
+                        onScroll={handleScroll}
+                        className="flex-1 p-3 overflow-y-auto space-y-2 border-t dark:border-gray-700 relative"
+                    >
                         {messages.map((msg, idx) => (
                             <div
                                 key={idx}
@@ -70,7 +94,18 @@ const AIChat = () => {
                                 {msg.text}
                             </div>
                         ))}
+                        <div ref={chatEndRef} />
                     </div>
+                    {showJumpButton && (
+                        <div className="absolute bottom-14 left-1/2 transform -translate-x-1/2">
+                            <button
+                                onClick={scrollToBottom}
+                                className="px-3 py-1 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-colors"
+                            >
+                                Jump to Present
+                            </button>
+                        </div>
+                    )}
                     <div className="flex p-2 border-t dark:border-gray-700">
                         <input
                             type="text"
@@ -92,7 +127,6 @@ const AIChat = () => {
         </div>
     );
 };
-
 const PaperRead = () => {
     const { url } = useParams();
     const apiDomain = import.meta.env.VITE_API_DOMAIN;
