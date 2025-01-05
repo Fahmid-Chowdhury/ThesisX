@@ -135,11 +135,19 @@ const saveDocument = async (req, res) => {
 const getAllDocuments = async (req, res) => {
     try {
         const documents = await DB.document.findMany({
-            include: { uploadedBy: true },
+            select:{
+                id: true,
+                title: true,
+                authors: true,
+                uploadDate: true,
+                url: true,
+                fileName: true,
+                uploadedById: true,
+            }
         });
-        res.status(200).json(documents);
+        res.status(200).json({success: true, data: documents});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
