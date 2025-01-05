@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { XMarkIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import * as pdfjsLib from 'pdfjs-dist';
+
 
 const PublicationForm = () => {
     const [formData, setFormData] = useState({
@@ -11,9 +13,51 @@ const PublicationForm = () => {
         url: '',
     });
     const [selectedFile, setSelectedFile] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
 
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const generatePreview = (file) => {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js`;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const pdfData = e.target.result;
+
+            // Use pdf.js to render the PDF
+            pdfjsLib.getDocument({ data: pdfData }).promise.then(function (pdf) {
+                pdf.getPage(1).then(function (page) {
+                    const scale = 1.5; // Adjust the scale for the preview image size
+                    const viewport = page.getViewport({ scale: scale });
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport,
+                    };
+
+                    page.render(renderContext).promise.then(function () {
+                        // Convert the canvas to a base64 image
+                        const imageUrl = canvas.toDataURL();
+                        setPreviewImage(imageUrl); // Save the preview in state
+                    });
+                });
+            }).catch(function (error) {
+                console.error('Error generating PDF preview:', error);
+            });
+        };
+        reader.readAsArrayBuffer(file);
+    };
+
+    useEffect(() => {
+        if (selectedFile && selectedFile.type === 'application/pdf') {
+            generatePreview(selectedFile);
+        }
+    }, [selectedFile]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -51,13 +95,13 @@ const PublicationForm = () => {
         try {
             const apiDomain = import.meta.env.VITE_API_DOMAIN;
             const token = localStorage.getItem('authToken');
-        
+
             if (!token) {
                 throw new Error('User not authenticated. Token not found.');
             }
-        
+
             const url = `${apiDomain}/api/document/save`;
-        
+
             // Create a FormData object
             const formDataToSend = new FormData();
             formDataToSend.append('title', formData.title);
@@ -66,7 +110,8 @@ const PublicationForm = () => {
             formDataToSend.append('publicationDate', formData.publicationDate);
             formDataToSend.append('url', formData.url);
             formDataToSend.append('document', selectedFile); // Attach the file
-        
+            formDataToSend.append('previewImage', previewImage); // Attach the preview image
+
             // Send the FormData with axios
             const response = await axios.post(url, formDataToSend, {
                 headers: {
@@ -74,9 +119,9 @@ const PublicationForm = () => {
                     'Content-Type': 'multipart/form-data', // Required for file uploads
                 },
             });
-        
+
             setMessage({ type: 'success', text: response.data.message });
-        
+
             // Reset the form
             setFormData({
                 title: '',
@@ -86,6 +131,7 @@ const PublicationForm = () => {
                 url: '',
             });
             setSelectedFile(null);
+            setPreviewImage(null);
         } catch (error) {
             setMessage({
                 type: 'error',
@@ -97,7 +143,7 @@ const PublicationForm = () => {
     };
 
     const getMetaData = async (file) => {
-        
+
         if (!file) {
             return;
         }
@@ -109,11 +155,11 @@ const PublicationForm = () => {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_DOMAIN}/api/document/extract-metadata`,
                 formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`,
+                },
+            }
             );
 
             if (!response.data.success) {
@@ -132,7 +178,7 @@ const PublicationForm = () => {
         }
     };
 
-        
+
     const handleFileSelect = (e) => {
         setSelectedFile(e.target.files[0]);
         getMetaData(e.target.files[0]);
@@ -156,6 +202,12 @@ const PublicationForm = () => {
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="flex flex-col space-y-2 sm:items-start">
+                    {previewImage &&
+                        <div className='max-w-60'> 
+                            <img src={previewImage} alt="PDF Preview" />
+                        </div>
+                     
+                     }
                     {selectedFile && (
                         <div className='flex justify-between w-full ace-x-2 px-5 py-3 border border-[hsl(0,0,75%)] dark:border-[hsl(0,0,25%)] rounded-lg'>
                             <p className="text-sm text-[hsl(0,0,20%)] dark:text-[hsl(0,0,80%)] truncate">
@@ -283,13 +335,10 @@ const PublicationForm = () => {
         </div>
     );
 };
-
-const PapersLayout = () => {
+const ResearchPaperLayout = () => {
     return (
-        <div>
-            <PublicationForm />
-        </div>
+        <PublicationForm />
     )
 }
 
-export default PapersLayout
+export default ResearchPaperLayout

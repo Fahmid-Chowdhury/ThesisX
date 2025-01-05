@@ -3,7 +3,6 @@ import documentUpload from "../middleware/documentUpload.js";
 import {
     extractMetadata,
     saveDocument,
-    // uploadDocument,
     getAllDocuments,
     getDocumentById,
 } from "../controllers/DocumentController.js";
@@ -12,9 +11,7 @@ import { checkAuth } from '../middleware/checkAuth.js';
 const router = express.Router();
 
 router.post("/extract-metadata", checkAuth, documentUpload.single("document"), extractMetadata);
-router.post("/save", checkAuth, saveDocument);
-router.delete("/cancel/:documentId", checkAuth, saveDocument);
-// router.post("/upload", checkAuth, documentUpload.single("document"), uploadDocument);
+router.post("/save", checkAuth,documentUpload.single("document"), saveDocument);
 router.get("/", checkAuth, getAllDocuments);
 router.get("/:id", checkAuth, getDocumentById);
 

@@ -131,7 +131,7 @@ model Document {
     authors      String[]
     uploadDate   DateTime @default(now())
     url          String
-    type         String
+    fileName     String
     uploadedById Int
     uploadedBy   User     @relation(fields: [uploadedById], references: [id])
 
@@ -247,6 +247,8 @@ model Feedback {
     createdAt    DateTime @default(now())
 
     submission Submission @relation(fields: [submissionId], references: [id])
+
+    @@map("feedback")
 }
 
 model Submission {
@@ -261,4 +263,6 @@ model Submission {
     createdAt DateTime   @default(now())
     thesis    Thesis     @relation(fields: [thesisId], references: [id])
     feedback  Feedback[]
+
+    @@map("submission")
 }

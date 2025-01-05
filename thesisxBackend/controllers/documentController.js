@@ -2,7 +2,11 @@ import DB from "../DB/db.js";
 import fs from "fs";
 import path from 'path';
 import pdfParse from "pdf-parse"; // Import the library
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+const documentPreviewDirectory = path.resolve(__dirname, "../public/documentPreview");
 
 const extractMetadata = async (req, res) => {
     try {
@@ -30,68 +34,68 @@ const extractMetadata = async (req, res) => {
             }
         });
 
-        res.status(200).json({ success:true, data: metadata });
+        return res.status(200).json({ success: true, data: metadata });
     } catch (error) {
-        res.status(500).json({ success:false, error: error.message });
+        return res.status(500).json({ success: false, error: error.message });
     }
 };
 
 const saveDocument = async (req, res) => {
     try {
-        const { title, abstract, authors, url, type } = req.body;
-        const userId = req.user.id;
+        const { title, abstract, authors, url } = req.body;
+        const userId = req.userData.id;
+        const role = req.userData.role;
 
+        if (role === "STUDENT") {
+            return res.status(403).json({ success: false, message: 'Only faculties and admins can upload papers.' });
+        }
+
+        const filename = req.file?.filename || null; // Safely access filename
+        if (!filename) {
+            return res.status(400).json({ success: false, message: 'No file uploaded.' });
+        }
+
+        // Parse authors if it is a string
+        let parsedAuthors;
+        try {
+            parsedAuthors = typeof authors === 'string' ? JSON.parse(authors) : authors;
+            if (!Array.isArray(parsedAuthors)) {
+                throw new Error('Authors must be an array.');
+            }
+        } catch (error) {
+            return res.status(400).json({ success: false, message: 'Invalid authors format. Expected an array.' });
+        }
+        const previewImage = req.body.previewImage
+        const name = filename.split('.')[0];
+        if (previewImage) {
+            const base64Data = previewImage.replace('data:image/png;base64', ""); // Strip the base64 prefix
+            const filename = `${name}.jpeg`;
+            const previewImagePath = path.join(documentPreviewDirectory, filename);
+            // Write the file
+            fs.writeFileSync(previewImagePath, base64Data, "base64");
+        }
+
+        // Create the document record in the database
         const document = await DB.document.create({
             data: {
                 title,
                 abstract,
-                authors: authors.split(","),
+                authors: parsedAuthors, // Use the parsed array
                 url,
-                type,
+                fileName: filename,
                 uploadedById: userId,
             },
         });
 
-        res.status(201).json({ message: "Document saved successfully", document });
+
+        return res.status(201).json({ success: true, message: 'Document saved successfully.', document });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Failed to save document.' });
     }
 };
 
-const cancelDocument = async (req, res) => {
-    try {
-        const { documentId } = req.params;
-        const userId = req.user.id; 
 
-        const document = await DB.contribution.findUnique({
-            where: { id: Number(documentId) },
-        });
-
-        if (!document) {
-            return res.status(404).json({ message: 'Document not found.' });
-        }
-
-        if (document.uploadedById !== userId) {
-            return res.status(403).json({ message: 'You do not have permission to delete this document.' });
-        }
-
-        const filePath = path.join(__dirname, '../public/documents', document.url);
-        fs.unlink(filePath, (err) => {
-            if (err) {
-                console.error('Error deleting file:', err);
-            }
-        });
-
-        await DB.contribution.delete({
-            where: { id: Number(documentId) },
-        });
-
-        return res.status(200).json({ message: 'Document cancelled and removed successfully.' });
-    } catch (error) {
-        console.error('Error cancelling document:', error);
-        return res.status(500).json({ message: 'An error occurred while cancelling the document.' });
-    }
-};
 
 // const uploadDocument = async (req, res) => {
 //     try {
@@ -155,10 +159,9 @@ const getDocumentById = async (req, res) => {
 };
 
 
-export { 
-    extractMetadata, 
-    saveDocument, 
-    cancelDocument, 
-    getAllDocuments, 
-    getDocumentById 
+export {
+    extractMetadata,
+    saveDocument,
+    getAllDocuments,
+    getDocumentById
 };

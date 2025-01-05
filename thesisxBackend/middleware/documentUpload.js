@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const documentDirectory = path.resolve(__dirname, "../public/documents");
+const documentPreviewDirectory = path.resolve(__dirname, "../public/documentPreview");
 
 const documentStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -17,6 +18,7 @@ const documentStorage = multer.diskStorage({
         cb(null, uniqueName);
     },
 });
+
 
 const documentFileFilter = (req, file, cb) => {
     const allowedTypes = [

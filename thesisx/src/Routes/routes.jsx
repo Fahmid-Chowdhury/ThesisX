@@ -31,6 +31,7 @@ import ThesisInfo from '../Pages/Thesis/ThesisPage/ThesisInfo/ThesisInfo';
 import RequestLayout from '../Pages/Appointments/RequestLayout';
 import RequestView from '../Pages/Appointments/RequestView';
 import StudentProfileView from '../Pages/Appointments/StudentProfileView';
+import ResearchPaperLayout from '../Pages/AccountManagement/AddResearchPaper/ResearchPaperLayout';
 // ===============================
 
 const ProtectedRoute = ({ element }) => {
@@ -130,6 +131,7 @@ const AppRouter = () => {
                         <Route path="" element={<Publication />} />
                         <Route path="add" element={<PublicationForm />} />
                     </Route>
+                    <Route path="addresearchpaper" element={<ResearchPaperLayout />} />
                 </Route>
             </Route>
         </Routes>

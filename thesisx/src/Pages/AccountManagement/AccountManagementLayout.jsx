@@ -38,7 +38,7 @@ const AccountManagementLayout = () => {
                             General
                         </NavLink>
                         {
-                           user && user.role !== "ADMIN" && (
+                            user && user.role !== "ADMIN" && (
                                 <NavLink
                                     key={"publication"}
                                     to="publication"
@@ -52,16 +52,19 @@ const AccountManagementLayout = () => {
                                 </NavLink>
                             )
                         }
+                        {user && user.role !== "STUDENT" && (
 
-                        <NavLink
-                            key="addresearchpaper"
-                            to="addresearchpaper"
-                            className={({ isActive }) =>
-                                `px-4 py-2 rounded-lg hover:bg-white dark:hover:bg-[hsl(0,0,15)] ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
-                            }
-                        >
-                            Add Research Paper
-                        </NavLink>
+                            <NavLink
+                                key="addresearchpaper"
+                                to="addresearchpaper"
+                                className={({ isActive }) =>
+                                    `px-4 py-2 rounded-lg hover:bg-white dark:hover:bg-[hsl(0,0,15)] ${isActive ? 'bg-white dark:bg-[hsl(0,0,15)]' : ''}`
+                                }
+                            >
+                                Add Research Paper
+                            </NavLink>
+                        )}
+
 
                     </nav>
                 </div>
