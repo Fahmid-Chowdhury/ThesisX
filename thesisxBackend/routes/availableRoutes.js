@@ -4,7 +4,7 @@ import {
     getAvailability,
     addAvailability,
     updateAvailability
-} from '../controllers/AvailabilityController.js';
+} from '../controllers/availabilityController.js';
 
 const router = express.Router();
 
