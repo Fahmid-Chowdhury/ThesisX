@@ -21,7 +21,7 @@ import PublicationLayout from '../Pages/AccountManagement/Publication/Publicatio
 import Publication from '../Pages/AccountManagement/Publication/Publication';  
 import PublicationForm from '../Pages/AccountManagement/Publication/PublicationForm';   
 import SupervisorProfile from '../Pages/Supervisors/SupervisorProfile/SupervisorProfile';
-import Extra from '../Pages/Extra/Extra';
+// import Extra from '../Pages/Extra/Extra';
 
 import ThesisDashboard from '../Pages/Thesis/ThesisPage/ThesisDashboard';
 import ThesisStream from '../Pages/Thesis/ThesisPage/ThesisStream/ThesisStream';
@@ -99,7 +99,7 @@ const AppRouter = () => {
             <Route path="/signin" element={<Signin />} />
             <Route path="/signup" element={<Signup />} />
             <Route element={<Layout />}>
-                <Route path="/extra" element={<Extra />} />
+                {/* <Route path="/extra" element={<Extra />} /> */}
                 <Route path="/" element={<ProtectedRoute element={<Home />} />} />
                 <Route path="/papers" element={<ProtectedRoute element={<Papers />} />} />
                 <Route path="/papers/:id" element={<ProtectedRoute element={<PaperView />} />} />

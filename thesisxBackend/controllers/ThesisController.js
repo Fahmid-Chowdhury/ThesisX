@@ -3,7 +3,7 @@ import DB from "../DB/db.js";
 //=======================================
 
 async function GetThesisByID(thesisID) {
-    
+
     try {
         const thesis = await DB.thesis.findUnique({
             where: {
@@ -29,14 +29,14 @@ async function GetThesisByID(thesisID) {
                             select: {
                                 name: true,
                                 email: true,
-                                image:true
+                                image: true
                             },
                         },
                     },
                 },
             },
         });
-    return thesis;
+        return thesis;
 
     } catch (err) {
         throw err;
@@ -183,7 +183,7 @@ async function GetThesisbyID(req, res) {
             message: "Unauthorized",
         });
     }
-    try{
+    try {
         // check if the user is realated to the thesis
         const thesisID = req.params.id;
         const thesis = await GetThesisByID(thesisID);
@@ -409,10 +409,10 @@ const getThesisPosts = async (req, res) => {
     }
 };
 
-async function CreateSubmissions ( req, res ) {
+async function CreateSubmissions(req, res) {
     const userData = req.userData;
 
-    if ( userData.role !== "FACULTY"){
+    if (userData.role !== "FACULTY") {
         return res.status(403).json({
             success: false,
             message: "Forbidden: Access is restricted to Faculty"
@@ -473,7 +473,7 @@ async function CreateSubmissions ( req, res ) {
         }
 
         const submission = await DB.submission.create({
-            data:{
+            data: {
                 title,
                 instructions: instruction,
                 deadline,
@@ -502,13 +502,13 @@ async function CreateSubmissions ( req, res ) {
             message: (err.message || "Internal server error"),
         });
     }
-    
+
 }
 
-async function UpdateSubmissions ( req, res ) {
+async function UpdateSubmissions(req, res) {
     const userData = req.userData;
 
-    if ( userData.role !== "FACULTY"){
+    if (userData.role !== "FACULTY") {
         return res.status(403).json({
             success: false,
             message: "Forbidden: Access is restricted to Faculty"
@@ -529,7 +529,7 @@ async function UpdateSubmissions ( req, res ) {
 
         const { submissionId, title, instructions, deadline, type } = req.body;
 
-        
+
         console.log(submissionId, title, instructions, deadline, type);
         if (!submissionId || !title || !instructions || !deadline || !type) {
             return res.status(400).json({
@@ -599,7 +599,7 @@ async function UpdateSubmissions ( req, res ) {
             message: "Submission updated successfully",
             data: updatedSubmission
         });
-        
+
 
     } catch (err) {
         console.error(err);
@@ -610,10 +610,10 @@ async function UpdateSubmissions ( req, res ) {
     }
 }
 
-async function GetSubmissions ( req, res ) {
+async function GetSubmissions(req, res) {
     const userData = req.userData;
 
-    try{
+    try {
         const { id } = req.params;
 
         if (!id) {
@@ -678,10 +678,10 @@ async function GetSubmissions ( req, res ) {
     }
 }
 
-async function EditThesis ( req, res ) {
+async function EditThesis(req, res) {
     const userData = req.userData;
 
-    if ( userData.role === "FACULTY"){
+    if (userData.role === "FACULTY") {
         return res.status(403).json({
             success: false,
             message: "Forbidden: Access is restricted to Students"
@@ -709,7 +709,7 @@ async function EditThesis ( req, res ) {
 
         const { title, abstract } = req.body;
 
-        if ( !title ) {
+        if (!title) {
             return res.status(400).json({
                 success: false,
                 message: "Missing required fields"
@@ -751,6 +751,88 @@ async function EditThesis ( req, res ) {
     }
 }
 
+async function InviteStudent(req, res) {
+    const userData = req.userData;
+
+    if (userData.role !== "STUDENT") {
+        return res.status(403).json({
+            success: false,
+            message: "Forbidden: Access is restricted to Students",
+        });
+    }
+
+    try {
+        const student = await DB.student.findUnique({
+            where: { userId: userData.id }
+        })
+
+        if (!student || !student.thesisID) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found",
+            });
+        }
+
+        
+
+        const { email } = req.body;
+        const thesisId = student.thesisID
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing email",
+            });
+        }
+
+        const existingStudent = await DB.student.findFirst({
+            where: {
+                user: {
+                    email
+                }
+            }
+        })
+
+        if (existingStudent && existingStudent.thesisID) {
+            return res.status(400).json({
+                success: false,
+                message: "Student is already enrolled in a thesis",
+            })
+        }
+
+        // generate a unique code
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        // check if invitation table already have a email address
+        const existingInvitation = await DB.invitation.findFirst({
+            where: { email },
+        });
+
+        if (existingInvitation) {
+            const updatedInvitation = await DB.invitation.update({
+                where: { id: existingInvitation.id }, // Use a unique field, e.g., `id`
+                data: { code, expiresAt }, 
+            });
+        } else {
+            const newInvitation = await DB.invitation.create({
+                data: { email, code, expiresAt, thesisId },
+            });
+        }
+
+        // Send email to the student with the invitation link
+        return res.status(200).json({
+            success: true,
+            message: "Invitation sent successfully",
+            data: { code },
+        })
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: (err.message || "Internal server error"),
+        });
+    }
+}
 // Add Feedback
 async function AddFeedback(req, res) {
     const { submissionId, content } = req.body;
@@ -852,5 +934,7 @@ export {
     GetSubmissions,
     EditThesis,
     AddFeedback,
-    UpdateFeedback
-}
+    UpdateFeedback,
+    InviteStudent,
+
+};

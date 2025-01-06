@@ -45,7 +45,6 @@ model User {
     documents    Document[]
     posts        Post[]
     comments     Comment[]
-    interactions Interaction[]
 
     @@map("user") // Explicitly set the table name as "user"
 }
@@ -91,7 +90,6 @@ model Thesis {
     posts             Post[]
     RequestSupervisor RequestSupervisor[]
     Appointment       Appointment[]
-    interactions      Interaction[]
     submission        Submission[]
 
     @@map("thesis")
@@ -99,8 +97,8 @@ model Thesis {
 
 model Invitation {
     id        Int      @id @default(autoincrement())
-    email     String
-    code      String   @unique
+    email     String   @unique
+    code      String   
     thesisId  Int
     createdAt DateTime @default(now())
     expiresAt DateTime
@@ -222,16 +220,6 @@ model Appointment {
     @@map("appointment")
 }
 
-model Interaction {
-    id        Int      @id @default(autoincrement())
-    userId    Int
-    thesisId  Int
-    question  String
-    answer    String
-    createdAt DateTime @default(now())
-    user      User     @relation(fields: [userId], references: [id])
-    thesis    Thesis   @relation(fields: [thesisId], references: [id])
-}
 
 enum SubmissionType {
     Normal
@@ -248,8 +236,8 @@ model Feedback {
     updatedAt   DateTime @updatedAt
     
     submission Submission @relation(fields: [submissionId], references: [id])
-
     @@map("feedback")
+    
 }
 
 model Submission {

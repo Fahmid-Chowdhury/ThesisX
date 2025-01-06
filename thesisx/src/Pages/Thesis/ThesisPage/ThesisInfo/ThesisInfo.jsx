@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useThesis } from '../../../../Contexts/ThesisContext/ThesisContext';
 import { GetStaticImage } from '../../../../utils/imageAPI';
-
+import Modal from '../../../../Components/Modal/Modal';
 const ThesisInfo = () => {
     const { thesisData, setThesisData } = useThesis();
-    
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         title: thesisData?.title || "",
@@ -21,6 +20,7 @@ const ThesisInfo = () => {
             [name]: value,
         }));
     };
+
 
     const handleSave = async () => {
         setLoading(true);
