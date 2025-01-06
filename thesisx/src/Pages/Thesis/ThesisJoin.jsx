@@ -13,9 +13,43 @@ const ThesisJoin = () => {
         navigate("/thesis"); // Navigate back to the thesis page
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Invitation code submitted:", code);
+        setLoading(true);
+        if (!code) {
+            setError("Please enter the invitation code.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("authToken");
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+
+            const response = await fetch(`${apiDomain}/api/thesis/join`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ code }),
+            });
+
+            const data = await response.json()
+            if (!response.ok) {
+                setError(data.message);
+                setLoading(false);
+                return;
+            }
+
+            navigate(`/thesis/t/${data.thesisId}`); // Navigate to the dashboard page with the thesis ID
+            setLoading(false);
+            setError(""); // Clear any error message
+
+        } catch (err) {
+            setError("An error occurred while joining thesis.");
+            setLoading(false);
+        }
     };
 
     const triggerSubmit = () => {
@@ -26,13 +60,14 @@ const ThesisJoin = () => {
 
     return (
         <div className="flex flex-col items-center justify-center h-full p-6">
+
             <div className="bg-white dark:bg-black rounded-lg p-6 w-full max-w-md border border-[hsl(0,0%,80%)] dark:border-[hsl(0,0%,20%)]">
                 <h2 className="text-xl mb-4">
                     Join Thesis
                 </h2>
 
                 <form onSubmit={handleSubmit}
-                    ref={formRef} 
+                    ref={formRef}
                     className="space-y-4 border p-6 rounded-lg border-[hsl(0,0%,80%)] dark:border-[hsl(0,0%,20%)]">
                     <div>
                         <label
@@ -49,6 +84,13 @@ const ThesisJoin = () => {
                             className="w-full p-2 rounded-md bg-[hsl(0,0,100%)] dark:bg-transparent dark:border focus:outline-none focus:ring-2 focus:ring-themeColDark dark:focus:ring-themeColLight dark:border-[hsl(0,0%,50%)]"
                             placeholder="Your Invitation Code"
                         />
+                        {
+                            error && (
+                                <div className="text-red-500 text-sm mt-2">
+                                    {error}
+                                </div>
+                            )
+                        }
                     </div>
                 </form>
                 <div className="mt-6 px-6">

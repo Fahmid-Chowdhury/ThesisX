@@ -833,6 +833,89 @@ async function InviteStudent(req, res) {
         });
     }
 }
+
+async function JoinThesis(req, res) {
+    const userData = req.userData;
+    if (userData.role!== "STUDENT") {
+        return res.status(403).json({
+            success: false,
+            message: "Forbidden: Access is restricted to Students",
+        });
+    }
+
+    try {
+        const student = await DB.student.findUnique({
+            where: { userId: userData.id },
+            include: {
+                user: true,
+            },
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found",
+            });
+        }
+
+        const { code } = req.body;
+
+        if (!code) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing code",
+            });
+        }
+
+        const invitation = await DB.invitation.findFirst({
+            where:{ email: student.user.email}
+        })
+
+        if (!invitation || invitation.expiresAt < Date.now()) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid code or invitation expired",
+            });
+        }
+
+        console.log(code);
+
+        if ( invitation.code !== code ){
+            return res.status(400).json({
+                success: false,
+                message: "Invalid code",
+            });
+        } 
+
+        const updateStudent = await DB.student.update({
+            where: { id: student.id },
+            data: { thesisID: invitation.thesisId },
+        })
+
+        if (!updateStudent){
+            return res.status(500).json({
+                success: false,
+                message: "Failed to join thesis",
+            });
+        }
+
+        DB.invitation.delete({
+            where: { id: invitation.id }
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "success",
+            thesisId: updateStudent.thesisID
+        });
+    } catch (err){
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: (err.message || "Internal server error"),
+        });
+    }
+}
 // Add Feedback
 async function AddFeedback(req, res) {
     const { submissionId, content } = req.body;
@@ -936,5 +1019,6 @@ export {
     AddFeedback,
     UpdateFeedback,
     InviteStudent,
+    JoinThesis,
 
 };
