@@ -1006,6 +1006,89 @@ async function UpdateFeedback(req, res) {
     }
 }
 
+async function submitSubmissions(req, res) {
+    const filename = req.file.filename;
+
+    const userData = req.userData;
+
+    if (userData.role!== "STUDENT") {
+        return res.status(403).json({
+            success: false,
+            message: "Forbidden: Access is restricted to students",
+        });
+    }
+
+    try {
+        const student = await DB.student.findUnique({
+            where: { userId: userData.id },
+            include: {
+                user: true,
+            },
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found",
+            });
+        }
+
+        const { submissionId } = req.body;
+
+        if (!submissionId) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing submissionId",
+            });
+        }
+
+        const submission = await DB.submission.findUnique({
+            where: { id: parseInt(submissionId) },
+        });
+
+        if (!submission) {
+            return res.status(404).json({
+                success: false,
+                message: "Submission not found",
+            });
+        }
+
+        if (submission.thesisId !== student.thesisID) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden: Access is restricted to thesis students",
+            });
+        }
+
+        const updatedSubmission = await DB.submission.update({
+            where: { id: parseInt(submissionId) },
+            data: {  file:filename },
+        });
+
+        if (!updatedSubmission){
+            return res.status(500).json({
+                success: false,
+                message: "Failed to submit submission",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Submission submitted successfully",
+            data: updatedSubmission,
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+
+
+}
+
 export {
     GetThesis,
     GetFacultyThesis,
@@ -1020,5 +1103,6 @@ export {
     UpdateFeedback,
     InviteStudent,
     JoinThesis,
+    submitSubmissions,
 
 };

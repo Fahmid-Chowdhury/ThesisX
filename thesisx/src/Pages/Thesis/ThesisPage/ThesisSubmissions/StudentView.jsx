@@ -4,6 +4,9 @@ import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 
 const SubmissionCard = ({ submission }) => {
     const [selectedFile, setSelectedFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const token = localStorage.getItem('authToken');
+    const apiDomain = import.meta.env.VITE_API_DOMAIN;
 
     // Format the deadline for display
     const formatDate = (isoDate) => {
@@ -11,8 +14,39 @@ const SubmissionCard = ({ submission }) => {
         return date.toLocaleString(); // Example: "1/13/2025, 5:59 PM"
     };
 
-    const handleSubmitWork = () => {
-        // Add your logic for submitting work here
+    const handleSubmitWork = async () => {
+        if (!selectedFile) {
+            alert("Please select a file before submitting.");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const formData = new FormData();
+            formData.append("submissionId", submission.id); // Add submission ID
+            formData.append("submission", selectedFile); // Add the selected file
+
+            const response = await fetch(`${apiDomain}/api/thesis/submit-submissions`, {
+                method: "POST",
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Authorization header
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to submit work");
+            }
+
+            alert("Submission successful!");
+        } catch (err) {
+            console.error(err);
+            alert(err.message || "An error occurred during submission.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleRemoveFile = () => {
