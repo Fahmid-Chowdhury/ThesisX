@@ -19,9 +19,13 @@ const AddEventForm = ({ onSave, onClose, currentTimes }) => {
         }
     }, [start, decoded.role]);
 
+    const convertToUTCIso = (isoString) =>{
+        const localDate = new Date(isoString); // Parse ISO as local
+        return new Date(localDate.getTime() + localDate.getTimezoneOffset() * 60000).toISOString(); // Adjust to UTC
+    }
     const isConflict = (startISO, endISO) => {
         const now = new Date();
-    
+        
         // Convert local ISO to UTC for consistent comparison
         const convertToUTC = (isoString) => {
             const localDate = new Date(isoString); // Parse ISO as local
@@ -84,8 +88,8 @@ const AddEventForm = ({ onSave, onClose, currentTimes }) => {
 
         const newEvent =
             decoded.role === "FACULTY"
-                ? { type, start, end }
-                : { appointmentTime: start, end, note };
+                ? { type, start: convertToUTCIso(start), end:convertToUTCIso(end) }
+                : { appointmentTime: convertToUTCIso(start), note };
 
         onSave(newEvent);
     };
@@ -159,8 +163,8 @@ const AddEventForm = ({ onSave, onClose, currentTimes }) => {
                                 onChange={(e) => setType(e.target.value)}
                                 className="w-full p-3 border border-gray-300 rounded-lg"
                             >
-                                <option value="online">Online</option>
-                                <option value="offline">Offline</option>
+                                <option value="Online">Online</option>
+                                <option value="Offline">Offline</option>
                             </select>
                         </div>
                     )}

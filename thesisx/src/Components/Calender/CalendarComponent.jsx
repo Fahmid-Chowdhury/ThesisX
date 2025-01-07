@@ -77,7 +77,41 @@ const CalendarComponent = () => {
         setIsAddEventOpen(false);
     };
 
+    const addAvailabililty = async (event) => {
+        try{
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+            const response = await fetch(`${apiDomain}/api/availability/add-availability`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    type: event.type,
+                    startTime: event.start,
+                    endTime: event.end,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to add availability");
+            }
+
+            const data = await response.json();
+            console.log(data);
+            fetchAvailability(); // Fetch updated availability after adding new event
+        } catch (err) {
+            console.error("Error adding availability:", err.message);
+        } 
+    }
+
+
     const handleEventSave = (newEvent) => {
+        if (decoded.role === 'FACULTY'){
+            addAvailabililty(newEvent);
+            closeAddEventModal
+            return
+        }
         console.log(newEvent);
         // setEvents([...events, newEvent]);
         // closeAddEventModal();
