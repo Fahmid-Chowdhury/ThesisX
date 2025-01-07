@@ -7,6 +7,9 @@ CREATE TYPE "AvailabilityType" AS ENUM ('Online', 'Offline');
 -- CreateEnum
 CREATE TYPE "requestStatus" AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED');
 
+-- CreateEnum
+CREATE TYPE "SubmissionType" AS ENUM ('Normal', 'P1', 'P2', 'Final');
+
 -- CreateTable
 CREATE TABLE "otp" (
     "id" SERIAL NOT NULL,
@@ -58,6 +61,7 @@ CREATE TABLE "student" (
 CREATE TABLE "thesis" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
+    "abstract" TEXT,
     "supervisorId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -99,7 +103,7 @@ CREATE TABLE "document" (
     "authors" TEXT[],
     "uploadDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "url" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
+    "fileName" TEXT NOT NULL,
     "uploadedById" INTEGER NOT NULL,
 
     CONSTRAINT "document_pkey" PRIMARY KEY ("id")
@@ -178,15 +182,28 @@ CREATE TABLE "appointment" (
 );
 
 -- CreateTable
-CREATE TABLE "Interaction" (
+CREATE TABLE "feedback" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "submissionId" INTEGER NOT NULL,
+    "content" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "feedback_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "submission" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "instructions" TEXT NOT NULL,
+    "deadline" TIMESTAMP(3) NOT NULL,
+    "type" "SubmissionType" NOT NULL,
+    "file" TEXT,
     "thesisId" INTEGER NOT NULL,
-    "question" TEXT NOT NULL,
-    "answer" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Interaction_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "submission_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -202,7 +219,7 @@ CREATE UNIQUE INDEX "faculty_userId_key" ON "faculty"("userId");
 CREATE UNIQUE INDEX "student_userId_key" ON "student"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "invitation_code_key" ON "invitation"("code");
+CREATE UNIQUE INDEX "invitation_email_key" ON "invitation"("email");
 
 -- AddForeignKey
 ALTER TABLE "faculty" ADD CONSTRAINT "faculty_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -256,7 +273,7 @@ ALTER TABLE "appointment" ADD CONSTRAINT "appointment_thesisId_fkey" FOREIGN KEY
 ALTER TABLE "appointment" ADD CONSTRAINT "appointment_facultyId_fkey" FOREIGN KEY ("facultyId") REFERENCES "faculty"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Interaction" ADD CONSTRAINT "Interaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "feedback" ADD CONSTRAINT "feedback_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "submission"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Interaction" ADD CONSTRAINT "Interaction_thesisId_fkey" FOREIGN KEY ("thesisId") REFERENCES "thesis"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "submission" ADD CONSTRAINT "submission_thesisId_fkey" FOREIGN KEY ("thesisId") REFERENCES "thesis"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
