@@ -1,10 +1,11 @@
+@import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
 /* React Big Calendar Styles */
-@import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 *{
     padding: 0;
