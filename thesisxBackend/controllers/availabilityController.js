@@ -8,25 +8,35 @@ const getAvailability = async (req, res) => {
         const userId = req.userData?.id; // Assuming user ID comes from authentication middleware
         const role = req.userData?.role;
 
-        if (!userId || role !== "STUDENT") {
+        if (!userId || role === "ADMIN") {
             return res.status(403).json({ success: false, message: "Unauthorized" });
         }
 
-        // Fetch user and student data from DB 
-        const student = await DB.student.findUnique({
-            where: { userId: userId },
-            include: { thesis: true },
-        });
+        let facultyId;
+        if (role === "STUDENT") {
+            const student = await DB.student.findUnique({
+                where: { userId: userId },
+                include: { thesis: true },
+            });
+    
+            if (!student || !student.thesis) {
+                return res.status(404).json({ success: false, message: "Student or thesis not found." });
+            }
+            facultyId = student.thesis.supervisorId;
+            if (!facultyId) {
+                return res.status(404).json({ success: false, message: "Faculty not found." });
+            }
 
-        if (!student || !student.thesis) {
-            return res.status(404).json({ success: false, message: "Student or thesis not found." });
+        } else {
+            const faculty = await DB.faculty.findUnique({
+                where: {userId}
+            })
+            if (!faculty) {
+                return res.status(404).json({ success: false, message: "Faculty not found." });
+            }
+            facultyId = faculty.id;
         }
-        console.log(student.thesis)
-        const facultyId = student.thesis.supervisorId;
-        console.log(facultyId)
-        if (!facultyId) {
-            return res.status(404).json({ success: false, message: "Faculty not found." });
-        }
+        // Fetch user and student data from DB 
 
         // Fetch faculty availability data from availability table
         const availability = await DB.availability.findMany({

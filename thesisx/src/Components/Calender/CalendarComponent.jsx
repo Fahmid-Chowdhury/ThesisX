@@ -4,7 +4,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import AddEventForm from "./AddEventForm"; // Import AddEventForm for event creation
 import Modal from "./Modal"; // The Modal to show event details
-
+import { jwtDecode } from "jwt-decode";
 // Configure the calendar to use Moment.js
 const localizer = momentLocalizer(moment);
 
@@ -13,25 +13,52 @@ const CalendarComponent = () => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAddEventOpen, setIsAddEventOpen] = useState(false);
-
+    const token = localStorage.getItem("authToken");
+    const decoded = jwtDecode(token)
     // Fetch or mock data for events
     useEffect(() => {
         // Example events
-        setEvents([
-            {
-                title: "Faculty Meeting",
-                start: new Date(2025, 0, 10, 10, 0),
-                end: new Date(2025, 0, 10, 12, 0),
-                type: "meeting",
-            },
-            {
-                title: "Student Thesis Discussion",
-                start: new Date(2025, 0, 12, 14, 0),
-                end: new Date(2025, 0, 12, 16, 0),
-                type: "discussion",
-            },
-        ]);
+
+        fetchAvailability(); // Fetch availability from API
     }, []);
+
+    const fetchAvailability = async () => {
+        try{
+            const apiDomain = import.meta.env.VITE_API_DOMAIN;
+
+            const response = await fetch(`${apiDomain}/api/availability/get-availability`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch availability");
+            }
+
+            const data = await response.json();
+            const events = data.data;
+
+            const updatedEvents = events.map(event => {
+                const startDate = new Date(event.startTime);
+                const endDate = new Date(event.endTime);
+            
+                return {
+                    title: "Available "+event.type,  // Set title as the type
+                    start: startDate,   // Convert startTime to Date object
+                    end: endDate,       // Convert endTime to Date object
+                    type: "available",  // Set type as "available" (you can adjust based on the logic needed)
+                };
+            });
+
+            console.log(updatedEvents);
+            setEvents(updatedEvents); // Update the state with the fetched events
+
+         
+        } catch (err) {
+            console.error("Error fetching availability:", err.message);
+        }
+    }
 
     const handleEventClick = (event) => {
         setSelectedEvent(event);
@@ -51,8 +78,9 @@ const CalendarComponent = () => {
     };
 
     const handleEventSave = (newEvent) => {
-        setEvents([...events, newEvent]);
-        closeAddEventModal();
+        console.log(newEvent);
+        // setEvents([...events, newEvent]);
+        // closeAddEventModal();
     };
 
     return (
@@ -63,7 +91,10 @@ const CalendarComponent = () => {
                     onClick={handleAddEventClick}
                     className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
                 >
-                    Add Event
+                    {
+                        decoded.role === "STUDENT" ? 'Add Appointment' : 'Add Availability'
+                    }
+                    
                 </button>
             </div>
 
@@ -92,10 +123,10 @@ const CalendarComponent = () => {
                         // Customize event styles based on type (for color coding)
                         let backgroundColor = "";
                         switch (event.type) {
-                            case "meeting":
+                            case "appointment":
                                 backgroundColor = "#4C6B8A"; // Blue for meetings
                                 break;
-                            case "discussion":
+                            case "available":
                                 backgroundColor = "#F2994A"; // Orange for discussions
                                 break;
                             default:
@@ -108,7 +139,7 @@ const CalendarComponent = () => {
 
             {/* Add Event Modal */}
             {isAddEventOpen && (
-                <AddEventForm onSave={handleEventSave} onClose={closeAddEventModal} />
+                <AddEventForm onSave={handleEventSave} onClose={closeAddEventModal} currentTimes={events} />
             )}
 
             {/* Event Details Modal */}
