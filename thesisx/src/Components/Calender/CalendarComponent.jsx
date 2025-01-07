@@ -56,9 +56,9 @@ const CalendarComponent = () => {
     };
 
     return (
-        <div className="h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto p-5">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-semibold text-gray-800">Event Scheduler</h1>
+                <h1 className="text-3xl font-semibold">Event Scheduler</h1>
                 <button
                     onClick={handleAddEventClick}
                     className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"
@@ -68,7 +68,7 @@ const CalendarComponent = () => {
             </div>
 
 
-            <div className="calendar-container bg-white rounded-lg shadow-lg p-4">
+            <div className="calendar-container bg-[hsl(0,0,100)] dark:bg-black border border-[hsl(0,0,85)] dark:border-[hsl(0,0,15)] rounded-lg shadow-lg p-4">
                 <Calendar
                     localizer={localizer}
                     events={events}
@@ -101,7 +101,7 @@ const CalendarComponent = () => {
                             default:
                                 backgroundColor = "#6C757D"; // Gray for others
                         }
-                        return { style: { backgroundColor, borderRadius: "8px" } };
+                        return { style: { backgroundColor, borderRadius: "8px", color:"white" } };
                     }}
                 />
             </div>
