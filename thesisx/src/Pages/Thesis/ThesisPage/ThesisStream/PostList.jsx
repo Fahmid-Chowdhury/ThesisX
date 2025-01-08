@@ -67,9 +67,14 @@ const CommentSection = ({ comments, postId }) => {
             </div>
             {expanded && (
                 <div className='px-6 flex flex-col gap-2 mt-2'>
-                    {comments.map((comment) => (
-                        <Comment key={comment.id} comment={comment} />
-                    ))}
+                    <div className="flex flex-col-reverse">
+                        <CommentComponent comments={comments} />
+
+                    </div>
+                    {/* {comments.map((comment) => (
+
+                        <Comment key={comment.id} comment={comment} number={comment.id} />
+                    ))} */}
                     <CommentPost postId={postId} />
                 </div>
             )}
@@ -77,7 +82,32 @@ const CommentSection = ({ comments, postId }) => {
     );
 }
 
-const Comment = ({ comment }) => {
+const CommentComponent = ({ comments }) => {
+    const userCommentCount = {};
+
+    const sortedComments = [...comments].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+    return (
+        <>
+            {sortedComments.map((comment) => {
+                userCommentCount[comment.authorId] = (userCommentCount[comment.authorId] || 0) + 1;
+
+                return (
+                    <Comment
+                        key={comment.id}
+                        comment={comment}
+                        number={userCommentCount[comment.authorId]}
+                    />
+                );
+            })}
+        </>
+    );
+};
+
+
+
+
+const Comment = ({ comment, number }) => {
     const { user } = useContext(AuthContext);
     const { socket } = useContext(ThesisStreamContext);
 
@@ -85,7 +115,7 @@ const Comment = ({ comment }) => {
 
     const handleDeleteComment = () => {
         const token = localStorage.getItem('authToken');
-        socket.emit('deleteComment', {roomId:id, commentId: comment.id, token });
+        socket.emit('deleteComment', { roomId: id, commentId: comment.id, token });
     };
 
     return (
@@ -101,6 +131,8 @@ const Comment = ({ comment }) => {
                 <div className="flex gap-2 items-center">
                     <h4>{comment.author.name}</h4>
                     <p className='text-sm text-[hsl(0,0%,50%)] dark:text-[hsl(0,0%,50%)]'>{formatDate(comment.createdAt)}</p>
+                    <div className='p-3 bg-gray-200 h-5 flex items-center justify-center rounded-full dark:bg-gray-800'>{number}</div>
+                    
                     {user.id === comment.authorId && (
                         <button onClick={handleDeleteComment}>
                             <svg
@@ -126,16 +158,24 @@ const Comment = ({ comment }) => {
     );
 }
 
-const CommentPost = ({postId}) => {
+const CommentPost = ({ postId }) => {
     const { user } = useContext(AuthContext);
     const { socket } = useContext(ThesisStreamContext);
     const [newComment, setNewComment] = useState("");
+
+    const [error, setError] = useState(null)
 
     const { id } = useParams();
 
     // Handle comment submission
     const handleCommentSubmit = (e, postId) => {
         e.preventDefault();
+        const containsSpecialChar = /[!@#_]/g.test(newComment);
+
+        if (containsSpecialChar) {
+            setError('Comment contains special characters!');
+            return; // Don't proceed further if special characters are found
+        }
         const token = localStorage.getItem('authToken');
         if (newComment.trim()) {
             socket.emit(
@@ -150,6 +190,7 @@ const CommentPost = ({postId}) => {
                 }
             );
             setNewComment("");
+            setError(null)
         }
     };
     const handleCommentChange = (e) => {
@@ -174,6 +215,7 @@ const CommentPost = ({postId}) => {
                         value={newComment}
                         required
                     ></textarea>
+                    {error && <div className='text-red-500'>{error}</div>}
                     <button type='submit' className='px-4 py-2 bg-themeColDark dark:bg-themeColLight text-white rounded-full mt-2'>Comment</button>
                 </form>
             </div>
